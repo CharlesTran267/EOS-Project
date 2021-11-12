@@ -77,7 +77,7 @@ function ContributePage(props) {
         }
         setData(newData)
     }
-    const onSubmit = (event) => {
+    const onSubmit = async(event) => {
         event.preventDefault();
 
         if (!volcName || !magnification || !gsLow ||
@@ -112,8 +112,7 @@ function ContributePage(props) {
             epis_dias_light: "",
             scale_ref: ""
           }
-          console.log(particle)
-           axios.post("/volcanoes/particles/add", particle)
+           await axios.post("/volcanoes/particles/add", particle)
               .catch(err=>console.log(err),failed=true)
           const image={
               imageURL:`${data[i].image_path}`,
@@ -123,8 +122,7 @@ function ContributePage(props) {
               volc_id:1,
               par_id:i
           }
-          console.log(image)
-           axios.post("/volcanoes/images/add",image)
+            await axios.post("/volcanoes/images/add",image)
             .catch(err=>console.log(err),failed=true)
 
         }
