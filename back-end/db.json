@@ -1,0 +1,116 @@
+{
+    "volcanoes":[
+        {   
+            "name":"Pinatubo",
+            "id":"1",
+            "imgURL": "images/volcanoes/pinatubo_volcano.jpeg",
+            "silicaContent": "Ultrabasic",
+            "tas": "Basalt",
+            "eruption": 
+            [
+                {   "id": "1",
+                    "year": "1991",
+                    "imgURL": "images/volcanoes/eruptions/pinatubo_eruption_1991.jpeg",
+                    "eruptiveStyle" :"Phreatic",
+                    "general":[
+                        {
+                            "id":"1",
+                            "imgURL":"images/volcanoes/eruptions/gral/pi1_gral_1_b.jpg",
+                            "particle":[
+                                {
+                                    "id":"1",
+                                    "index":"1",
+                                    "instrument":"b",
+                                    "imgURL":"images/volcanoes/eruptions/gral/particles/pi1_1_1_b.png", 
+                                    "particleType" : "Pyroxene",
+                                    "glassyType" : "Juvenile",
+                                    "crystallinity": "Low Transparent",
+                                    "alteration" : "None",
+                                    "shape":  "Blocky"
+                                },
+                                {
+                                    "id":"2",
+                                    "index":"1",
+                                    "instrument":"b",
+                                    "imgURL":"images/volcanoes/eruptions/gral/particles/pi1_2_1_b.png",
+                                    "particleType" : "Pyroxene",
+                                    "glassyType" : "Juvenile",
+                                    "crystallinity": "Low Transparent",
+                                    "alteration" : "None",
+                                    "shape":  "Blocky"
+                                },
+                                {
+                                    "id":"3",
+                                    "index":"1",
+                                    "instrument":"b",
+                                    "imgURL":"images/volcanoes/eruptions/gral/particles/pi1_3_1_b.png",
+                                    "particleType" : "Pyroxene",
+                                    "glassyType" : "Juvenile",
+                                    "crystallinity": "Low Transparent",
+                                    "alteration" : "None",
+                                    "shape":  "Blocky"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {   
+            "name": "Taal",
+            "id":"2",
+            "imgURL": "images/volcanoes/taal_volcano.jpeg",
+            "silicaContent": "Ultrabasic",
+            "tas": "Basalt",
+            "eruption": 
+            [
+                {   "id": "1",
+                    "year": "2020",
+                    "imgURL": "images/volcanoes/eruptions/taal_eruption_2020.jpeg",
+                    "eruptiveStyle" :"Phreatic",
+                    "general":[
+                        {
+                            "id":"1",
+                            "imgURL":"images/volcanoes/eruptions/gral/ta1_gral_1_b.jpg",
+                            "particle":[
+                                {
+                                    "id":"1",
+                                    "index":"1",
+                                    "instrument":"b",
+                                    "imgURL":"images/volcanoes/eruptions/gral/particles/ta1_1_1_b.png",
+                                    "particleType" : "Pyroxene",
+                                    "glassyType" : "Juvenile",
+                                    "crystallinity": "Low Transparent",
+                                    "alteration" : "None",
+                                    "shape":  "Blocky"
+                                },
+                                {
+                                    "id":"2",
+                                    "index":"1",
+                                    "instrument":"b",
+                                    "imgURL":"images/volcanoes/eruptions/gral/particles/ta1_2_1_b.png",
+                                    "particleType" : "Pyroxene",
+                                    "glassyType" : "Juvenile",
+                                    "crystallinity": "Low Transparent",
+                                    "alteration" : "None",
+                                    "shape":  "Blocky"
+                                },
+                                {
+                                    "id":"3",
+                                    "index":"1",
+                                    "instrument":"b",
+                                    "imgURL":"images/volcanoes/eruptions/gral/particles/ta1_3_1_b.png",
+                                    "particleType" : "Pyroxene",
+                                    "glassyType" : "Juvenile",
+                                    "crystallinity": "Low Transparent",
+                                    "alteration" : "None",
+                                    "shape":  "Blocky"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

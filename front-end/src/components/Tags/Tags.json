@@ -1,0 +1,30 @@
+{
+   "volcanoName": {
+      "id":1,
+      "choices": ["Volcano Name", "Pinatubo","Taal"]
+   },
+  "silicaContent": {
+    "id": 2,
+    "choices":["Silica Content","Ultrabasic", "Basic", "Acid"]
+  },
+  "tas" :{
+    "id" : 3,
+    "choices": ["TAS","Basalt", "Basaltic andesite", "Andesite", "Dacite", "Rhyolite", "Trachyte or Trachydacite", "Phonolite", "Trachybasalt", "Basaltic trachyandesite", "Trachyandesite", "Picrobasalt", "Basanite or Tephrite", "Phonotephrite", "Tephriphonolite"]},
+  "eruptiveStyle": {
+    "id": 4,
+    "choices": ["Eruptive Style", "Phreatic","Fountaining","Strombolian","Vulcanian","Subplinian","Plinian","Ultraplinian","Hyaloclastite","Surtseyan"]},
+  "particleType": {
+    "id": 5,
+    "choices":["Particle Type","Pyroxene","Plagioclase","Other minerals","Altered material","Glassy"]},
+  "glassyType" :{
+    "id": 6,
+    "choices":["Glassy Type","Juvenile","Non-juvenile"]},
+  "crystallinity": {
+    "id":7,
+    "choices":["Crystallinity","Low Transparent","Low Black", "Mid", "High"]},
+  "alteration" :{
+    "id":8,
+    "choices":["Aleration","None", "Slight", "Moderate"]},
+  "shape" :{"id": 9,
+    "choices":["Shape","Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy"]}
+}
