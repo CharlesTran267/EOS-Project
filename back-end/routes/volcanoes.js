@@ -1,5 +1,5 @@
 const router = require('express').Router();
-let {Volcano, Eruption, General, Particle, AFE, Sample} = require('../models/volcano.model');
+let {Volcano, Eruption, General, Particle, AFE, Sample,Image} = require('../models/volcano.model');
 // Volcano routes
 router.route('/getVolcanoes').get((req, res) => {
   Volcano.find()
@@ -258,7 +258,6 @@ router.get("/particles_by_id", (req, res) => {
       })
 });
 // Image route
-const {Image}  = require('../models/image.model');
 
 router.route('/getImage').get((req,res)=>{
     Image.find()
@@ -268,11 +267,11 @@ router.route('/getImage').get((req,res)=>{
         })
 })
 
-router.route('/images/add').post((req,res)=>{
-    const newImage = new Image(req.body)
-    newImage.save()
-        .then(()=> res.json('Image added!'))
-        .catch(err => res.status(400).json('Error: ',err))
-})
+router.route('/images/add').post((req, res) => {
+  const newImage = new Image(req.body);
+  newImage.save()
+  .then(() => res.json('Image added!'))
+  .catch(err => res.status(400).json('Error: ' + err));
+});
 
 module.exports = router;

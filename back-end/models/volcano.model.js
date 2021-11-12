@@ -1,6 +1,16 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
+const imageSchema = new Schema({
+  imageURL:{type:String, required:true},
+  gsLow:{type: Number, required: true},
+  gsUp:{type: Number, required: true},
+  magnification:{type: Number, required: true},
+  volc_id: {type:Number, required: true},
+  par_id: {type:Number, required: true}
+},{
+  timestamps:true
+})
 const particleSchema = new Schema({
   id: {type:Number, required: true},
   index: {type:Number},
@@ -103,6 +113,7 @@ const General = mongoose.model('General', generalSchema);
 const Particle = mongoose.model('Particle', particleSchema);
 const AFE = mongoose.model('AFE', afeSchema);
 const Sample = mongoose.model('Sample', sampleSchema);
+const Image = mongoose.model("Image",imageSchema)
 module.exports = {
   Volcano: Volcano,
   Eruption: Eruption,
@@ -110,4 +121,5 @@ module.exports = {
   Particle: Particle,
   AFE: AFE,
   Sample: Sample,
+  Image: Image
 }
