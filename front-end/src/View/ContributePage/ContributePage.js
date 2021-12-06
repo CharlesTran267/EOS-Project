@@ -1,8 +1,10 @@
 import React, { useState,useEffect } from 'react'
-import { Typography, Button, Form, message, Input, Icon } from 'antd';
 import FileUpload from './FileUpload.js'
 import axios from 'axios';
 import Table from './Table'
+import { Grid, TextField, Button, Card, CardContent, Typography } from '@material-ui/core';
+import { contributeStyle } from './ContributePage.style.tsx';
+import MenuItem from '@mui/material/MenuItem';
 const { Title } = Typography;
 
 const gsValue = [0,1,2,3,4];
@@ -11,47 +13,102 @@ const gTypes = ["Juvenile","Non-juvenile"];
 const crystallinity = ["Low Transparent","Low Black", "Mid", "High"];
 const alterations = ["None", "Slight", "Moderate"];
 const shapes = ["Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy"]
+const currencies = [
+    {
+      value: 'USD',
+      label: '$',
+    },
+    {
+      value: 'EUR',
+      label: '€',
+    },
+    {
+      value: 'BTC',
+      label: '฿',
+    },
+    {
+      value: 'JPY',
+      label: '¥',
+    },
+  ];
 
 function ContributePage(props) {
+    const classes = contributeStyle();
     const [volcName, setVolcName] = useState("");
+    const [volcValid,setVolcValid] = useState({
+        error:true,
+        helperText:""
+    })
     const [magnification, setMg] = useState(null);
+    const [magValid,setMagValid] = useState({
+        error:true,
+        helperText:""
+    })
     const [gsLow,setGsLow] = useState();
+    const [gsLowValid,setGsLowValid] = useState({
+        error:true,
+        helperText:""
+    })
     const [gsUp,setGsUp] = useState();
+    const [gsUpValid,setGsUpValid] = useState({
+        error:true,
+        helperText:""
+    })
     const [pType,setPType] = useState("");
-    const [gType,setGType] = useState("");
+    const [pValid,setPValid] = useState({
+        error:true,
+        helperText:""
+    })
+    const [gType,setGType] = useState('');
+    const [gValid,setGValid] = useState({
+        error:true,
+        helperText:""
+    })
     const [crys,setCrys] = useState("");
+    const [crysValid,setCrysValid] = useState({
+        error:true,
+        helperText:""
+    })
     const [alteration, setAlt] = useState("");
-    const [shape, setShape] = useState("");
+    const [altValid,setAltValid] = useState({
+        error:true,
+        helperText:""
+    })
+    const [shape, setShape] = useState('');
+    const [shapeValid,setShapeValid] = useState({
+        error:true,
+        helperText:""
+    })
     const [buttonClicked, setButtonClicked] = useState(false)
     const [data,setData] = useState([])
     const [Images, setImages] = useState([])
 
     const onVolcChange = (event)=>{
-      setVolcName(event.currentTarget.value)
+      setVolcName(event.target.value)
     } 
     const onMgChange = (event)=>{
-      setMg(event.currentTarget.value)
+      setMg(event.target.value)
     } 
     const onGsLowChange = (event)=>{
-      setGsLow(event.currentTarget.value)
+        setGsLow(event.target.value)
     } 
     const onGsUpChange = (event)=>{
-      setGsUp(event.currentTarget.value)
+      setGsUp(event.target.value)
     } 
     const onPTypeChange = (event)=>{
-      setPType(event.currentTarget.value)
+      setPType(event.target.value)
     } 
     const onGTypeChange = (event)=>{
-      setGType(event.currentTarget.value)
+      setGType(event.target.value)
     } 
     const onCrysChange = (event)=>{
-      setCrys(event.currentTarget.value)
+      setCrys(event.target.value)
     } 
     const onAltChange = (event)=>{
-      setAlt(event.currentTarget.value)
+      setAlt(event.target.value)
     } 
     const onShapeChange = (event)=>{
-      setShape(event.currentTarget.value)
+      setShape(event.target.value)
     } 
     const updateImages = (newImages) => {
         setImages(newImages)
@@ -129,28 +186,182 @@ function ContributePage(props) {
         
         if(!failed) props.history.push('/')
       }
-
     return (
         <div style={{ maxWidth:"80%",margin: '2rem auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                <Title level={2}> Help us expand our Database!</Title>
+            <Typography gutterBottom variant="h4" align="center" style={{fontWeight:"600"}} >
+        Help Us Expand Our Database!
+       </Typography>
+      <Grid>
+        <Card style={{ maxWidth: "100%", padding: "20px 5px", margin: "0 auto" }}>
+          <CardContent>
+
+            <form>
+            <div style={{padding: "20px 5px"}}>
+                <FileUpload refreshFunction={updateImages}/>
             </div>
-
-
-            <Form onSubmit={onSubmit} >
-
-                {/* DropZone */}
-                <FileUpload refreshFunction={updateImages} />
-
-                <br />
-                <br />
-                <label>Volcano Name</label>
-                <Input
-                    onChange={onVolcChange}
+              <Grid container spacing={1}>
+                <Grid xs={12} item>
+                  <TextField 
+                    placeholder="Enter volcano name" 
+                    label="Volcano Name" 
+                    variant="outlined" 
                     value={volcName}
-                />
-                <br />
-                <br />
+                    onChange={onVolcChange}
+                    fullWidth 
+                    required />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <TextField 
+                        placeholder="Enter number only (E.g. 1.4 instead of 1.4x)" 
+                        label="Magnification" 
+                        variant="outlined" 
+                        type="number"
+                        value={magnification}
+                        onChange={onMgChange}
+                        fullWidth 
+                        required >
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <TextField 
+                        label="Grain Size Lower Bound" 
+                        variant="outlined" 
+                        select
+                        value={gsLow}
+                        onChange={onGsLowChange}
+                        fullWidth 
+                        helperText="Please ensure Upper Bound is greater than or equal to Lower Bound"
+                        required >
+                            {gsValue.map(item => (
+                            <MenuItem key = {item} value={item}>{item} </MenuItem>
+                            ))}
+                        </TextField>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <TextField 
+                        label="Grain Size Upper Bound" 
+                        variant="outlined" 
+                        select
+                        value={gsUp}
+                        onChange={onGsUpChange}
+                        fullWidth 
+                        required >
+                            {gsValue.map(item => (
+                            <MenuItem key = {item} value={item}>{item} </MenuItem>
+                            ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} >
+                    <Typography style={{color:"#7d7d7d"}}> Tell us more about your data:</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField 
+                        label="Particle Type" 
+                        variant="outlined" 
+                        select
+                        value={pType}
+                        onChange={onPTypeChange}
+                        fullWidth 
+                        required >
+                            {pTypes.map(item => (
+                           <MenuItem key = {item} value={item}>{item} </MenuItem>
+                            ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                <TextField 
+                        label="Shape" 
+                        variant="outlined" 
+                        select
+                        value={shape}
+                        onChange={onShapeChange}
+                        fullWidth 
+                        optional >
+                            {shapes.map(item => (
+                            <MenuItem key = {item} value={item}>{item} </MenuItem>
+                            ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                <TextField 
+                        label="Glassy Type" 
+                        variant="outlined" 
+                        select
+                        value={gType}
+                        onChange={onGTypeChange}
+                        fullWidth 
+                        optional >
+                            {gTypes.map(item => (
+                            <MenuItem key = {item} value={item}>{item} </MenuItem>
+                            ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                <TextField 
+                        label="Crystallinity" 
+                        variant="outlined" 
+                        select
+                        value={crys}
+                        onChange={onCrysChange}
+                        fullWidth 
+                        optional >
+                            {crystallinity.map(item => (
+                            <MenuItem key = {item} value={item}>{item} </MenuItem>
+                            ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                <TextField 
+                        label="Alteration" 
+                        variant="outlined" 
+                        select
+                        value={alteration}
+                        onChange={onAltChange}
+                        fullWidth 
+                        optional >
+                            {alterations.map(item => (
+                            <MenuItem key = {item} value={item}>{item} </MenuItem>
+                            ))}
+                    </TextField>
+                </Grid>
+              </Grid>
+            </form>
+            {buttonClicked?<div>
+                    <Button
+                        className={classes.tableButton}
+                        variant="contained" 
+                        color="success"
+                        onClick={()=>{handleClick()}}
+                        style={{marginBottom:"10px"}}
+                >
+                    Refresh Table
+                </Button>
+                    <Table data={data} setData={setData}/>
+                    </div>:
+                    <div>                
+                    <Button
+                        className={classes.tableButton}
+                        variant="contained" 
+                        color="success"
+                        onClick={()=>{handleClick()}}
+                        style={{marginBottom:"10px"}}
+                >
+                    Show in Table
+                </Button></div>}
+                        <Button
+                            className={classes.submitButton}
+                            variant="contained" 
+                            onClick={onSubmit}
+                            >
+                            Submit
+                        </Button>
+
+                
+          </CardContent>
+        </Card>
+      </Grid>
+            {/* <Form onSubmit={onSubmit} >
+                
                 <label>Magnification</label>
                 <Input
                     placeholder="Enter the magnification value in number only (E.g. 1.4 instead of 1.4x)"
@@ -228,7 +439,7 @@ function ContributePage(props) {
                     </div>:null}
                 
 
-            </Form>
+            </Form> */}
 
         </div>
     )

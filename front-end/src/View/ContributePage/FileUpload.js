@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
+import { fileUploadStyle } from './FileUpload.style';
 import Dropzone from 'react-dropzone';
-import {FileAddOutlined} from "@ant-design/icons"
+import {CloudUploadOutlined} from "@ant-design/icons"
 import Axios from 'axios';
+import { Grid } from '@material-ui/core';
 function FileUpload(props) {
+    const classes = fileUploadStyle();
     const [Images, setImages] = useState([])
 
     const onDrop = (files) => {
@@ -39,7 +42,8 @@ function FileUpload(props) {
     }
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+            <Grid xs={3} className={classes.upload}>
             <Dropzone
                 onDrop={onDrop}
                 multiple={true}
@@ -47,19 +51,19 @@ function FileUpload(props) {
             >
                 {({ getRootProps, getInputProps }) => (
                     <div style={{
-                        width: '300px', height: '240px', border: '1px solid lightgray',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        display: 'block', alignItems: 'center', justifyContent: 'center'
                     }}
                         {...getRootProps()}
                     >
                         <input {...getInputProps()} />
-                        <FileAddOutlined style={{fontSize:"100px"}} />
-
+                        <CloudUploadOutlined style={{color: "#6990F2",fontSize:"100px",marginLeft:"50px"}}/>
+                        <p style={{color: "#6990F2",fontSize:"20px"}}>Browse File to Upload</p>
                     </div>
                 )}
             </Dropzone>
+            </Grid>
 
-            <div style={{ display: 'flex', width: '350px', height: '240px', overflowX: 'scroll' }}>
+            {/* <div style={{ display: 'flex', width: '350px', height: '240px', overflowX: 'scroll' }}>
 
                 {Images.map((image, index) => (
                     <div onClick={() => onDelete(image)}>
@@ -68,7 +72,7 @@ function FileUpload(props) {
                 ))}
 
 
-            </div>
+            </div> */}
 
         </div>
     )
