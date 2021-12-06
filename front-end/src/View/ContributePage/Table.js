@@ -25,6 +25,7 @@ export default function Table({data,setData}){
     }]
     return (
         <MaterialTable
+            title={<h2 style={{fontWeight:600}}> Uploaded Image </h2>}
             editable={{
                 onRowAdd:(newRow)=> new Promise((res,rej)=>{
                     setData([...data,newRow])
@@ -48,7 +49,9 @@ export default function Table({data,setData}){
             options={{
                 exportButton:true,
                 addRowPosition:"first",
-                actionsColumnIndex: -1
+                actionsColumnIndex: -1,
+                rowStyle:(data,index) =>index%2==0?{background:"#f5f5f5"}:null,
+                headerStyle:{background:"#096fe3",fontWeight:600,color:"white"},
             }}
         />
     )

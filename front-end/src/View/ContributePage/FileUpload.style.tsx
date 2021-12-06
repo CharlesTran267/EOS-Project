@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core"
 export const fileUploadStyle = makeStyles(({
     upload:{
-        height: "167px",
+        height: "200px",
         display: "flex",
         cursor: "pointer",
         margin: "30px 0",
@@ -10,5 +10,13 @@ export const fileUploadStyle = makeStyles(({
         flexDirection: "column",
         borderRadius: "5px",
         border: "2px dashed #6990F2",
+    },
+    uploadfiles:{
+        height: "200px",
+        margin: "30px 0",
+        padding:"20px",
+        borderRadius: "5px",
+        border: "2px solid #6990F2",
+        overflow:"auto"
     }
 }))

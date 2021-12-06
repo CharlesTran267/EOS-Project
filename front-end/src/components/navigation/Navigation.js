@@ -69,7 +69,7 @@ export default function Navigation() {
       </Toolbar>
     </AppBar>
     <Menu style={{ marginTop : "50px", marginLeft:"20px"}} id= 'menu' onClose={handleMenuClose} anchorEl={anchorEl} open={Boolean(anchorEl)}>
-        <MenuItem onClick={() => {handleOnClick('/database'); handleMenuClose();}}> Catalogue </MenuItem>
+        <MenuItem onClick={() => {handleOnClick('/catalogue'); handleMenuClose();}}> Catalogue </MenuItem>
         <MenuItem onClick={() => {handleOnClick('/analyze'); handleMenuClose();}}> Analytic </MenuItem>
     </Menu>
     </>

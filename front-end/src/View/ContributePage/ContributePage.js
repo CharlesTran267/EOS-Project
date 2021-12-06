@@ -1,11 +1,11 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState,useEffect,useCallback } from 'react'
 import FileUpload from './FileUpload.js'
 import axios from 'axios';
 import Table from './Table'
 import { Grid, TextField, Button, Card, CardContent, Typography } from '@material-ui/core';
 import { contributeStyle } from './ContributePage.style.tsx';
 import MenuItem from '@mui/material/MenuItem';
-const { Title } = Typography;
+import { useHistory } from 'react-router';
 
 const gsValue = [0,1,2,3,4];
 const pTypes  = ["Pyroxene","Plagioclase","Other minerals","Altered material","Glassy"];
@@ -13,70 +13,57 @@ const gTypes = ["Juvenile","Non-juvenile"];
 const crystallinity = ["Low Transparent","Low Black", "Mid", "High"];
 const alterations = ["None", "Slight", "Moderate"];
 const shapes = ["Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy"]
-const currencies = [
-    {
-      value: 'USD',
-      label: '$',
-    },
-    {
-      value: 'EUR',
-      label: '€',
-    },
-    {
-      value: 'BTC',
-      label: '฿',
-    },
-    {
-      value: 'JPY',
-      label: '¥',
-    },
-  ];
 
 function ContributePage(props) {
+    const history= useHistory();
     const classes = contributeStyle();
+    const navigate = useCallback(
+      (url) => history.push(url),
+      [history]
+    );
     const [volcName, setVolcName] = useState("");
     const [volcValid,setVolcValid] = useState({
-        error:true,
+        error:false,
         helperText:""
     })
     const [magnification, setMg] = useState(null);
     const [magValid,setMagValid] = useState({
-        error:true,
+        error:false,
         helperText:""
     })
     const [gsLow,setGsLow] = useState();
     const [gsLowValid,setGsLowValid] = useState({
-        error:true,
+        error:false,
         helperText:""
     })
     const [gsUp,setGsUp] = useState();
     const [gsUpValid,setGsUpValid] = useState({
-        error:true,
+        error:false,
         helperText:""
     })
     const [pType,setPType] = useState("");
     const [pValid,setPValid] = useState({
-        error:true,
+        error:false,
         helperText:""
     })
     const [gType,setGType] = useState('');
     const [gValid,setGValid] = useState({
-        error:true,
+        error:false,
         helperText:""
     })
     const [crys,setCrys] = useState("");
     const [crysValid,setCrysValid] = useState({
-        error:true,
+        error:false,
         helperText:""
     })
     const [alteration, setAlt] = useState("");
     const [altValid,setAltValid] = useState({
-        error:true,
+        error:false,
         helperText:""
     })
     const [shape, setShape] = useState('');
     const [shapeValid,setShapeValid] = useState({
-        error:true,
+        error:false,
         helperText:""
     })
     const [buttonClicked, setButtonClicked] = useState(false)
@@ -113,78 +100,110 @@ function ContributePage(props) {
     const updateImages = (newImages) => {
         setImages(newImages)
     }
-    const handleClick = ()=>{
-        setButtonClicked(true)
-        let newData = []
-        for(var i =0;i<Images.length;i++){
-            const particle={
-                volc_name: volcName,
-              mag: magnification,
-              gsLow: gsLow,
-              gsUp: gsUp,
-              pType: pType,
-              gType: gType,
-              crys: crys,
-              alteration: alteration,
-              shape: shape,
-              image_path:Images[i]
-            }
-            newData.push(particle)
-
-        }
-        setData(newData)
+    const checkValidData = ()=>{
+      let valid = true;
+      const nullError={
+        error:true,
+        helperText:"This field cannot be blank"
+      }
+      const isValid={
+        error:false,
+        helperText:""
+      }
+      if(!volcName){setVolcValid(nullError);valid=false}
+      else{
+        setVolcValid(isValid);
+      }
+      if(magnification==null){setMagValid(nullError);valid=false}
+      else{
+        setMagValid(isValid);
+      }
+      if(gsLow==null){setGsLowValid(nullError);valid=false}
+      else{
+        setGsLowValid(isValid);
+      }
+      if(gsUp==null){setGsUpValid(nullError);valid=false}
+      else{
+        setGsUpValid(isValid);
+      }
+      if(gsLow!=null && gsUp!=null && gsLow>gsUp){
+        setGsLowValid({
+          error:true,
+          helperText:"Lower Bound cannot not be greater than Lower Bound"
+        })
+        valid=false}
+      return valid;
     }
+    const handleClick = ()=>{
+        if(checkValidData()){
+          setButtonClicked(true)
+          let newData = []
+          for(var i =0;i<Images.length;i++){
+              const particle={
+                  volc_name: volcName,
+                mag: magnification,
+                gsLow: gsLow,
+                gsUp: gsUp,
+                pType: pType,
+                gType: gType,
+                crys: crys,
+                alteration: alteration,
+                shape: shape,
+                image_path:Images[i]
+              }
+              newData.push(particle)
+
+          }
+          setData(newData)
+      }
+    }
+    const [failed,setFailed] = useState(false)
     const onSubmit = async(event) => {
         event.preventDefault();
+        if(checkValidData()){
+          for(var i =0;i<data.length;i++){
+            const particle ={
+              id: i+1,
+              index: 1,
+              instrument:"b",
+              imgURL:data[i].image_path,
+              particleType: data[i].pType, 
+              glassyType: data[i].gType,
+              crystallinity:data[i].crys, 
+              alteration: data[i].alteration, 
+              shape:data[i].shape,
+              volc_id: 1,
+              volc_name: data[i].volc_name,
+              afe_id: 1,
+              gen_id: 1,
+              microscope: "",
+              software: "",
+              device: "",
+              magnification: "",
+              ligh_intensity: "",
+              epis_dias_light: "",
+              scale_ref: ""
+            }
+            await axios.post("/volcanoes/particles/add", particle)
+                .catch(err=>console.log(err),setFailed(true))
+            const image={
+                imageURL:`${data[i].image_path}`,
+                gsLow:data[i].gsLow,
+                gsUp: data[i].gsUp,
+                magnification: data[i].magnification,
+                volc_id:1,
+                par_id:i
+            }
+              await axios.post("/volcanoes/images/add",image)
+              .catch(err=>console.log(err),setFailed(true))
 
-        if (!volcName || !magnification || !gsLow ||
-            !gsUp  ) {
-            return alert('Fill all the compulsory fields first!')
-        }
-        
-        if(gsLow > gsUp) {
-            return alert('Grain size lower bound cannot be higher than upper bound')
-        }
-        var failed=false;
-        for(var i =0;i<data.length;i++){
-          const particle ={
-            id: i+1,
-            index: 1,
-            instrument:"b",
-            imgURL:data[i].image_path,
-            particleType: data[i].pType, 
-            glassyType: data[i].gType,
-            crystallinity:data[i].crys, 
-            alteration: data[i].alteration, 
-            shape:data[i].shape,
-            volc_id: 1,
-            volc_name: data[i].volc_name,
-            afe_id: 1,
-            gen_id: 1,
-            microscope: "",
-            software: "",
-            device: "",
-            magnification: "",
-            ligh_intensity: "",
-            epis_dias_light: "",
-            scale_ref: ""
           }
-           await axios.post("/volcanoes/particles/add", particle)
-              .catch(err=>console.log(err),failed=true)
-          const image={
-              imageURL:`${data[i].image_path}`,
-              gsLow:data[i].gsLow,
-              gsUp: data[i].gsUp,
-              magnification: data[i].magnification,
-              volc_id:1,
-              par_id:i
+          
+          if(!failed) {navigate('/catalogue')}
+          else{
+            return alert("Upload failed! Please try again!")
           }
-            await axios.post("/volcanoes/images/add",image)
-            .catch(err=>console.log(err),failed=true)
-
         }
-        
-        if(!failed) props.history.push('/')
       }
     return (
         <div style={{ maxWidth:"80%",margin: '2rem auto' }}>
@@ -207,7 +226,9 @@ function ContributePage(props) {
                     variant="outlined" 
                     value={volcName}
                     onChange={onVolcChange}
-                    fullWidth 
+                    fullWidth
+                    error={volcValid.error} 
+                    helperText={volcValid.helperText}
                     required />
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -218,6 +239,8 @@ function ContributePage(props) {
                         type="number"
                         value={magnification}
                         onChange={onMgChange}
+                        error={magValid.error} 
+                        helperText={magValid.helperText}
                         fullWidth 
                         required >
                     </TextField>
@@ -229,8 +252,9 @@ function ContributePage(props) {
                         select
                         value={gsLow}
                         onChange={onGsLowChange}
-                        fullWidth 
-                        helperText="Please ensure Upper Bound is greater than or equal to Lower Bound"
+                        fullWidth
+                        error={gsLowValid.error} 
+                        helperText={gsLowValid.error?gsLowValid.helperText:"Please ensure Upper Bound is greater than or equal to Lower Bound"}
                         required >
                             {gsValue.map(item => (
                             <MenuItem key = {item} value={item}>{item} </MenuItem>
@@ -244,6 +268,8 @@ function ContributePage(props) {
                         select
                         value={gsUp}
                         onChange={onGsUpChange}
+                        error={gsUpValid.error} 
+                        helperText={gsUpValid.helperText}
                         fullWidth 
                         required >
                             {gsValue.map(item => (
@@ -252,7 +278,7 @@ function ContributePage(props) {
                     </TextField>
                 </Grid>
                 <Grid item xs={12} >
-                    <Typography style={{color:"#7d7d7d"}}> Tell us more about your data:</Typography>
+                    <Typography style={{color:"#7d7d7d"}}> Tell us more about your data (optional):</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <TextField 
@@ -262,7 +288,7 @@ function ContributePage(props) {
                         value={pType}
                         onChange={onPTypeChange}
                         fullWidth 
-                        required >
+                        optional >
                             {pTypes.map(item => (
                            <MenuItem key = {item} value={item}>{item} </MenuItem>
                             ))}
@@ -360,87 +386,6 @@ function ContributePage(props) {
           </CardContent>
         </Card>
       </Grid>
-            {/* <Form onSubmit={onSubmit} >
-                
-                <label>Magnification</label>
-                <Input
-                    placeholder="Enter the magnification value in number only (E.g. 1.4 instead of 1.4x)"
-                    onChange={onMgChange}
-                    value={magnification}
-                    type= "number"
-                />
-                <br /><br />
-                <label>Grain Size:</label>
-                <label>Lower Bound(Φ)</label>
-                <select onChange={onGsLowChange} value={gsLow}>
-                    {gsValue.map(item => (
-                        <option value={item}>{item} </option>
-                    ))}
-                </select>
-                <br /><br />
-                <label>Upper Bound(Φ)</label>
-                <select onChange={onGsUpChange} value={gsUp}>
-                    {gsValue.map(item => (
-                        <option value={item}>{item} </option>
-                    ))}
-                </select>
-                <br /><br />
-                <h4> Tell us more about your data (Optional)</h4>
-                <label>Particle Type</label>
-                <select onChange={onPTypeChange} value={pType}>
-                    {pTypes.map(item => (
-                        <option value={item}>{item} </option>
-                    ))}
-                </select>
-                <br /><br />
-                <label>Glassy Type</label>
-                <select onChange={onGTypeChange} value={gType}>
-                    {gTypes.map(item => (
-                        <option value={item}>{item} </option>
-                    ))}
-                </select>
-                <br /><br />
-                <label>Crystallinity</label>
-                <select onChange={onCrysChange} value={crys}>
-                    {crystallinity.map(item => (
-                        <option value={item}>{item} </option>
-                    ))}
-                </select>
-                <br /><br />
-                <label>Alteration</label>
-                <select onChange={onAltChange} value={alteration}>
-                    {alterations.map(item => (
-                        <option value={item}>{item} </option>
-                    ))}
-                </select>
-                <br /><br />
-                <label>Shape</label>
-                <select onChange={onShapeChange} value={shape} style={{marginBottom:"10px"}}>
-                    {shapes.map(item => (
-                        <option value={item}>{item} </option>
-                    ))}
-                </select>
-                <br /><br />
-                <Button
-                    onClick={()=>{handleClick()}}
-                    style={{marginBottom:"10px"}}
-                >
-                    Show in Table
-                </Button>
-                <br/>
-                {buttonClicked?<div>
-                    <Table data={data} setData={setData}/>
-                    <br/>
-                    <Button
-                    onClick={onSubmit}
-                    >
-                     Submit
-                    </Button>
-                    </div>:null}
-                
-
-            </Form> */}
-
         </div>
     )
 }

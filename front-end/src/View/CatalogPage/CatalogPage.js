@@ -10,7 +10,7 @@ import { useHistory } from 'react-router-dom';
 import VolcanoCard from '../../components/VolcanoCard/volcanoCard';
 import Tags from '../../components/Tags/Tags.js';
 const originalTags=['Volcano Name','Silica Content','TAS','Eruptive Style','Particle Type','Glassy Type','Crystallinity','Aleration','Shape']
-function Search() {
+function CatalogPage() {
   const classes = useStyles();
   const history = useHistory();
   const [tags,setTags] = useState(originalTags)
@@ -191,7 +191,7 @@ function Search() {
             <VolcanoCard
               info={fetchedData[key][1]}
               type={key}
-            />)
+            />
             </div>):null):(
             <div>
             <h2 style={{fontWeight:700, fontSize: "30px", marginBottom:"10px"}}>Particle: </h2>
@@ -209,4 +209,4 @@ function Search() {
     </div>
   );
 }
-export default Search;
+export default CatalogPage;

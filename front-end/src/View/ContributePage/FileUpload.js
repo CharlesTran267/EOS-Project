@@ -43,36 +43,34 @@ function FileUpload(props) {
 
     return (
         <div>
-            <Grid xs={3} className={classes.upload}>
-            <Dropzone
-                onDrop={onDrop}
-                multiple={true}
-                maxSize={99999999999999999999999999999999}
-            >
-                {({ getRootProps, getInputProps }) => (
-                    <div style={{
-                        display: 'block', alignItems: 'center', justifyContent: 'center'
-                    }}
-                        {...getRootProps()}
+            <Grid container justifyContent="space-between">
+                <Grid item xs={3} className={classes.upload}>
+                    <Dropzone
+                        onDrop={onDrop}
+                        multiple={true}
+                        maxSize={99999999999999999999999999999999}
                     >
-                        <input {...getInputProps()} />
-                        <CloudUploadOutlined style={{color: "#6990F2",fontSize:"100px",marginLeft:"50px"}}/>
-                        <p style={{color: "#6990F2",fontSize:"20px"}}>Browse File to Upload</p>
-                    </div>
-                )}
-            </Dropzone>
+                        {({ getRootProps, getInputProps }) => (
+                            <div style={{
+                                display: 'block', alignItems: 'center', justifyContent: 'center'
+                            }}
+                                {...getRootProps()}
+                            >
+                                <input {...getInputProps()} />
+                                <CloudUploadOutlined style={{color: "#6990F2",fontSize:"100px",marginLeft:"50px"}}/>
+                                <p style={{color: "#6990F2",fontSize:"20px"}}>Browse File to Upload</p>
+                            </div>
+                        )}
+                    </Dropzone>
+                </Grid>
+                <Grid item xs={7} className={classes.uploadfiles}>
+                        {Images.map((image, index) => (
+                            <span onClick={() => onDelete(image)}>
+                                <img style={{ width: '100px', height: '100px',marginRight:"10px" }} src={`${image}`} alt={`Img-${index}`} />
+                            </span>
+                        ))}
+                </Grid>
             </Grid>
-
-            {/* <div style={{ display: 'flex', width: '350px', height: '240px', overflowX: 'scroll' }}>
-
-                {Images.map((image, index) => (
-                    <div onClick={() => onDelete(image)}>
-                        <img style={{ minWidth: '300px', width: '300px', height: '240px' }} src={`${image}`} alt={`Img-${index}`} />
-                    </div>
-                ))}
-
-
-            </div> */}
 
         </div>
     )
