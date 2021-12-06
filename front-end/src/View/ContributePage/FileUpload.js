@@ -20,7 +20,6 @@ function FileUpload(props) {
         Axios.post('/upload/uploadImage', formData, config)
             .then(response => {
                 if (response.data.success) {
-                    console.log(response.data.image)
                     setImages(Images.concat(response.data.image))
                     props.refreshFunction(Images.concat(response.data.image))
                 } else {

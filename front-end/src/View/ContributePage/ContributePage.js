@@ -187,22 +187,24 @@ function ContributePage(props) {
             await axios.post("/volcanoes/particles/add", particle)
                 .catch(err=>console.log(err),setFailed(true))
             const image={
-                imageURL:`${data[i].image_path}`,
+                imageURL:data[i].image_path,
                 gsLow:data[i].gsLow,
                 gsUp: data[i].gsUp,
-                magnification: data[i].magnification,
+                magnification: data[i].mag,
                 volc_id:1,
                 par_id:i
             }
-              await axios.post("/volcanoes/images/add",image)
+            console.log(image)
+            await axios.post("/volcanoes/images/add",image)
+              .then(console.log("success"))
               .catch(err=>console.log(err),setFailed(true))
 
           }
           
-          if(!failed) {navigate('/catalogue')}
-          else{
-            return alert("Upload failed! Please try again!")
-          }
+          // if(!failed) {navigate('/catalogue')}
+          // else{
+          //   return alert("Upload failed! Please try again!")
+          // }
         }
       }
     return (
