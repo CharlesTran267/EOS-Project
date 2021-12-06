@@ -201,10 +201,10 @@ function ContributePage(props) {
 
           }
           
-          // if(!failed) {navigate('/catalogue')}
-          // else{
-          //   return alert("Upload failed! Please try again!")
-          // }
+          if(!failed) {navigate('/catalogue')}
+          else{
+            return alert("Upload failed! Please try again!")
+          }
         }
       }
     return (
