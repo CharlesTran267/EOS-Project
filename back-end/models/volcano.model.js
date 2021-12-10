@@ -7,7 +7,8 @@ const imageSchema = new Schema({
   gsUp:{type: Number, required: true},
   magnification:{type: Number, required: true},
   volc_id: {type:Number, required: true},
-  par_id: {type:Number, required: true}
+  par_id: {type:Number, required: true},
+  multi_focus:{type:Boolean, required: true}
 },{
   timestamps:true
 })
@@ -88,10 +89,11 @@ const sampleSchema = new Schema({
   timestamps: true
 })
 const eruptionSchema = new Schema({
-  year: {type: Number,required: true},
   id: {type:Number,required: true},
+  start: {type: Date,required: true},
+  end:{type:Date},
   imgURL:{type:String},
-  eruptiveStyle: {type:String,required:true},
+  eruptiveStyle: {type:String},
   volc_id: {type:Number,required: true},
   volc_name: {type:String,required: true},
 },{

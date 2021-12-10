@@ -3,15 +3,25 @@ import { fileUploadStyle } from './FileUpload.style';
 import Dropzone from 'react-dropzone';
 import {CloudUploadOutlined} from "@ant-design/icons"
 import Axios from 'axios';
-import { Grid } from '@material-ui/core';
+import { Grid,LinearProgress } from '@material-ui/core';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import IconButton from '@material-ui/core/IconButton';
+
 function FileUpload(props) {
     const classes = fileUploadStyle();
     const [Images, setImages] = useState([])
-
+    const [progress, setProgress] = useState(0)
     const onDrop = (files) => {
         let formData = new FormData();
         const config = {
-            header: { 'content-type': 'multipart/form-data' }
+            header: { 'content-type': 'multipart/form-data' },
+            onUploadProgress : progressEvent => {
+                setProgress(
+                    parseInt(
+                        Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                    )
+                );
+            }
         }
         for(var i=0;i<files.length;i++){
             formData.append("files",files[i])
@@ -27,6 +37,7 @@ function FileUpload(props) {
                     alert('Failed to save the Image in Server')
                 }
             })
+        
     }
 
 
@@ -62,12 +73,18 @@ function FileUpload(props) {
                         )}
                     </Dropzone>
                 </Grid>
-                <Grid item xs={7} className={classes.uploadfiles}>
-                        {Images.map((image, index) => (
-                            <span onClick={() => onDelete(image)}>
-                                <img style={{ width: '100px', height: '100px',marginRight:"10px" }} src={`${image}`} alt={`Img-${index}`} />
+                <Grid item xs={7}>
+                    <div className={classes.uploadfiles}>
+                        {progress==100?Images.map((image, index) => (
+                            <span style={{position:"relative",display:"inline-flex"}}>
+                                <IconButton onClick={() => onDelete(image)} style={{position:"absolute",top:2,right:10, zIndex:1, width:"12px", height:"12px"}}>
+                                    <RemoveCircleIcon sx={{ color: "#FF0D86" }}/>
+                                </IconButton>
+                                <img className={classes.image} src={`${image}`} alt={`Img-${index}`}/>
                             </span>
-                        ))}
+                        )):null}
+                    </div>
+                    {progress<100 && progress!=0?<LinearProgress variant="determinate" value={progress}/>:null}
                 </Grid>
             </Grid>
 

@@ -53,11 +53,15 @@ router.route('/getEruptions').get((req, res) => {
 });
 
 router.route('/eruptions/add').post((req, res) => {
+  if(req.body.start<=req.body.end){
     const newEruption = new Eruption(req.body);
-  
     newEruption.save()
     .then(() => res.json('Eruption added!'))
     .catch(err => res.status(400).json('Error: ' + err));
+  }
+  else{
+    res.json('end date must be more recently than start date')
+  }
   });
 router.route('/eruptions/:id').delete((req, res) => {
   Eruption.findByIdAndDelete(req.params.id)
@@ -68,8 +72,6 @@ router.get("/eruptions_by_id", (req, res) => {
   let type = req.query.type
   let eruptionIds = req.query.id
 
-  console.log("req.query.id", req.query.id)
-
   if (type === "array") {
       let ids = req.query.id.split(',');
       eruptionIds = [];
@@ -77,15 +79,21 @@ router.get("/eruptions_by_id", (req, res) => {
           return item
       })
   }
-
-  console.log("eruptionIDs", eruptionIds)
-
   Eruption.find({ 'id': { $in: eruptionIds } })
       .exec((err, eruptions) => {
           if (err) return res.status(400).send(err)
           return res.status(200).send(eruptions)
       })
 });
+router.get("/eruption_by_date",(req,res)=>{
+  let date = req.query.date;
+  let volc = req.query.volc;
+  Eruption.find({volc_name:volc,start:{$lte: date},end:{$gte:date}})
+    .exec((err, eruption) => {
+      if (err) return res.status(400).send(err)
+      return res.status(200).send(eruption)
+  })
+})
 // afe routes
 router.route('/getAFE').get((req, res) => {
   AFE.find()

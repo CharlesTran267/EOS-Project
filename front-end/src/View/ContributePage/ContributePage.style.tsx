@@ -5,6 +5,18 @@ export const contributeStyle = makeStyles(({
           width:'20ch',
       }
     },
+    progressArea:{
+        '&.row':{
+            marginBottom: "10px",
+            background: "#E9F0FF",
+            listStyle: "none",
+            padding: "15px 20px",
+            borderRadius: "5px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between"
+        }
+    },
     tableButton:{
         appearance: "button",
         backfaceVisibility: "hidden",
@@ -51,7 +63,6 @@ export const contributeStyle = makeStyles(({
         fontWeight:600,
         height: "44px",
         lineHeight: 1.15,
-        margin: "12px 0 0",
         outline: "none",
         padding: "0 25px",
         position: "relative",
@@ -63,11 +74,18 @@ export const contributeStyle = makeStyles(({
         WebkitUserSelect:"none",
         touchAction: "manipulation",
         width: "7%",
-        float:"right",
         '&:hover':{
             background:"#405cf5"
-        }
-
+        }  
+    },
+    submitandLoading:{
+        display:"flex",
+        float:"right",
+        flexDirection:"row",
+        marginTop:"20px"
+    },
+    loading:{
+        marginRight:"20px",
     }
 
 }))

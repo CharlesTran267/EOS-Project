@@ -6,14 +6,21 @@ import { Grid, TextField, Button, Card, CardContent, Typography } from '@materia
 import { contributeStyle } from './ContributePage.style.tsx';
 import MenuItem from '@mui/material/MenuItem';
 import { useHistory } from 'react-router';
-
+import CircularProgress from '@mui/material/CircularProgress';
+import Autocomplete from '@mui/material/Autocomplete';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePicker from '@mui/lab/DatePicker';
 const gsValue = [0,1,2,3,4];
 const pTypes  = ["Pyroxene","Plagioclase","Other minerals","Altered material","Glassy"];
 const gTypes = ["Juvenile","Non-juvenile"];
 const crystallinity = ["Low Transparent","Low Black", "Mid", "High"];
 const alterations = ["None", "Slight", "Moderate"];
 const shapes = ["Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy"]
-
+const multi_focus_values =[
+  {key:"True",value:true},
+  {key:"False", value:false}
+]
 function ContributePage(props) {
     const history= useHistory();
     const classes = contributeStyle();
@@ -21,10 +28,52 @@ function ContributePage(props) {
       (url) => history.push(url),
       [history]
     );
+    
+    const [isLoading, setIsLoading] = useState(false)
+    const [volcanoList, setVolcanoList] = useState([])
+    useEffect(()=>{
+      axios.get("/volcanoes/getVolcanoes")
+      .then(response => {
+        if(response.data.success){
+          let newVolcanoList = []
+          response.data.volcanoes.map(volcano=>{
+            newVolcanoList.push({
+              label: volcano.name,
+              id: volcano.id
+            })
+          })
+          setVolcanoList(newVolcanoList)
+        } else{
+          alert("Failed to fetch data")
+        }
+      })
+    },[])
     const [volcName, setVolcName] = useState("");
+    const [volcID,setVolcID] = useState()
     const [volcValid,setVolcValid] = useState({
         error:false,
         helperText:""
+    })
+    const [afeDate,setAFEDate] = useState(null)
+    const [afeValid,setAFEValid] =useState({
+      error:false,
+      helperText:""
+    })
+    const [eStartDate, setEStart] = useState({
+      date:null,
+      helperText:""
+    })
+    const [eStartValid,setEStartValid] =useState({
+      error:false,
+      helperText:""
+    })
+    const [eEndDate, setEEnd] = useState({
+      date:null,
+      helperText:""
+    })
+    const [eEndValid,setEEndValid] =useState({
+      error:false,
+      helperText:""
     })
     const [magnification, setMg] = useState(null);
     const [magValid,setMagValid] = useState({
@@ -42,37 +91,53 @@ function ContributePage(props) {
         helperText:""
     })
     const [pType,setPType] = useState("");
-    const [pValid,setPValid] = useState({
-        error:false,
-        helperText:""
-    })
     const [gType,setGType] = useState('');
-    const [gValid,setGValid] = useState({
-        error:false,
-        helperText:""
-    })
     const [crys,setCrys] = useState("");
-    const [crysValid,setCrysValid] = useState({
-        error:false,
-        helperText:""
-    })
     const [alteration, setAlt] = useState("");
-    const [altValid,setAltValid] = useState({
-        error:false,
-        helperText:""
-    })
     const [shape, setShape] = useState('');
-    const [shapeValid,setShapeValid] = useState({
-        error:false,
-        helperText:""
-    })
+    const [multi_focus, setMulti_focus] = useState()
+    const [multiValid, setMultiValid] = useState({
+      error:false,
+      helperText:""
+  })
     const [buttonClicked, setButtonClicked] = useState(false)
     const [data,setData] = useState([])
     const [Images, setImages] = useState([])
 
-    const onVolcChange = (event)=>{
-      setVolcName(event.target.value)
-    } 
+    useEffect(()=>{
+      if(volcName && afeDate){
+        axios.get(`/volcanoes/eruption_by_date?date=${afeDate}&volc=${volcName}`)
+        .then(res=>{
+          if(res.data.length!=0){
+            console.log(res.data[0].start.slice(0,10))
+            setEStart({
+              date:res.data[0].start.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
+              helperText:""
+            })
+            setEEnd({
+              date:res.data[0].end.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
+              helperText:""
+            })
+          }else{
+            setEStart({
+              date:null,
+              helperText:"No Eruption Found"
+            })
+            setEEnd({
+              date:null,
+              helperText:""
+            })
+          }
+        })
+        .catch(err=>console.log(err))
+      }
+    },[volcName,afeDate])
+    const onVolcChange = (newValue)=>{
+      if(newValue){
+        setVolcName(newValue.label);
+        setVolcID(newValue.id)
+      } 
+    }
     const onMgChange = (event)=>{
       setMg(event.target.value)
     } 
@@ -97,9 +162,16 @@ function ContributePage(props) {
     const onShapeChange = (event)=>{
       setShape(event.target.value)
     } 
+    const onMfChange = (event)=>{
+      setMulti_focus(event.target.value)
+    }
     const updateImages = (newImages) => {
         setImages(newImages)
     }
+    useEffect(()=>{
+        console.log(afeDate,eStartDate.date,eEndDate.date)
+    },[afeDate,eStartDate,eEndDate])
+
     const checkValidData = ()=>{
       let valid = true;
       const nullError={
@@ -114,10 +186,53 @@ function ContributePage(props) {
       else{
         setVolcValid(isValid);
       }
+      if(eStartDate.date){
+        if(eEndDate.date){
+          if(eStartDate.date>eEndDate.date){
+            setEStartValid({
+              error:true,
+              helperText:"Eruption Start Date cannot be later than End Date"
+            })
+            valid=false
+          }else{
+            setEStartValid(isValid)
+            if(afeDate<=eEndDate.date && afeDate>=eStartDate.date){
+              setAFEValid(isValid)
+            }else{
+              setAFEValid({
+                error:true,
+                helperText:"Ash Emission Date must lie between Eruption Start Date and End Date"
+              })
+              valid=false
+            }
+          }
+        }else{
+          if(afeDate.date>eStartDate.date){
+            setAFEValid({
+              error:true,
+              helperText:"Ash Emission Date cannot be before Eruption Start Date"
+            })
+            valid=false
+          }else{
+            setAFEValid(isValid)
+          }
+        }
+      }else{
+        if(eEndDate.date){
+          setEEndValid({
+            error:true,
+            helperText:"Please fill Start Date first!"
+          })
+          valid=false
+        }else{
+          setEEndValid(isValid)
+        }
+      }
       if(magnification==null){setMagValid(nullError);valid=false}
       else{
         setMagValid(isValid);
       }
+
       if(gsLow==null){setGsLowValid(nullError);valid=false}
       else{
         setGsLowValid(isValid);
@@ -131,16 +246,26 @@ function ContributePage(props) {
           error:true,
           helperText:"Lower Bound cannot not be greater than Lower Bound"
         })
-        valid=false}
+        valid=false
+      }
+      if(multi_focus==null){setMultiValid(nullError);valid=false}
+      else{
+        setMultiValid(isValid);
+      }
+
       return valid;
     }
-    const handleClick = ()=>{
+    const [addable, setAddable] = useState(false)
+    const handleTableClick = ()=>{
         if(checkValidData()){
           setButtonClicked(true)
           let newData = []
           for(var i =0;i<Images.length;i++){
               const particle={
-                  volc_name: volcName,
+                volc_name: volcName,
+                afeDate: afeDate,
+                eStartDate: eStartDate.date,
+                eEndDate: eEndDate.date,
                 mag: magnification,
                 gsLow: gsLow,
                 gsUp: gsUp,
@@ -149,7 +274,8 @@ function ContributePage(props) {
                 crys: crys,
                 alteration: alteration,
                 shape: shape,
-                image_path:Images[i]
+                image_path:Images[i],
+                multi_focus:multi_focus
               }
               newData.push(particle)
 
@@ -161,6 +287,7 @@ function ContributePage(props) {
     const onSubmit = async(event) => {
         event.preventDefault();
         if(checkValidData()){
+          setIsLoading(true)
           for(var i =0;i<data.length;i++){
             const particle ={
               id: i+1,
@@ -192,7 +319,8 @@ function ContributePage(props) {
                 gsUp: data[i].gsUp,
                 magnification: data[i].mag,
                 volc_id:1,
-                par_id:i
+                par_id:i,
+                multi_focus:data[i].multi_focus
             }
             console.log(image)
             await axios.post("/volcanoes/images/add",image)
@@ -200,8 +328,32 @@ function ContributePage(props) {
               .catch(err=>console.log(err),setFailed(true))
 
           }
-          
-          if(!failed) {navigate('/catalogue')}
+          if(afeDate){
+            const afe = {
+              id:1,
+              volc_id:volcID,
+              volc_name:volcName,
+              ed_stime:afeDate
+            }
+            console.log(afe)
+            axios.post("/volcanoes/afes/add",afe)
+            .catch(err=> console.log(err),setFailed(true))
+          }
+          if(addable){
+            const eruption={
+              id:1,
+              start: eStartDate.date,
+              end: eEndDate.date,
+              volc_id: volcID,
+              volc_name: volcName
+            }
+            axios.post("/volcanoes/eruptions/add",eruption)
+            .catch(err=> console.log(err),setFailed(true))
+          }
+          setIsLoading(false);
+          if(!failed) {
+            // navigate('/catalogue')
+          }
           else{
             return alert("Upload failed! Please try again!")
           }
@@ -221,21 +373,97 @@ function ContributePage(props) {
                 <FileUpload refreshFunction={updateImages}/>
             </div>
               <Grid container spacing={1}>
-                <Grid xs={12} item>
+                <Grid xs={12} sm={3} item>
+                <Autocomplete
+                  disablePortal
+                  options={volcanoList}
+                  value={volcName}
+                  onChange={(event,newValue)=>{onVolcChange(newValue)}} 
+                  renderInput={(params) => 
                   <TextField 
+                    {...params} 
                     placeholder="Enter volcano name" 
                     label="Volcano Name" 
-                    variant="outlined" 
-                    value={volcName}
-                    onChange={onVolcChange}
+                    variant="outlined"
                     fullWidth
                     error={volcValid.error} 
                     helperText={volcValid.helperText}
-                    required />
+                    required />}
+                />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid xs={12} sm={3} item>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Ash Emission Date" 
+                    value={afeDate}
+                    onChange={(newValue) => {
+                      setAFEDate(newValue.toISOString().slice(0,10)); // change format
+                      setAddable(false);
+                    }}
+                    renderInput={(params) => 
                     <TextField 
-                        placeholder="Enter number only (E.g. 1.4 instead of 1.4x)" 
+                    {...params}
+                    error={afeValid.error}
+                    variant="outlined"
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    helperText={afeValid.helperText}
+                    fullWidth />}
+                  />
+                </LocalizationProvider>
+                </Grid>
+                <Grid xs={12} sm={3} item>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Eruption Start Date"
+                    value={eStartDate.date}
+                    onChange={(newValue)=>{
+                      setEStart({...eStartDate,date:newValue.toISOString().slice(0,10)}) //change format date
+                    }}
+                    readOnly={!addable}
+                    renderInput={(params) => 
+                    <TextField
+                      {...params}
+                      error={eStartValid.error}
+                      variant="outlined" 
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      helperText={!eStartDate.date?
+                        (<div>
+                          <p style={{display:"inline",color:"red"}}>{eStartDate.helperText}.</p>
+                          {eStartDate.helperText?<p style={{display:"inline",color:"#0291c9",cursor:"pointer",textDecoration:"underline"}} onClick={()=>setAddable(true)}> Add a new Eruption</p>:null}
+                        </div>):eStartValid.helperText}
+                      fullWidth />}
+                  />
+                </LocalizationProvider>
+                </Grid>
+                <Grid xs={12} sm={3} item>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Eruption End Date" 
+                    value={eEndDate.date}
+                    onChange={(newValue)=>{
+                      setEEnd({...eEndDate,date:newValue.toISOString().slice(0,10)}) //change format date
+                    }}
+                    readOnly={!addable}
+                    renderInput={(params) => 
+                    <TextField
+                      {...params}
+                      error={eEndValid.error}
+                      variant="outlined" 
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      helperText={eEndValid.helperText}
+                      fullWidth />}
+                  />
+                </LocalizationProvider>
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                    <TextField 
+                        placeholder="Enter number only" 
                         label="Magnification" 
                         variant="outlined" 
                         type="number"
@@ -247,7 +475,7 @@ function ContributePage(props) {
                         required >
                     </TextField>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={3}>
                     <TextField 
                         label="Grain Size Lower Bound" 
                         variant="outlined" 
@@ -263,7 +491,7 @@ function ContributePage(props) {
                             ))}
                         </TextField>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={3}>
                     <TextField 
                         label="Grain Size Upper Bound" 
                         variant="outlined" 
@@ -276,6 +504,22 @@ function ContributePage(props) {
                         required >
                             {gsValue.map(item => (
                             <MenuItem key = {item} value={item}>{item} </MenuItem>
+                            ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                    <TextField 
+                        label="Multifocus Image" 
+                        variant="outlined" 
+                        select
+                        value={multi_focus}
+                        onChange={onMfChange}
+                        error={multiValid.error} 
+                        helperText={multiValid.helperText}
+                        fullWidth 
+                        required >
+                            {multi_focus_values.map(item => (
+                            <MenuItem key = {item.key} value={item.value}>{item.key} </MenuItem>
                             ))}
                     </TextField>
                 </Grid>
@@ -352,14 +596,17 @@ function ContributePage(props) {
                             ))}
                     </TextField>
                 </Grid>
+                <Grid item xs={12} >
+                    <Typography style={{color:"#7d7d7d"}}> * means required</Typography>
+                </Grid>
               </Grid>
             </form>
             {buttonClicked?<div>
-                    <Button
+                <Button
                         className={classes.tableButton}
                         variant="contained" 
                         color="success"
-                        onClick={()=>{handleClick()}}
+                        onClick={()=>{handleTableClick()}}
                         style={{marginBottom:"10px"}}
                 >
                     Refresh Table
@@ -371,18 +618,21 @@ function ContributePage(props) {
                         className={classes.tableButton}
                         variant="contained" 
                         color="success"
-                        onClick={()=>{handleClick()}}
+                        onClick={()=>{handleTableClick()}}
                         style={{marginBottom:"10px"}}
                 >
                     Show in Table
                 </Button></div>}
-                        <Button
-                            className={classes.submitButton}
-                            variant="contained" 
-                            onClick={onSubmit}
-                            >
-                            Submit
-                        </Button>
+                <div className={classes.submitandLoading}>
+                  {isLoading?<CircularProgress className={classes.loading} />:null}
+                <Button
+                  className={classes.submitButton}
+                  variant="contained" 
+                  onClick={onSubmit}
+                  >
+                  Submit
+              </Button>
+              </div>
 
                 
           </CardContent>

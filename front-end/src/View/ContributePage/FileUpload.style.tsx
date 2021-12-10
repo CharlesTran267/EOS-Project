@@ -18,5 +18,13 @@ export const fileUploadStyle = makeStyles(({
         borderRadius: "5px",
         border: "2px solid #6990F2",
         overflow:"auto"
+    },
+    image:{
+        width: '100px',
+        height: '100px',
+        marginRight:"10px",
+        '&:hover':{
+            transform:"scale(1.2)",
+        }
     }
 }))
