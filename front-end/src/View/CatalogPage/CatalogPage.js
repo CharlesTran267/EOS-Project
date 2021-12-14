@@ -65,7 +65,7 @@ function CatalogPage() {
       const dataList  = {} 
       var filter = [...selectedTags];
       filter = filter.join(" ").toLowerCase().split(" ")
-      if (searchSubmit && !filter.includes(searchSubmit)) filter.push(searchSubmit);
+      if (searchSubmit && !filter.includes(searchSubmit.toLowerCase())) filter.push(searchSubmit.toLowerCase());
       var newSearchfilter = [...filter]
       for(var i=0;i<newSearchfilter.length;i++) if(newSearchfilter[i]) newSearchfilter[i]=newSearchfilter[i][0].toUpperCase()+newSearchfilter[i].slice(1);
       selectedTags.length?setSearchFilter(newSearchfilter.join(', ')):setSearchFilter(searchSubmit[0].toUpperCase()+searchSubmit.slice(1))
