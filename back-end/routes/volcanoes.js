@@ -1,5 +1,11 @@
 const router = require('express').Router();
-let {Volcano, Eruption, General, Particle, AFE, Sample,Image} = require('../models/volcano.model');
+let {Volcano, Volcano2} = require('../models/volcano');
+let {Eruption} = require('../models/eruption');
+let {AFE} = require('../models/afe');
+let {General} = require('../models/general');
+let {Image} = require('../models/image');
+let {Particle} = require('../models/particle');
+
 // Volcano routes
 router.route('/getVolcanoes').get((req, res) => {
   Volcano.find()
@@ -43,6 +49,22 @@ router.get("/volcanoes_by_id", (req, res) => {
           return res.status(200).send(volcanoes)
       })
 });
+// Volcano2 routes
+router.route('/getVolcanoes2').get((req, res) => {
+  Volcano2.find()
+    .exec((err, volcanoes) => {
+      if(err) return res.status(400).json({success:false , err})
+      res.status(200).json({success:true, volcanoes})
+    })
+});
+
+router.route('/addVolcano2').post((req, res) => {
+    const newVolcano2 = new Volcano2(req.body);
+  
+    newVolcano2.save()
+    .then(() => res.json('Volcano added!'))
+    .catch(err => res.status(400).json('Error: ' + err));
+  });
 // Eruption routes
 router.route('/getEruptions').get((req, res) => {
   Eruption.find()
@@ -88,7 +110,7 @@ router.get("/eruptions_by_id", (req, res) => {
 router.get("/eruption_by_date",(req,res)=>{
   let date = req.query.date;
   let volc = req.query.volc;
-  Eruption.find({volc_name:volc,start:{$lte: date},end:{$gte:date}})
+  Eruption.find({vd_num:volc,ed_stime:{$lte: date},ed_etime:{$gte:date}})
     .exec((err, eruption) => {
       if (err) return res.status(400).send(err)
       return res.status(200).send(eruption)

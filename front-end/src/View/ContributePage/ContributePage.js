@@ -38,8 +38,8 @@ function ContributePage(props) {
           let newVolcanoList = []
           response.data.volcanoes.map(volcano=>{
             newVolcanoList.push({
-              label: volcano.name,
-              id: volcano.id
+              label: volcano.vd_name,
+              id: volcano.vd_num
             })
           })
           setVolcanoList(newVolcanoList)
@@ -105,17 +105,17 @@ function ContributePage(props) {
     const [Images, setImages] = useState([])
 
     useEffect(()=>{
-      if(volcName && afeDate){
-        axios.get(`/volcanoes/eruption_by_date?date=${afeDate}&volc=${volcName}`)
+      console.log(volcID,afeDate)
+      if(volcID && afeDate){
+        axios.get(`/volcanoes/eruption_by_date?date=${afeDate}&volc=${volcID}`)
         .then(res=>{
           if(res.data.length!=0){
-            console.log(res.data[0].start.slice(0,10))
             setEStart({
-              date:res.data[0].start.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
+              date:res.data[0].ed_stime.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
               helperText:""
             })
             setEEnd({
-              date:res.data[0].end.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
+              date:res.data[0].ed_etime.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
               helperText:""
             })
           }else{
@@ -131,7 +131,7 @@ function ContributePage(props) {
         })
         .catch(err=>console.log(err))
       }
-    },[volcName,afeDate])
+    },[volcID,afeDate])
     const onVolcChange = (newValue)=>{
       if(newValue){
         setVolcName(newValue.label);
@@ -341,18 +341,16 @@ function ContributePage(props) {
           }
           if(addable){
             const eruption={
-              id:1,
-              start: eStartDate.date,
-              end: eEndDate.date,
-              volc_id: volcID,
-              volc_name: volcName
+              vd_num: volcID,
+              ed_stime: eStartDate.date,
+              ed_etime: eEndDate.date,
             }
             axios.post("/volcanoes/eruptions/add",eruption)
             .catch(err=> console.log(err),setFailed(true))
           }
           setIsLoading(false);
           if(!failed) {
-            // navigate('/catalogue')
+            navigate('/catalogue')
           }
           else{
             return alert("Upload failed! Please try again!")

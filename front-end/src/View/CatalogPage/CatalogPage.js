@@ -36,7 +36,7 @@ function CatalogPage() {
     setButtonClicked(true);
     };
   useEffect(()=>{
-     axios.get("/volcanoes/getVolcanoes")
+     axios.get("/volcanoes/getVolcanoes2")
       .then(response => {
         if(response.data.success){
           setVolcanoes(response.data.volcanoes)
