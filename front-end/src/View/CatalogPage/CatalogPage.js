@@ -22,7 +22,7 @@ function CatalogPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState({});
   const [searchSubmit,setSearchSubmit] = useState("");
-  const [buttonClicked, setButtonClicked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [searched, setSearched] = useState(false);
     const handleChange = (event) => {
     const value = event.target.value;
@@ -32,9 +32,37 @@ function CatalogPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setSearched(true)
-    setSearchSubmit(searchTerm);
-    setButtonClicked(true);
-    };
+    var submit = searchTerm.toLowerCase();
+    setSearchSubmit(submit);
+    setIsLoading(true)
+    if (submit !== "" || selectedTags.length!==0) {
+      const dataList  = {} 
+      var filter=[]
+      for (var i =0; i<selectedTags.length;i++){
+        filter.push(selectedTags[i].toLowerCase());
+      }
+      var i;
+      for(i=0;i<filter.length;i++){
+        if(filter[i].includes(submit)) break;
+      }
+      if(i==filter.length) filter.push(submit)
+      var newSearchfilter = [...filter]
+      for(var i=0;i<newSearchfilter.length;i++) if(newSearchfilter[i]) newSearchfilter[i]=newSearchfilter[i][0].toUpperCase()+newSearchfilter[i].slice(1);
+      selectedTags.length?setSearchFilter(newSearchfilter.join(', ')):setSearchFilter(submit[0].toUpperCase()+submit.slice(1)) 
+      Object.keys(fetchedData).map(key => {
+        const data = fetchedData[key].filter(d=>{
+          var props_arr = Object.values(d)
+            .join(" ")
+            .toLowerCase()
+            .split(" ")
+          return(filter.every(elem => props_arr.includes(elem)))
+        })
+        dataList[key]=data;
+      })
+      setSearchData(dataList);
+    }
+    setIsLoading(false)
+  };
   useEffect(()=>{
      axios.get("/volcanoes/getVolcanoes2")
       .then(response => {
@@ -60,36 +88,13 @@ function CatalogPage() {
       Particles: particles
     })
   },[particles])
-  useEffect(()=>{
-    if (searchSubmit !== "" || selectedTags.length!==0) {
-      const dataList  = {} 
-      var filter = [...selectedTags];
-      filter = filter.join(" ").toLowerCase().split(" ")
-      if (searchSubmit && !filter.includes(searchSubmit.toLowerCase())) filter.push(searchSubmit.toLowerCase());
-      var newSearchfilter = [...filter]
-      for(var i=0;i<newSearchfilter.length;i++) if(newSearchfilter[i]) newSearchfilter[i]=newSearchfilter[i][0].toUpperCase()+newSearchfilter[i].slice(1);
-      selectedTags.length?setSearchFilter(newSearchfilter.join(', ')):setSearchFilter(searchSubmit[0].toUpperCase()+searchSubmit.slice(1))
-      Object.keys(fetchedData).map(key => {
-        const data = fetchedData[key].filter(d=>{
-          var props_arr = Object.values(d)
-            .join(" ")
-            .toLowerCase()
-            .split(" ")
-          return(filter.every(elem => props_arr.includes(elem)))
-        })
-        dataList[key]=data;
-      })
-      setSearchData(dataList);
-    }
-    setButtonClicked(false);
-  },[buttonClicked])
     const handleKeyPress =(event)=>{
     if(event.key === 'Enter'){
       document.getElementById('search-button').click();
     }
   }
   const Loading = () =>{
-    if(buttonClicked){
+    if(isLoading){
       return <img style={{display:"block",marginLeft:"auto",marginRight:"auto"}} src="https://cutewallpaper.org/21/loading-gif-transparent-background/All-Loading-Gif-Image-Transparent-Background-Best-Studio-.gif"/>
     }
     return null;
