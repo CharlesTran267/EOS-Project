@@ -11,7 +11,7 @@ export default function VolcanoCard({info,type}) {
       let path = `/par_gral/par_gralDetailPage`;
       history.push(path);
     }
-
+  if(type=="Volcanoes") console.log(info.imgURL)
   return (
     <div className={classes.container}>
       {type=="Volcanoes"? 

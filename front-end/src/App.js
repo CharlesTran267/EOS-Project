@@ -25,9 +25,9 @@ function App() {
           <Route  path="/profile/:userId" component={Auth(ProfilePage,true)}/>
             <Route  path="/volcano/:volcanoId" component={Auth(VolcanoDetailPage,null)}/>
             <Route  path="/par_gral/par_gralDetailPage" component={Auth(GralParDetailPage,null)}/>
-            <Route path={'/catalogue'} component={Auth(CataloguePage,null)}/>
+            <Route path={'/database/catalogue'} component={Auth(CataloguePage,null)}/>
             <Route path={'/home'} component={Auth(Home,null)}/>
-            <Route path={'/contribute'} component={Auth(ContributePage,null)}/>
+            <Route path={'/contribute/binocular'} component={Auth(ContributePage,null)}/>
             <Route path="/login" component={Auth(LoginPage,false)}/>
             <Route path="/register" component={Auth(RegisterPage,false)}/>
             <Route path={'/'}>

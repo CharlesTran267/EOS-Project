@@ -10,20 +10,30 @@ import RightMenu from "./RightMenu"
 export default function Navigation() {
   const classes = NavigationStyles();
   const history = useHistory();
-  const [anchorEl,setAnchorEl] = useState(null);
+  const [anchorEL_db,setanchorEL_db] = useState(null);
+  const open_db= Boolean(anchorEL_db)
+  const [anchorEL_cb,setanchorEL_cb] = useState(null);
+  const open_cb= Boolean(anchorEL_cb)
+
   const handleOnClick = useCallback(
     (url) => history.push(url),
     [history]
   );
-  const handleOpenMenu = (e) => {
-    setAnchorEl(e.currentTarget);
+  const handleOpen_db = (e) => {
+    setanchorEL_db(e.currentTarget);
   };
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const handleOpen_cb = (e) => {
+    setanchorEL_cb(e.currentTarget);
+  };
+  const handleClose_db = () => {
+    setanchorEL_db(null);
+  };
+  const handleClose_cb = () => {
+    setanchorEL_cb(null);
   };
   return (
     <>
-    <AppBar className={classes.header} position='static'>
+    <AppBar position='static'>
       <Toolbar> 
         <Link to="/home" className={classes.navLogo}> Volcanic Ash <br/> DataBase </Link>
         <div className={classes.navMenu}>
@@ -42,17 +52,23 @@ export default function Navigation() {
             About Us
           </Button>
           <Button
-            aria-controls= 'menu'
-            onMouseOver={handleOpenMenu}
+            id='db-button'
+            aria-controls= 'dropDown_db'
+            aria-haspopup="true"
+            aria-expanded={open_db ? 'true' : undefined}
+            onClick={handleOpen_db}
             className={classes.navBtn}
             color='inherit'
           >
             Data Base
           </Button>
           <Button
+            aria-controls= 'dropDown_cb'
+            aria-haspopup="true"
+            aria-expanded={open_cb ? 'true' : undefined}
+            onClick={handleOpen_cb}
             className={classes.navBtn}
             color='inherit'
-            onClick={() => handleOnClick('/contribute')}
           >
             Contribute
           </Button>
@@ -68,9 +84,42 @@ export default function Navigation() {
         
       </Toolbar>
     </AppBar>
-    <Menu style={{ marginTop : "50px", marginLeft:"20px"}} id= 'menu' onClose={handleMenuClose} anchorEl={anchorEl} open={Boolean(anchorEl)}>
-        <MenuItem onClick={() => {handleOnClick('/catalogue'); handleMenuClose();}}> Catalogue </MenuItem>
-        <MenuItem onClick={() => {handleOnClick('/analyze'); handleMenuClose();}}> Analytic </MenuItem>
+    <Menu 
+      id= 'dropDown_db' 
+      anchorEL={anchorEL_db} 
+      open={open_db}
+      onClose={handleClose_db}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      MenuListProps={{
+        'aria-labelledby': 'db-button',
+      }}
+      >
+        <MenuItem onClick={() => {handleOnClick('/database/catalogue');handleClose_db()}}> Catalogue </MenuItem>
+        <MenuItem onClick={() => {handleOnClick('/database/analyze');handleClose_db()}}> Analytic </MenuItem>
+    </Menu>
+    <Menu 
+      id= 'dropDown_cb' 
+      anchorEL={anchorEL_cb} 
+      open={open_cb}
+      onClose={handleClose_cb}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+    >
+        <MenuItem onClick={() => {handleOnClick('/contribute/binocular');handleClose_cb()}}> Upload Binocular Image </MenuItem>
+        <MenuItem onClick={() => {handleOnClick('/contribute/multifocus');handleClose_cb()}}> Upload Multifocus Image </MenuItem>
     </Menu>
     </>
   );
