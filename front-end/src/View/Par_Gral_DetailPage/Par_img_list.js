@@ -3,7 +3,7 @@ import './DisplayPage.css'
 import {useState} from 'react'
 import { useEffect } from 'react';
 import axios from 'axios';
-import VolcanoCard from '../../components/VolcanoCard/volcanoCard';
+import VolcanoCard from '../CatalogPage/VolcanoCard/volcanoCard';
 	
 
 const ParList = (props) =>{
