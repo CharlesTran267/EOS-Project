@@ -58,15 +58,15 @@ function getInfo(file,volc_num,filepath){
     }
     const label = breakDown[7]
     switch(label){
-        case "pg": particle.particleType = "plagioclase";break;
-        case "px": particle.particleType = "pyroxene";break;
-        case "amf": particle.particleType = "amfibole";break;
-        case "su": particle.particleType = "sulfide";break;
-        case "ol": particle.particleType = "olivine";break;
+        case "pg": particle.particleType = "free crystal"; particle.crystalType = "plagioclase";break;
+        case "px": particle.particleType = "free crystal";particle.crystalType = "pyroxene";break;
+        case "amf": particle.particleType = "free crystal";particle.crystalType = "amfibole";break;
+        case "su": particle.particleType = "free crystal";particle.crystalType = "sulfide";break;
+        case "ol": particle.particleType = "free crystal";particle.crystalType = "olivine";break;
         default: 
-            particle.particleType = "other";
             if(label[0]=='J'){
-                particle.glassyType = "Juvenile"
+                particle.particleType = "juvenile"
+                particle.glassyType = "juvenile"
                 switch(label.slice(1,5)){
                     case "lctr": particle.crystallinity = "low transparent"; break;
                     case "lcbl": particle.crystallinity = "low black"; break;
@@ -86,17 +86,23 @@ function getInfo(file,volc_num,filepath){
                     default: particle.shape = "";break;
                 }
             }else if(label.slice(0,3)=="NJli"){
-                particle.glassyType = "Non-juvenile";
-                switch(label.slice(4)){
-                    case "n": particle.alteration = "none"; break;
-                    case "l": particle.alteration = "slight";break;
-                    case "m": particle.alteration = "moderate"; break;
-                    case "h": particle.alteration = "high"; break;
-                    default : particle.alteration = ""
+                particle.particleType = "altered material"
+                particle.glassyType = "non-juvenile";
+                if(label=="NJliagg") {
+                    particle.shape = "aggregates"
+                }else{
+                    switch(label.slice(4)){
+                        case "n": particle.alteration = "none"; break;
+                        case "l": particle.alteration = "slight";break;
+                        case "m": particle.alteration = "moderate"; break;
+                        case "h": particle.alteration = "high"; break;
+                        default : particle.alteration = ""
+                    }
                 }
             }
             else{
-                particle.glassyType = "Non-juvenile";
+                particle.particleType = "lithics"
+                particle.glassyType = "non-juvenile";
                 switch(label.slice(2,6)){
                     case "lctr": particle.crystallinity = "low transparent"; break;
                     case "lcbl": particle.crystallinity = "low black"; break;
