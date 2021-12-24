@@ -2,10 +2,9 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 const afeSchema = new Schema({
-    id: {type: Number,required: true},
-    volc_id: {type: Number},
-    volc_name: {type:String,required: true},
-    ed_stime: {type: Date, required: true},
+    volc_num: {type: Number,required:true},
+    afe_id:{type:String, required:true},
+    ed_stime: {type: Date},
     onset_unrest_e: {type: Date},
     onset_new_phase: {type: Date},
     vent_lon: {type: Number},

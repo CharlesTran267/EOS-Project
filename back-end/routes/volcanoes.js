@@ -2,8 +2,7 @@ const router = require('express').Router();
 let {Volcano, Volcano2} = require('../models/volcano');
 let {Eruption} = require('../models/eruption');
 let {AFE} = require('../models/afe');
-let {General} = require('../models/general');
-let {Image} = require('../models/image');
+let {Sample} = require('../models/sample');
 let {Particle} = require('../models/particle');
 
 // Volcano routes
@@ -126,9 +125,13 @@ router.route('/getAFE').get((req, res) => {
 });
 
 router.route('/afes/add').post((req, res) => {
-    const newAFE = new AFE(req.body);
-  
-    newAFE.save()
+    const newAFE = req.body;
+    const query = {
+      volc_num: newAFE.volc_num,
+      afe_id: newAFE.afe_id
+    }
+    const options = {upsert:true, new:true, setDefaultsOnInsert: true}
+    AFE.findOneAndUpdate(query,newAFE,options)
     .then(() => res.json('AFE added!'))
     .catch(err => res.status(400).json('Error: ' + err));
   });
@@ -169,12 +172,17 @@ router.route('/getSample').get((req, res) => {
 });
 
 router.route('/samples/add').post((req, res) => {
-    const newSample = new Sample(req.body);
-  
-    newSample.save()
-    .then(() => res.json('Sample added!'))
-    .catch(err => res.status(400).json('Error: ' + err));
-  });
+  const newSample = req.body;
+  const query = {
+    volc_num: newSample.volc_num,
+    afe_id: newSample.afe_id,
+    sample_id: newSample.sample_id
+  }
+  const options = {upsert:true, new:true, setDefaultsOnInsert: true}
+  Sample.findOneAndUpdate(query,newSample,options)
+  .then(() => res.json('Sample added!'))
+  .catch(err => res.status(400).json('Error: ' + err));
+});
 router.route('/samples/:id').delete((req, res) => {
   Sample.findByIdAndDelete(req.params.id)
     .then(() => res.json('Sample deleted.'))
@@ -200,49 +208,6 @@ router.get("/samples_by_id", (req, res) => {
       .exec((err, samples) => {
           if (err) return res.status(400).send(err)
           return res.status(200).send(samples)
-      })
-});
-// General routes
-router.route('/getGenerals').get((req, res) => {
-  General.find()
-    .exec((err, generals) => {
-      if(err) return res.status(400).json({success:false , err})
-      res.status(200).json({success:true, generals})
-    })
-});
-
-router.route('/generals/add').post((req, res) => {
-    const newGeneral = new General(req.body);
-  
-    newGeneral.save()
-    .then(() => res.json('General added!'))
-    .catch(err => res.status(400).json('Error: ' + err));
-  });
-router.route('/generals/:id').delete((req, res) => {
-  General.findByIdAndDelete(req.params.id)
-    .then(() => res.json('General deleted.'))
-    .catch(err => res.status(400).json('Error: ' + err));
-});
-router.get("/generals_by_id", (req, res) => {
-  let type = req.query.type
-  let generalIds = req.query.id
-
-  console.log("req.query.id", req.query.id)
-
-  if (type === "array") {
-      let ids = req.query.id.split(',');
-      generalIds = [];
-      generalIds = ids.map(item => {
-          return item
-      })
-  }
-
-  console.log("generalIDs", generalIds)
-
-  General.find({ 'id': { $in: generalIds } })
-      .exec((err, generals) => {
-          if (err) return res.status(400).send(err)
-          return res.status(200).send(generals)
       })
 });
 // Particle route
@@ -286,22 +251,6 @@ router.get("/particles_by_id", (req, res) => {
           if (err) return res.status(400).send(err)
           return res.status(200).send(particles)
       })
-});
-// Image route
-
-router.route('/getImage').get((req,res)=>{
-    Image.find()
-        .exec((err,images)=>{
-            if(err) return res.status(400).json({success:false,err})
-            res.status(200).json({sucess:true, images})
-        })
-})
-
-router.route('/images/add').post((req, res) => {
-  const newImage = new Image(req.body);
-  newImage.save()
-  .then(() => res.json('Image added!'))
-  .catch(err => res.status(400).json('Error: ' + err));
 });
 
 module.exports = router;

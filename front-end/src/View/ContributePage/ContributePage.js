@@ -255,7 +255,6 @@ function ContributePage(props) {
 
       return valid;
     }
-    const [addable, setAddable] = useState(false)
     const handleTableClick = ()=>{
         if(checkValidData()){
           setButtonClicked(true)
@@ -299,33 +298,13 @@ function ContributePage(props) {
               crystallinity:data[i].crys, 
               alteration: data[i].alteration, 
               shape:data[i].shape,
-              volc_id: 1,
+              volc_id: volcID,
               volc_name: data[i].volc_name,
               afe_id: 1,
-              gen_id: 1,
-              microscope: "",
-              software: "",
-              device: "",
-              magnification: "",
-              ligh_intensity: "",
-              epis_dias_light: "",
-              scale_ref: ""
+              sample_id:1
             }
             await axios.post("/volcanoes/particles/add", particle)
                 .catch(err=>console.log(err),setFailed(true))
-            const image={
-                imageURL:data[i].image_path,
-                gsLow:data[i].gsLow,
-                gsUp: data[i].gsUp,
-                magnification: data[i].mag,
-                volc_id:1,
-                par_id:i,
-                multi_focus:data[i].multi_focus
-            }
-            console.log(image)
-            await axios.post("/volcanoes/images/add",image)
-              .then(console.log("success"))
-              .catch(err=>console.log(err),setFailed(true))
 
           }
           if(afeDate){
@@ -337,15 +316,6 @@ function ContributePage(props) {
             }
             console.log(afe)
             axios.post("/volcanoes/afes/add",afe)
-            .catch(err=> console.log(err),setFailed(true))
-          }
-          if(addable){
-            const eruption={
-              vd_num: volcID,
-              ed_stime: eStartDate.date,
-              ed_etime: eEndDate.date,
-            }
-            axios.post("/volcanoes/eruptions/add",eruption)
             .catch(err=> console.log(err),setFailed(true))
           }
           setIsLoading(false);
@@ -396,7 +366,6 @@ function ContributePage(props) {
                     value={afeDate}
                     onChange={(newValue) => {
                       setAFEDate(newValue.toISOString().slice(0,10)); // change format
-                      setAddable(false);
                     }}
                     renderInput={(params) => 
                     <TextField 
@@ -419,7 +388,7 @@ function ContributePage(props) {
                     onChange={(newValue)=>{
                       setEStart({...eStartDate,date:newValue.toISOString().slice(0,10)}) //change format date
                     }}
-                    readOnly={!addable}
+                    readOnly="true"
                     renderInput={(params) => 
                     <TextField
                       {...params}
@@ -431,7 +400,6 @@ function ContributePage(props) {
                       helperText={!eStartDate.date?
                         (<div>
                           <p style={{display:"inline",color:"red"}}>{eStartDate.helperText}.</p>
-                          {eStartDate.helperText?<p style={{display:"inline",color:"#0291c9",cursor:"pointer",textDecoration:"underline"}} onClick={()=>setAddable(true)}> Add a new Eruption</p>:null}
                         </div>):eStartValid.helperText}
                       fullWidth />}
                   />
@@ -445,7 +413,7 @@ function ContributePage(props) {
                     onChange={(newValue)=>{
                       setEEnd({...eEndDate,date:newValue.toISOString().slice(0,10)}) //change format date
                     }}
-                    readOnly={!addable}
+                    readOnly="true"
                     renderInput={(params) => 
                     <TextField
                       {...params}

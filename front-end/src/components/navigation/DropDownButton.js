@@ -41,6 +41,7 @@ export default function DropDownButton({label,options}) {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        style={{top:"45px", left:"20px"}}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'left',

@@ -35,7 +35,6 @@ export default function VolcanoCard({info,type}) {
             <h4>Index: {info.index}</h4>
             <h4>Volcano Name: {info.volc_name}</h4>
             <h4>AFE ID: {info.afe_id}</h4>
-            <h4>General Images ID: {info.gen_id}</h4>
             <h4>Glassy Type: {info.glassyType}</h4>
             <h4>Crystallinity: {info.crystallinity}</h4>
             {info.glassyType=="Juvenile"?<h4>Shape: {info.shape}</h4>:<h4>Alteration: {info.alteration}</h4>}

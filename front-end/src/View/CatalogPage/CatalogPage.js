@@ -85,7 +85,7 @@ function CatalogPage() {
       Volcanoes: volcanoes,
       Particles: particles
     })
-  },[particles])
+  },[volcanoes,particles])
     const handleKeyPress =(event)=>{
     if(event.key === 'Enter'){
       document.getElementById('search-button').click();
@@ -200,7 +200,7 @@ function CatalogPage() {
             <h2 style={{fontWeight:700, fontSize: "30px", marginBottom:"10px"}}>Particle: </h2>
             <div style={{display: "flex",flexDirection:"row",flexWrap:"wrap"}}>
             {fetchedData[key].map((ele)=>
-            ele.volc_id==2?
+            ele.volc_num==2?
             <VolcanoCard
               info={ele}
               type={key}

@@ -26,39 +26,27 @@ program.parse(process.argv)
 function getInfo(filename,id,name,filepath){
   var arr = filename.split("_")
   var info = {
+    volc_num: id,
+    volc_name:name,
+    afe_id : 1,
+    sample_id:1,
     id: arr[2],
     index: arr[3],
     instrument: "b",
     imgURL: filepath,
-    particleType: "",
-    glassyType: "",
-    crystallinity:"",
-    alteration: "",
-    shape: "",
-    volc_id: id,
-    volc_name:name,
-    afe_id:"1",
-    gen_id:"1",
-    microscope:"",
-    software: "",
-    device: "",
-    magnification: "",
-    ligh_intensity:"",
-    epis_dias_light: "",
-    scale_ref: ""
   }
   switch(arr[0]){
     case "holohyaline": 
-      info.crystallinity = "Low Transparent";
+      info.crystallinity = "low transparent";
       break;
     case "obsidian":
-      info.crystallinity = "Low Black";
+      info.crystallinity = "low black";
       break;
     case "dotted":
-      info.crystallinity = "Mid";
+      info.crystallinity = "mid";
       break;
     case "dome":
-      info.crystallinity = "High";
+      info.crystallinity = "high";
       break;
   }
   if(arr[4][0] == "N"){
@@ -68,28 +56,28 @@ function getInfo(filename,id,name,filepath){
   const l = arr[4].length;
   switch(arr[4][l-1]){
     case "n": 
-      info.alteration = "None";
+      info.alteration = "none";
       break;
     case "l":
-      info.alteration = "Slight";
+      info.alteration = "slight";
       break;
     case "m":
-      info.alteration = "Moderate";
+      info.alteration = "moderate";
       break;
     case "b":
-      info.shape = "Blocky";
+      info.shape = "blocky";
       break;
     case "f":
-      info.shape = "Fluidal";
+      info.shape = "fluidal";
       break;
     case "v":
-      info.shape = "Highly vesicular";
+      info.shape = "highly vesicular";
       break;
     case "t":
-      info.shape = "Microtubular"
+      info.shape = "microtubular"
       break;
     case "s":
-      info.shape = "Spongy"
+      info.shape = "spongy"
 
   }
   return info;

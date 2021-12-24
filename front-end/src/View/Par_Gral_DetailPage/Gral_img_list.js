@@ -60,7 +60,7 @@ const ParList = (props) =>{
 
             <div style={{display: "flex",flexDirection:"row",flexWrap:"wrap"}}>
             {fetchedData[key].map((e) =>
-	    e.volc_id==2?
+	    e.volc_num==2?
 	     <VolcanoCard
               info={e}
               type={key}
@@ -85,7 +85,7 @@ const ParList = (props) =>{
             <div style={{display: "flex",flexDirection:"row",flexWrap:"wrap"}}>
 		
             {fetchedData[key].map((ele)=>
-            ele.volc_id==2?
+            ele.volc_num==2?
             <VolcanoCard
               info={ele}
               type={key}
