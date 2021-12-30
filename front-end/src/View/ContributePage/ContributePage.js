@@ -11,16 +11,14 @@ import Autocomplete from '@mui/material/Autocomplete';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
+import DatePickerCustom from './DatePickerCustom.js';
 const gsValue = [0,1,2,3,4];
 const pTypes  = ["Pyroxene","Plagioclase","Other minerals","Altered material","Glassy"];
 const gTypes = ["Juvenile","Non-juvenile"];
 const crystallinity = ["Low Transparent","Low Black", "Mid", "High"];
 const alterations = ["None", "Slight", "Moderate"];
 const shapes = ["Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy"]
-const multi_focus_values =[
-  {key:"True",value:true},
-  {key:"False", value:false}
-]
+const dateFormatValues = ["mm/dd/yyyy", "mm/yyyy", "Year only", "Years BP", "Unknown"]
 function ContributePage(props) {
     const history= useHistory();
     const classes = contributeStyle();
@@ -59,10 +57,20 @@ function ContributePage(props) {
       error:false,
       helperText:""
     })
+    const [afeFormat, setAFEFormat] = useState("")
+    const [sampleDate,setSampleDate] = useState(null)
+    const [sampleValid,setSampleValid] =useState({
+      error:false,
+      helperText:""
+    })
+    const [sampleFormat, setSampleFormat] = useState("")
     const [eStartDate, setEStart] = useState({
       date:null,
       helperText:""
     })
+    const [sampleLon,setSampleLon] = useState()
+    const [sampleLat,setSampleLat] = useState()
+    const [afeYearsBP, setAFEYearsBP] = useState()
     const [eStartValid,setEStartValid] =useState({
       error:false,
       helperText:""
@@ -95,11 +103,6 @@ function ContributePage(props) {
     const [crys,setCrys] = useState("");
     const [alteration, setAlt] = useState("");
     const [shape, setShape] = useState('');
-    const [multi_focus, setMulti_focus] = useState()
-    const [multiValid, setMultiValid] = useState({
-      error:false,
-      helperText:""
-  })
     const [buttonClicked, setButtonClicked] = useState(false)
     const [data,setData] = useState([])
     const [Images, setImages] = useState([])
@@ -138,6 +141,21 @@ function ContributePage(props) {
         setVolcID(newValue.id)
       } 
     }
+    const onAFEFormatChange = (event)=>{
+      setAFEFormat(event.target.value)
+    }
+    const onAFEYearsBPChange = (event)=>{
+      setAFEYearsBP(event.target.value)
+    }
+    const onSampleFormatChange = (event)=>{
+      setSampleFormat(event.target.value)
+    }
+    const onSampleLonChange = (event)=>{
+      setSampleLon(event.target.value)
+    }
+    const onSampleLatChange = (event)=>{
+      setSampleLat(event.target.value)
+    }
     const onMgChange = (event)=>{
       setMg(event.target.value)
     } 
@@ -162,9 +180,6 @@ function ContributePage(props) {
     const onShapeChange = (event)=>{
       setShape(event.target.value)
     } 
-    const onMfChange = (event)=>{
-      setMulti_focus(event.target.value)
-    }
     const updateImages = (newImages) => {
         setImages(newImages)
     }
@@ -248,10 +263,6 @@ function ContributePage(props) {
         })
         valid=false
       }
-      if(multi_focus==null){setMultiValid(nullError);valid=false}
-      else{
-        setMultiValid(isValid);
-      }
 
       return valid;
     }
@@ -274,7 +285,7 @@ function ContributePage(props) {
                 alteration: alteration,
                 shape: shape,
                 image_path:Images[i],
-                multi_focus:multi_focus
+                multi_focus:false
               }
               newData.push(particle)
 
@@ -312,9 +323,9 @@ function ContributePage(props) {
               id:1,
               volc_id:volcID,
               volc_name:volcName,
-              ed_stime:afeDate
+              ed_stime:afeDate,
             }
-            console.log(afe)
+            if(afeYearsBP) afe.yearsBP = afeYearsBP
             axios.post("/volcanoes/afes/add",afe)
             .catch(err=> console.log(err),setFailed(true))
           }
@@ -340,8 +351,12 @@ function ContributePage(props) {
             <div style={{padding: "20px 5px"}}>
                 <FileUpload refreshFunction={updateImages}/>
             </div>
-              <Grid container spacing={1}>
-                <Grid xs={12} sm={3} item>
+              <Grid container spacing={2}>
+              <Grid xs={12} item>
+                  <Typography style={{color:"red"}}>*Note: If different images have the same filename but with different index number at the end, we will assume those are come from the same particle. Otherwise, we will assume every image is come from different particles. </Typography>
+                  <Typography style={{color:"red"}}> Example: par1_1.jpeg, par1_2.jpeg, par1_3.jpeg, par2.jpeg</Typography>
+                </Grid>
+                <Grid xs={12} item>
                 <Autocomplete
                   disablePortal
                   options={volcanoList}
@@ -359,28 +374,25 @@ function ContributePage(props) {
                     required />}
                 />
                 </Grid>
-                <Grid xs={12} sm={3} item>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="Ash Emission Date" 
-                    value={afeDate}
-                    onChange={(newValue) => {
-                      setAFEDate(newValue.toISOString().slice(0,10)); // change format
-                    }}
-                    renderInput={(params) => 
-                    <TextField 
-                    {...params}
-                    error={afeValid.error}
-                    variant="outlined"
-                    InputLabelProps={{
-                      shrink: true
-                    }}
-                    helperText={afeValid.helperText}
-                    fullWidth />}
-                  />
-                </LocalizationProvider>
+                <Grid xs ={12} sm={3} item>
+                  <Typography style={{fontWeight:600}}>Ash Emission Date:</Typography>
                 </Grid>
-                <Grid xs={12} sm={3} item>
+                <Grid xs={12} item>
+                  <DatePickerCustom 
+                  dateFormat={afeFormat} 
+                  onFormatChange={onAFEFormatChange} 
+                  values={dateFormatValues} 
+                  label="Ash Emission Date" 
+                  value ={afeDate}
+                  yearsBP={afeYearsBP}
+                  onYearsBPChange={onAFEYearsBPChange} 
+                  setValue={setAFEDate} 
+                  valid ={afeValid}/>
+                </Grid>
+                <Grid xs ={12}  item>
+                  <Typography style={{fontWeight:600}}>Eruption:</Typography>
+                </Grid>
+                <Grid xs={12} sm={6} item>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Eruption Start Date"
@@ -405,7 +417,7 @@ function ContributePage(props) {
                   />
                 </LocalizationProvider>
                 </Grid>
-                <Grid xs={12} sm={3} item>
+                <Grid xs={12} sm={6} item>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Eruption End Date" 
@@ -427,7 +439,54 @@ function ContributePage(props) {
                   />
                 </LocalizationProvider>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid xs ={12}  item>
+                  <Typography style={{fontWeight:600}}>Sample infomation:</Typography>
+                </Grid>
+                <Grid xs={12} item>
+                  <DatePickerCustom 
+                  dateFormat={sampleFormat} 
+                  onFormatChange={onSampleFormatChange} 
+                  values={dateFormatValues} 
+                  label="Sample Collection Date" 
+                  value ={afeDate}
+                  yearsBP={afeYearsBP}
+                  onYearsBPChange={onAFEYearsBPChange} 
+                  setValue={setAFEDate} 
+                  valid ={afeValid}/>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField 
+                        placeholder="Enter number from 0 to 90" 
+                        label="Collection Location (longitude)" 
+                        variant="outlined" 
+                        type="number"
+                        value={sampleLon}
+                        onChange={onSampleLonChange}
+                        fullWidth 
+                        required >
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField 
+                        placeholder="Enter number from 0 to 90" 
+                        label="Collection Location (latitude)" 
+                        variant="outlined" 
+                        type="number"
+                        value={sampleLat}
+                        onChange={onSampleLatChange}
+                        InputProps={{
+                          inputProps: { 
+                              max: 90, min: 0 
+                          }
+                        }}
+                        fullWidth 
+                        required >
+                    </TextField>
+                </Grid>
+                <Grid xs ={12}  item>
+                  <Typography style={{fontWeight:600}}>Image infomation:</Typography>
+                </Grid>
+                <Grid item xs={12} sm={4}>
                     <TextField 
                         placeholder="Enter number only" 
                         label="Magnification" 
@@ -441,7 +500,7 @@ function ContributePage(props) {
                         required >
                     </TextField>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={4}>
                     <TextField 
                         label="Grain Size Lower Bound" 
                         variant="outlined" 
@@ -457,7 +516,7 @@ function ContributePage(props) {
                             ))}
                         </TextField>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={4}>
                     <TextField 
                         label="Grain Size Upper Bound" 
                         variant="outlined" 
@@ -473,24 +532,8 @@ function ContributePage(props) {
                             ))}
                     </TextField>
                 </Grid>
-                <Grid item xs={12} sm={3}>
-                    <TextField 
-                        label="Multifocus Image" 
-                        variant="outlined" 
-                        select
-                        value={multi_focus}
-                        onChange={onMfChange}
-                        error={multiValid.error} 
-                        helperText={multiValid.helperText}
-                        fullWidth 
-                        required >
-                            {multi_focus_values.map(item => (
-                            <MenuItem key = {item.key} value={item.value}>{item.key} </MenuItem>
-                            ))}
-                    </TextField>
-                </Grid>
                 <Grid item xs={12} >
-                    <Typography style={{color:"#7d7d7d"}}> Tell us more about your data (optional):</Typography>
+                    <Typography style={{fontWeight:600}}> Tell us more about your data (optional):</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <TextField 
