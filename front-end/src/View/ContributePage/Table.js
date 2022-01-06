@@ -6,29 +6,18 @@ export default function Table({data,setData}){
     const colums =[{
         title:"Volcano Name", field: "volc_name", editable:"never"
     },{
-        title:"Ash Emission Date", field:"afeDate",type:"date", editable:"never"
-    },{
-        title:"Eruption Start Date", field:"eStartDate",type:"date", editable:"never"
-    },{
-        title:"Eruption End Date", field:"eEndDate",type:"date", editable:"never"
-    },{
         title:"Magnification", field:"mag",type:"numeric", validate: rowData =>{
             if(!rowData.mag) {return "Required"}
             return true
         }
     },{
-        title: "Grain Size Low Bound", field:"gsLow",lookup:{1:"1",2:"2",3:"3",4:"4"},type:"numeric", validate: rowData =>{
+        title: "GS Lower Bound", field:"gsLow",lookup:{1:"1",2:"2",3:"3",4:"4"},type:"numeric", validate: rowData =>{
             if(!rowData.gsLow) {return "Required"}
             return true
         }
     },{
-        title: "Grain Size Upper Bound", field:"gsUp",lookup:{1:"1",2:"2",3:"3",4:"4"},type:"numeric", validate: rowData =>{
+        title: "GS Upper Bound", field:"gsUp",lookup:{1:"1",2:"2",3:"3",4:"4"},type:"numeric", validate: rowData =>{
             if(!rowData.gsUp) {return "Required"}
-            return true
-        }
-    },{
-        title: "Multifocus Image", field:"multi_focus",lookup:{true:"True",false:"False"},type:"boolean", validate: rowData =>{
-            if(rowData.multi_focus==null) {return "Required"}
             return true
         }
     },{
@@ -47,7 +36,7 @@ export default function Table({data,setData}){
         title:"Shape", field:"shape", lookup:{"Blocky":"Blocky", "Fluidal":"Fluidal", "Microtubular":"Microtubular", "Highly vesicular":"Highly vesicular", "Spongy":"Spongy"}
         ,validate: rowData => ({ isValid: true, helperText: "Optional" })
     },{
-        title: "Image Path", field:"image_path", editable:"never"
+        title: "Image name", field:"image_name", editable:"never"
     }]
     return (
         <MaterialTable

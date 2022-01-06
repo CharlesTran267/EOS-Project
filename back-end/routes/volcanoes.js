@@ -64,6 +64,14 @@ router.route('/addVolcano2').post((req, res) => {
     .then(() => res.json('Volcano added!'))
     .catch(err => res.status(400).json('Error: ' + err));
   });
+  router.route('/volcano2/update').post((req,res)=>{
+    const filter = req.body.filter;
+    const update  = req.body.update;
+    const options = {new:true, useFindAndModify:false}
+    Volcano2.findOneAndUpdate(filter,update,options)
+    .then(() => res.json('Volcano2 updated!'))
+    .catch(err => res.status(400).json('Error: ' + err));
+  })
 // Eruption routes
 router.route('/getEruptions').get((req, res) => {
   Eruption.find()
@@ -252,5 +260,13 @@ router.get("/particles_by_id", (req, res) => {
           return res.status(200).send(particles)
       })
 });
-
+router.route('/particles/update').post(async(req,res)=>{
+  const filter = req.body.filter;
+  const update  = req.body.update;
+  const options = {new:true, useFindAndModify:false}
+  const updated = await Particle.findOneAndUpdate(filter,update,options)
+  .then(() => res.json(updated))
+  .catch(err => res.status(400).json('Error: ' + err));
+})
+    
 module.exports = router;

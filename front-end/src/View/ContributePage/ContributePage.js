@@ -12,6 +12,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
 import DatePickerCustom from './DatePickerCustom.js';
+import { IdcardFilled } from '@ant-design/icons';
 const gsValue = [0,1,2,3,4];
 const pTypes  = ["Pyroxene","Plagioclase","Other minerals","Altered material","Glassy"];
 const gTypes = ["Juvenile","Non-juvenile"];
@@ -52,25 +53,26 @@ function ContributePage(props) {
         error:false,
         helperText:""
     })
+    const [afeFormat, setAFEFormat] = useState("")
     const [afeDate,setAFEDate] = useState(null)
+    const [afeYearsBP, setAFEYearsBP] = useState()
     const [afeValid,setAFEValid] =useState({
       error:false,
       helperText:""
     })
-    const [afeFormat, setAFEFormat] = useState("")
+    const [sampleFormat, setSampleFormat] = useState("")
     const [sampleDate,setSampleDate] = useState(null)
+    const [sampleYearsBP, setSampleYearsBP] = useState()
     const [sampleValid,setSampleValid] =useState({
       error:false,
       helperText:""
     })
-    const [sampleFormat, setSampleFormat] = useState("")
     const [eStartDate, setEStart] = useState({
       date:null,
       helperText:""
     })
     const [sampleLon,setSampleLon] = useState()
     const [sampleLat,setSampleLat] = useState()
-    const [afeYearsBP, setAFEYearsBP] = useState()
     const [eStartValid,setEStartValid] =useState({
       error:false,
       helperText:""
@@ -149,6 +151,9 @@ function ContributePage(props) {
     }
     const onSampleFormatChange = (event)=>{
       setSampleFormat(event.target.value)
+    }
+    const onSampleYearsBPChange = (event)=>{
+      setSampleYearsBP(event.target.value)
     }
     const onSampleLonChange = (event)=>{
       setSampleLon(event.target.value)
@@ -284,8 +289,8 @@ function ContributePage(props) {
                 crys: crys,
                 alteration: alteration,
                 shape: shape,
-                image_path:Images[i],
-                multi_focus:false
+                image_name:Images[i].split("_").slice(1).join("_").slice(0,-4),
+                image_path:Images[i]
               }
               newData.push(particle)
 
@@ -293,35 +298,75 @@ function ContributePage(props) {
           setData(newData)
       }
     }
+    const groupData = (data)=>{
+      let group = {}
+      var idCounter = 0
+      for (var i=0;i<data.length;i++){
+        const breakDown = data[i].image_name.split("_")
+        if(breakDown.length==1 || isNaN(breakDown[breakDown.length-1])){
+          const key = data[i].image_name
+            if(group[key]!==undefined){
+              group[key].dataList[0] = data[i]
+            }else{
+              group[key]={}
+              group[key].id = idCounter++
+              group[key].dataList={
+                "0": data[i]
+              }
+            }
+        }else{
+          const key = breakDown.slice(0,-1).join("_")
+          const index = breakDown[breakDown.length-1]
+          if(group[key]!==undefined){
+            group[key].dataList[index] = data[i]
+          }else{
+            group[key]={}
+              group[key].id = idCounter++
+              group[key].dataList={}
+              group[key].dataList[index] = data[i]
+          }
+        }
+      }
+      return group
+    }
     const [failed,setFailed] = useState(false)
     const onSubmit = async(event) => {
         event.preventDefault();
         if(checkValidData()){
           setIsLoading(true)
-          for(var i =0;i<data.length;i++){
-            const particle ={
-              id: i+1,
-              index: 1,
-              instrument:"b",
-              imgURL:data[i].image_path,
-              particleType: data[i].pType, 
-              glassyType: data[i].gType,
-              crystallinity:data[i].crys, 
-              alteration: data[i].alteration, 
-              shape:data[i].shape,
-              volc_id: volcID,
-              volc_name: data[i].volc_name,
-              afe_id: 1,
-              sample_id:1
-            }
-            await axios.post("/volcanoes/particles/add", particle)
+          const group = groupData(data)
+          console.log(group)
+          Object.keys(group).map(key=>{
+            Object.keys(group[key].dataList).map(par=>{
+              const parInfo = group[key].dataList[par]
+              const particle ={
+                volc_num: volcID,
+                volc_name: parInfo.volc_name,
+                afe_id: 1,
+                sample_id:1,
+                id:group[key].id,
+                index:par,
+                instrument:"b",
+                imgURL:parInfo.image_path,
+                gsLow:parInfo.gsLow,
+                gsUp: parInfo.gsUp,
+                multi_focus: false,
+                magnification: parInfo.mag,
+                particleType: parInfo.pType, 
+                glassyType: parInfo.gType,
+                crystallinity:parInfo.crys, 
+                alteration: parInfo.alteration, 
+                shape:parInfo.shape
+              }
+              axios.post("/volcanoes/particles/add", particle)
                 .catch(err=>console.log(err),setFailed(true))
-
+            })
+          })
           }
           if(afeDate){
             const afe = {
-              id:1,
-              volc_id:volcID,
+              afe_id:1,
+              volc_num:volcID,
               volc_name:volcName,
               ed_stime:afeDate,
             }
@@ -331,12 +376,11 @@ function ContributePage(props) {
           }
           setIsLoading(false);
           if(!failed) {
-            navigate('/catalogue')
+            navigate('/database/catalogue')
           }
           else{
             return alert("Upload failed! Please try again!")
           }
-        }
       }
     return (
         <div style={{ maxWidth:"80%",margin: '2rem auto' }}>
@@ -353,7 +397,7 @@ function ContributePage(props) {
             </div>
               <Grid container spacing={2}>
               <Grid xs={12} item>
-                  <Typography style={{color:"red"}}>*Note: If different images have the same filename but with different index number at the end, we will assume those are come from the same particle. Otherwise, we will assume every image is come from different particles. </Typography>
+                  <Typography style={{color:"red"}}>*Note: If different images have the same filename but with different index number at the end, we will assume those are come from the same particle (No index means index 0). Otherwise, we will assume every image is come from different particles. </Typography>
                   <Typography style={{color:"red"}}> Example: par1_1.jpeg, par1_2.jpeg, par1_3.jpeg, par2.jpeg</Typography>
                 </Grid>
                 <Grid xs={12} item>
@@ -448,11 +492,11 @@ function ContributePage(props) {
                   onFormatChange={onSampleFormatChange} 
                   values={dateFormatValues} 
                   label="Sample Collection Date" 
-                  value ={afeDate}
-                  yearsBP={afeYearsBP}
-                  onYearsBPChange={onAFEYearsBPChange} 
-                  setValue={setAFEDate} 
-                  valid ={afeValid}/>
+                  value ={sampleDate}
+                  yearsBP={sampleYearsBP}
+                  onYearsBPChange={onSampleYearsBPChange} 
+                  setValue={setSampleDate} 
+                  valid ={sampleValid}/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <TextField 

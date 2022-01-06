@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const afeSchema = new Schema({
     volc_num: {type: Number,required:true},
-    afe_id:{type:String, required:true},
+    afe_id:{type:Number,required: true},
     yearsBP:{type:Number},
     ed_stime: {type: Date},
     onset_unrest_e: {type: Date},

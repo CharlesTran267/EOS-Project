@@ -25,7 +25,7 @@ export default function Navigation() {
   }]
   const options_cb=[{
     label: "Upload Binocular Image",
-    path: "/contribute/binocular"
+    path: "/contribute"
   },{
     label: "Upload Multifocus Image",
     path: "/contribute/multifocus"
