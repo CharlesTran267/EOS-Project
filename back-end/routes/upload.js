@@ -38,12 +38,18 @@ router.post("/uploadImage", upload.array('files'), async(req, res) => {
     }        
     res.json({success:true, image:imagePaths, fileName: fileNames })
 });
-router.get("/mesureTool",async(req,res)=>{
-    await axios.get('http://localhost:5005/api')
-    .catch(err=>console.log(err))  
-    const mesurement = require('../uploads/sample.json')
+router.post("/mesureTool",async(req,res)=>{
+    await axios.post('http://localhost:5005/api',{'len':req.body.len}).then(
+        axios.get('http://localhost:5005/api')
+    )
+    .catch(err=>console.log("err"))  
+    let mesurement = require("../uploads/sample.json"); 
+    delete require.cache[require.resolve("../uploads/sample.json")];
+    mesurement = require("../uploads/sample.json");
+
+    console.log(mesurement)
     Object.keys(mesurement).map((par)=>{
-        const req={
+        let req={
             filter:{
                 "imgURL":{"$regex":`${mesurement[par][""]}`}
             },
@@ -82,5 +88,6 @@ router.get("/mesureTool",async(req,res)=>{
         .then(res=>console.log("updated"))
         .catch(err=>console.log("error"))
     })
+    res.json({succes:true})
 })
 module.exports = router;

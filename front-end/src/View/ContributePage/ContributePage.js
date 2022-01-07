@@ -198,10 +198,10 @@ function ContributePage(props) {
         error:false,
         helperText:""
       }
-      if(!volcName){setVolcValid(nullError);valid=false}
-      else{
-        setVolcValid(isValid);
-      }
+      // if(!volcName){setVolcValid(nullError);valid=false}
+      // else{
+      //   setVolcValid(isValid);
+      // }
       if(followConvention==null){setFollowValid(nullError);valid=false}
       else{
         setFollowValid(isValid);
@@ -333,7 +333,7 @@ function ContributePage(props) {
               Object.keys(group[key].dataList).map(par=>{
                 const parInfo = group[key].dataList[par]
                 const particle ={
-                  volc_num: volcID,
+                  volc_num: 1,
                   volc_name: parInfo.volc_name,
                   afe_id: 1,
                   sample_id:1,
@@ -358,7 +358,7 @@ function ContributePage(props) {
             }else if(followConvention == true){
               for(var i=0;i<data.length;i++){
                 const particle={
-                  volc_num: volcID,
+                  volc_num: 1,
                   volc_name: data[i].volc_name,
                   afe_id: 1,
                   sample_id:1,
@@ -404,7 +404,7 @@ function ContributePage(props) {
             axios.post("/volcanoes/samples/add",sample)
             .catch(err=> console.log(err),setFailed(true)) 
           }
-          axios.get("/upload/mesureTool").catch(err=>console.log(err))
+          axios.post("/upload/mesureTool",{len:Images.length}).catch(err=>console.log(err))
           setIsLoading(false);
           if(!failed) {
             navigate('/database/catalogue')

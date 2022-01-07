@@ -174,9 +174,11 @@ app = Flask(__name__)
 
 
 
-@app.route('/api', methods= ['GET'])
+@app.route('/api', methods= ['GET','POST'])
 def index():
-
+    length = 0
+    if request.method == "POST":
+        length = request.get_json()['len']
     
     # if request.method == "POST":
     #     print("POST");
@@ -187,10 +189,14 @@ def index():
     # else:
     os.chdir('C:/Users/User/Desktop/EOS Project/back-end/uploads')
     filenames = [file for file in os.listdir() if file.endswith('.png')]
+    
     # latest_file = max(filenames, key=os.path.getctime)
-    threshold = 0.900
+    # threshold = 0.900
     files =  sorted(filenames, key=os.path.getctime,reverse=True)
-    filtered = list(filter(lambda x: os.path.getctime(filenames[0]) - os.path.getctime(x) <= threshold, files))
+    filtered = []
+    for i in range(length):
+        filtered.append(files[i])
+    # filtered = list(filter(lambda x: os.path.getctime(filenames[0]) - os.path.getctime(x) <= threshold, files))
         # for f in filenames[:]:
         #      tCreate = os.path.getctime(f)
         #      if tCreate == t :
