@@ -260,12 +260,12 @@ router.get("/particles_by_id", (req, res) => {
           return res.status(200).send(particles)
       })
 });
-router.route('/particles/update').post(async(req,res)=>{
+router.route('/particles/update').post((req,res)=>{
   const filter = req.body.filter;
   const update  = req.body.update;
   const options = {new:true, useFindAndModify:false}
-  const updated = await Particle.findOneAndUpdate(filter,update,options)
-  .then(() => res.json(updated))
+  Particle.findOneAndUpdate(filter,update,options)
+  .then(() => res.status(200).json({success:true}))
   .catch(err => res.status(400).json('Error: ' + err));
 })
     

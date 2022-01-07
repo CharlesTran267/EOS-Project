@@ -58,12 +58,10 @@ export default function DatePickerCustom(props){
                             renderInput={(params) => 
                             <TextField 
                                 {...params}
-                                error={props.valid.error}
                                 variant="outlined"
                                 InputLabelProps={{
                                     shrink: !props.dateFormat || props.dateFormat =="Unknown"?false:true
                                 }}
-                                helperText={props.valid.helperText}
                                 fullWidth />}
                         />
                     </LocalizationProvider>}

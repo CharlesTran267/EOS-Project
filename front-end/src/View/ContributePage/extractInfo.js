@@ -1,33 +1,4 @@
-var program = require("commander");
-var fs = require("fs")
-var path = require("path")
-var axios =  require("axios")
-program.version('0.0.1')
-program
-  .command('post [folderpath] [volc_num]')
-  .description('this is the command to post data from the folder')
-  .action(function(folderpath,volc_num){
-      fs.readdir(folderpath,(err,files)=>{
-        if(err){
-          console.log(err)
-        }
-        else {
-          files.forEach(function(file,index){
-            var filepath = path.join(folderpath,file)
-            var info = getInfo(file,volc_num,filepath);
-            axios.post("http://localhost:5001/volcanoes/particles/add",info.particle)
-            .catch(err => console.log(err))
-            axios.post("http://localhost:5001/volcanoes/afes/add",info.afe)
-            .catch(err => console.log(err))
-            axios.post("http://localhost:5001/volcanoes/samples/add",info.sample)
-            .catch(err => console.log(err))
-          })
-        }
-      })
-    
-  })
-program.parse(process.argv)
-function getInfo(file,volc_num,filepath){
+export default function extractInfo(file,volc_num,filepath){
     const breakDown = file.split('_')
     const afe = {
         volc_num: volc_num,

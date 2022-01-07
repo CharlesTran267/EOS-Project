@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const particleSchema = new Schema({
     volc_num: {type:Number,required:true},
     volc_name:{type:String},
-    afe_id:{type:String, required:true},
+    afe_id:{type:Number, required:true},
     sample_id :{type:Number, required: true},
     id: {type:Number, required: true},
     batch:{type:Number},

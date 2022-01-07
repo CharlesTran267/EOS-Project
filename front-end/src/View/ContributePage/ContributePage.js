@@ -12,7 +12,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
 import DatePickerCustom from './DatePickerCustom.js';
-import { IdcardFilled } from '@ant-design/icons';
+import extractInfo from './extractInfo.js';
 const gsValue = [0,1,2,3,4];
 const pTypes  = ["Pyroxene","Plagioclase","Other minerals","Altered material","Glassy"];
 const gTypes = ["Juvenile","Non-juvenile"];
@@ -20,6 +20,10 @@ const crystallinity = ["Low Transparent","Low Black", "Mid", "High"];
 const alterations = ["None", "Slight", "Moderate"];
 const shapes = ["Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy"]
 const dateFormatValues = ["mm/dd/yyyy", "mm/yyyy", "Year only", "Years BP", "Unknown"]
+const booleanList = {
+  "Yes": true,
+  "No": false
+}
 function ContributePage(props) {
     const history= useHistory();
     const classes = contributeStyle();
@@ -56,35 +60,25 @@ function ContributePage(props) {
     const [afeFormat, setAFEFormat] = useState("")
     const [afeDate,setAFEDate] = useState(null)
     const [afeYearsBP, setAFEYearsBP] = useState()
-    const [afeValid,setAFEValid] =useState({
-      error:false,
-      helperText:""
-    })
+
     const [sampleFormat, setSampleFormat] = useState("")
     const [sampleDate,setSampleDate] = useState(null)
     const [sampleYearsBP, setSampleYearsBP] = useState()
-    const [sampleValid,setSampleValid] =useState({
-      error:false,
-      helperText:""
-    })
     const [eStartDate, setEStart] = useState({
       date:null,
       helperText:""
     })
     const [sampleLon,setSampleLon] = useState()
     const [sampleLat,setSampleLat] = useState()
-    const [eStartValid,setEStartValid] =useState({
-      error:false,
-      helperText:""
-    })
     const [eEndDate, setEEnd] = useState({
       date:null,
       helperText:""
     })
-    const [eEndValid,setEEndValid] =useState({
+    const [followConvention, setFollow] = useState(null)
+    const [followValid,setFollowValid] = useState({
       error:false,
       helperText:""
-    })
+  })
     const [magnification, setMg] = useState(null);
     const [magValid,setMagValid] = useState({
         error:false,
@@ -161,6 +155,9 @@ function ContributePage(props) {
     const onSampleLatChange = (event)=>{
       setSampleLat(event.target.value)
     }
+    const onFollowChange = (event)=>{
+      setFollow(event.target.value)
+    }
     const onMgChange = (event)=>{
       setMg(event.target.value)
     } 
@@ -191,7 +188,6 @@ function ContributePage(props) {
     useEffect(()=>{
         console.log(afeDate,eStartDate.date,eEndDate.date)
     },[afeDate,eStartDate,eEndDate])
-
     const checkValidData = ()=>{
       let valid = true;
       const nullError={
@@ -206,81 +202,43 @@ function ContributePage(props) {
       else{
         setVolcValid(isValid);
       }
-      if(eStartDate.date){
-        if(eEndDate.date){
-          if(eStartDate.date>eEndDate.date){
-            setEStartValid({
-              error:true,
-              helperText:"Eruption Start Date cannot be later than End Date"
-            })
-            valid=false
-          }else{
-            setEStartValid(isValid)
-            if(afeDate<=eEndDate.date && afeDate>=eStartDate.date){
-              setAFEValid(isValid)
-            }else{
-              setAFEValid({
-                error:true,
-                helperText:"Ash Emission Date must lie between Eruption Start Date and End Date"
-              })
-              valid=false
-            }
-          }
-        }else{
-          if(afeDate.date>eStartDate.date){
-            setAFEValid({
-              error:true,
-              helperText:"Ash Emission Date cannot be before Eruption Start Date"
-            })
-            valid=false
-          }else{
-            setAFEValid(isValid)
-          }
+      if(followConvention==null){setFollowValid(nullError);valid=false}
+      else{
+        setFollowValid(isValid);
+      }
+      if(followConvention==false){
+        if(magnification==null){setMagValid(nullError);valid=false}
+        else{
+          setMagValid(isValid);
         }
-      }else{
-        if(eEndDate.date){
-          setEEndValid({
+
+        if(gsLow==null){setGsLowValid(nullError);valid=false}
+        else{
+          setGsLowValid(isValid);
+        }
+        if(gsUp==null){setGsUpValid(nullError);valid=false}
+        else{
+          setGsUpValid(isValid);
+        }
+        if(gsLow!=null && gsUp!=null && gsLow>gsUp){
+          setGsLowValid({
             error:true,
-            helperText:"Please fill Start Date first!"
+            helperText:"Lower Bound cannot not be greater than Lower Bound"
           })
           valid=false
-        }else{
-          setEEndValid(isValid)
         }
-      }
-      if(magnification==null){setMagValid(nullError);valid=false}
-      else{
-        setMagValid(isValid);
-      }
-
-      if(gsLow==null){setGsLowValid(nullError);valid=false}
-      else{
-        setGsLowValid(isValid);
-      }
-      if(gsUp==null){setGsUpValid(nullError);valid=false}
-      else{
-        setGsUpValid(isValid);
-      }
-      if(gsLow!=null && gsUp!=null && gsLow>gsUp){
-        setGsLowValid({
-          error:true,
-          helperText:"Lower Bound cannot not be greater than Lower Bound"
-        })
-        valid=false
-      }
+    }
 
       return valid;
     }
     const handleTableClick = ()=>{
-        if(checkValidData()){
-          setButtonClicked(true)
+      if(checkValidData()){
+        setButtonClicked(true)
+        if(followConvention==false){
           let newData = []
           for(var i =0;i<Images.length;i++){
               const particle={
                 volc_name: volcName,
-                afeDate: afeDate,
-                eStartDate: eStartDate.date,
-                eEndDate: eEndDate.date,
                 mag: magnification,
                 gsLow: gsLow,
                 gsUp: gsUp,
@@ -296,6 +254,40 @@ function ContributePage(props) {
 
           }
           setData(newData)
+        }else if (followConvention==true){
+          let newData = []
+          for(var i=0;i<Images.length;i++){
+            const image_path = Images[i]
+            const image_name = Images[i].split("_").slice(1).join("_").slice(0,-4)
+            const info = extractInfo(image_name,volcID,image_path)
+            const changeToPascalCase =(s)=>{
+              let arr = s.split(" ")
+              for(var i=0;i<arr.length;i++){
+                arr[i] = arr[i][0].toUpperCase() + arr[i].slice(1)
+              }
+              return arr.join(" ")
+            }
+            const parInfo = info.particle
+            const particle = {
+              volc_name: volcName,
+              id: parInfo.id,
+              mag: parInfo.magnification,
+              gsLow: parInfo.gsLow,
+              gsUp: parInfo.gsUp,
+              multi_focus: parInfo.multi_focus,
+              image_name: image_name,
+              image_path:image_path
+            }
+            if(parInfo.index){ particle.index = parInfo.index}
+            if(parInfo.particleType){ particle.pType = changeToPascalCase(parInfo.particleType)}
+            if(parInfo.glassyType){ particle.gType = changeToPascalCase(parInfo.glassyType)}
+            if(parInfo.crystallinity){ particle.crys = changeToPascalCase(parInfo.crystallinity)}
+            if(parInfo.alteration){ particle.alteration = changeToPascalCase(parInfo.alteration)}
+            if(parInfo.shape){ particle.shape = changeToPascalCase(parInfo.shape)}
+            newData.push(particle)
+          }
+          setData(newData)
+        }
       }
     }
     const groupData = (data)=>{
@@ -334,46 +326,85 @@ function ContributePage(props) {
         event.preventDefault();
         if(checkValidData()){
           setIsLoading(true)
-          const group = groupData(data)
-          console.log(group)
-          Object.keys(group).map(key=>{
-            Object.keys(group[key].dataList).map(par=>{
-              const parInfo = group[key].dataList[par]
-              const particle ={
-                volc_num: volcID,
-                volc_name: parInfo.volc_name,
-                afe_id: 1,
-                sample_id:1,
-                id:group[key].id,
-                index:par,
-                instrument:"b",
-                imgURL:parInfo.image_path,
-                gsLow:parInfo.gsLow,
-                gsUp: parInfo.gsUp,
-                multi_focus: false,
-                magnification: parInfo.mag,
-                particleType: parInfo.pType, 
-                glassyType: parInfo.gType,
-                crystallinity:parInfo.crys, 
-                alteration: parInfo.alteration, 
-                shape:parInfo.shape
+          if(followConvention==false){
+            const group = groupData(data)
+            console.log(group)
+            Object.keys(group).map(key=>{
+              Object.keys(group[key].dataList).map(par=>{
+                const parInfo = group[key].dataList[par]
+                const particle ={
+                  volc_num: volcID,
+                  volc_name: parInfo.volc_name,
+                  afe_id: 1,
+                  sample_id:1,
+                  id:group[key].id,
+                  index:par,
+                  instrument:"b",
+                  imgURL:parInfo.image_path,
+                  gsLow:parInfo.gsLow,
+                  gsUp: parInfo.gsUp,
+                  multi_focus: false,
+                  magnification: parInfo.mag,
+                  particleType: parInfo.pType, 
+                  glassyType: parInfo.gType,
+                  crystallinity:parInfo.crys, 
+                  alteration: parInfo.alteration, 
+                  shape:parInfo.shape
+                }
+                axios.post("/volcanoes/particles/add", particle)
+                  .catch(err=>console.log(err),setFailed(true))
+                })
+              })
+            }else if(followConvention == true){
+              for(var i=0;i<data.length;i++){
+                const particle={
+                  volc_num: volcID,
+                  volc_name: data[i].volc_name,
+                  afe_id: 1,
+                  sample_id:1,
+                  id: data[i].id,
+                  index: data[i].index,
+                  instrument:"b",
+                  imgURL:data[i].image_path,
+                  gsLow:data[i].gsLow,
+                  gsUp: data[i].gsUp,
+                  multi_focus: data[i].multi_focus,
+                  magnification: data[i].mag,
+                  particleType: data[i].pType, 
+                  glassyType: data[i].gType,
+                  crystallinity:data[i].crys, 
+                  alteration: data[i].alteration, 
+                  shape:data[i].shape
+                }
+                axios.post("/volcanoes/particles/add", particle)
+                  .catch(err=>console.log(err),setFailed(true))
               }
-              axios.post("/volcanoes/particles/add", particle)
-                .catch(err=>console.log(err),setFailed(true))
-            })
-          })
+            }
           }
           if(afeDate){
             const afe = {
               afe_id:1,
               volc_num:volcID,
               volc_name:volcName,
-              ed_stime:afeDate,
+              afe_date:afeDate,
             }
             if(afeYearsBP) afe.yearsBP = afeYearsBP
             axios.post("/volcanoes/afes/add",afe)
             .catch(err=> console.log(err),setFailed(true))
           }
+          if(sampleDate || sampleLat || sampleLon){
+            const sample={
+              volc_num: volcID,
+              afe_id:1,
+              sample_id:1,
+            }
+            if(sampleDate) {sample.sample_date = sampleDate}
+            if (sampleLat) {sample.sample_loc_lat = sampleLat}
+            if (sampleLon) {sample.sample_loc_lon = sampleLon}
+            axios.post("/volcanoes/samples/add",sample)
+            .catch(err=> console.log(err),setFailed(true)) 
+          }
+          axios.get("/upload/mesureTool").catch(err=>console.log(err))
           setIsLoading(false);
           if(!failed) {
             navigate('/database/catalogue')
@@ -430,8 +461,7 @@ function ContributePage(props) {
                   value ={afeDate}
                   yearsBP={afeYearsBP}
                   onYearsBPChange={onAFEYearsBPChange} 
-                  setValue={setAFEDate} 
-                  valid ={afeValid}/>
+                  setValue={setAFEDate}/>
                 </Grid>
                 <Grid xs ={12}  item>
                   <Typography style={{fontWeight:600}}>Eruption:</Typography>
@@ -448,15 +478,14 @@ function ContributePage(props) {
                     renderInput={(params) => 
                     <TextField
                       {...params}
-                      error={eStartValid.error}
                       variant="outlined" 
                       InputLabelProps={{
                         shrink: true
                       }}
                       helperText={!eStartDate.date?
                         (<div>
-                          <p style={{display:"inline",color:"red"}}>{eStartDate.helperText}.</p>
-                        </div>):eStartValid.helperText}
+                          <p style={{display:"inline",color:"red"}}>{eStartDate.helperText}</p>
+                        </div>):null}
                       fullWidth />}
                   />
                 </LocalizationProvider>
@@ -473,12 +502,10 @@ function ContributePage(props) {
                     renderInput={(params) => 
                     <TextField
                       {...params}
-                      error={eEndValid.error}
                       variant="outlined" 
                       InputLabelProps={{
                         shrink: true
                       }}
-                      helperText={eEndValid.helperText}
                       fullWidth />}
                   />
                 </LocalizationProvider>
@@ -495,8 +522,7 @@ function ContributePage(props) {
                   value ={sampleDate}
                   yearsBP={sampleYearsBP}
                   onYearsBPChange={onSampleYearsBPChange} 
-                  setValue={setSampleDate} 
-                  valid ={sampleValid}/>
+                  setValue={setSampleDate} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <TextField 
@@ -529,8 +555,27 @@ function ContributePage(props) {
                 </Grid>
                 <Grid xs ={12}  item>
                   <Typography style={{fontWeight:600}}>Image infomation:</Typography>
+                  <Typography style={{color:"#8f8f8f"}} >Tips: If you name your images following our naming convention. Our system will automatically get data from your filename.</Typography>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={4} >
+                    <TextField 
+                        label="Follow our Naming Convention" 
+                        variant="outlined" 
+                        select
+                        value={followConvention}
+                        onChange={onFollowChange}
+                        error={followValid.error} 
+                        helperText={followValid.helperText}
+                        fullWidth 
+                        required >
+                            {Object.keys(booleanList).map(key => (
+                            <MenuItem key = {key} value={booleanList[key]}>{key} </MenuItem>
+                            ))}
+                        </TextField>
+                </Grid>
+                <Grid item xs={8}/>
+                {followConvention==false?
+                (<Grid container xs={12} spacing={2} style={{paddingLeft:7}}><Grid item xs={12} sm={4}>
                     <TextField 
                         placeholder="Enter number only" 
                         label="Magnification" 
@@ -648,7 +693,7 @@ function ContributePage(props) {
                             <MenuItem key = {item} value={item}>{item} </MenuItem>
                             ))}
                     </TextField>
-                </Grid>
+                </Grid></Grid>):null}
                 <Grid item xs={12} >
                     <Typography style={{color:"#7d7d7d"}}> * means required</Typography>
                 </Grid>

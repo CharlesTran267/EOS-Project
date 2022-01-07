@@ -36,11 +36,11 @@ router.post("/uploadImage", upload.array('files'), async(req, res) => {
         fileNames.push(req.files[i].fileName)   
          
     }        
+    res.json({success:true, image:imagePaths, fileName: fileNames })
+});
+router.get("/mesureTool",async(req,res)=>{
     await axios.get('http://localhost:5005/api')
     .catch(err=>console.log(err))  
-    res.json({success:true, image:imagePaths, fileName: fileNames })
-
-    
     const mesurement = require('../uploads/sample.json')
     Object.keys(mesurement).map((par)=>{
         const req={
@@ -79,12 +79,8 @@ router.post("/uploadImage", upload.array('files'), async(req, res) => {
             }
         }
         axios.post("http://localhost:5001/volcanoes/particles/update",req)
-        .then(res=>console.log(res.data))
-        .catch(err=>console.log(err))
+        .then(res=>console.log("updated"))
+        .catch(err=>console.log("error"))
     })
-
-
-
-});
-
+})
 module.exports = router;

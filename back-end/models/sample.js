@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const sampleSchema = new Schema({
   volc_num:{type:Number,required:true},
-  afe_id:{type:String, required: true},
+  afe_id:{type:Number, required: true},
   sample_id:{type:Number, required: true},
+  sample_date:{type:Date},
   vent_loc_lat:{type:Number},
   vent_loc_lon:{type:Number},
   vent_loc_elevation:{type:Number},
