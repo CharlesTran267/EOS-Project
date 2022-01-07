@@ -198,10 +198,10 @@ function ContributePage(props) {
         error:false,
         helperText:""
       }
-      // if(!volcName){setVolcValid(nullError);valid=false}
-      // else{
-      //   setVolcValid(isValid);
-      // }
+      if(!volcName){setVolcValid(nullError);valid=false}
+      else{
+        setVolcValid(isValid);
+      }
       if(followConvention==null){setFollowValid(nullError);valid=false}
       else{
         setFollowValid(isValid);
@@ -333,7 +333,7 @@ function ContributePage(props) {
               Object.keys(group[key].dataList).map(par=>{
                 const parInfo = group[key].dataList[par]
                 const particle ={
-                  volc_num: 1,
+                  volc_num: volcID,
                   volc_name: parInfo.volc_name,
                   afe_id: 1,
                   sample_id:1,
@@ -358,7 +358,7 @@ function ContributePage(props) {
             }else if(followConvention == true){
               for(var i=0;i<data.length;i++){
                 const particle={
-                  volc_num: 1,
+                  volc_num: volcID,
                   volc_name: data[i].volc_name,
                   afe_id: 1,
                   sample_id:1,
