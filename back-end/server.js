@@ -30,7 +30,6 @@ const volcanoesRouter = require('./routes/volcanoes');
 app.use('/volcanoes', volcanoesRouter);
 app.use('/users', require('./routes/users'));
 app.use('/upload',require('./routes/upload'));
-
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });

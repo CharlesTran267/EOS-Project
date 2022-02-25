@@ -1,9 +1,9 @@
 import React, { useState,useEffect,useCallback } from 'react'
-import FileUpload from './FileUpload.js'
+import FileUpload from '../FileUpload.js'
 import axios from 'axios';
-import Table from './Table'
+import Table from '../Table'
 import { Grid, TextField, Button, Card, CardContent, Typography } from '@material-ui/core';
-import { contributeStyle } from './ContributePage.style.tsx';
+import { contributeStyle } from '../ContributePage.style.tsx';
 import MenuItem from '@mui/material/MenuItem';
 import { useHistory } from 'react-router';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -11,8 +11,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
-import DatePickerCustom from './DatePickerCustom.js';
-import extractInfo from './extractInfo.js';
+import DatePickerCustom from '../DatePickerCustom.js';
+import extractInfo from '../extractInfo.js';
 const gsValue = [0,1,2,3,4];
 const pTypes  = ["Pyroxene","Plagioclase","Other minerals","Altered material","Glassy"];
 const gTypes = ["Juvenile","Non-juvenile"];
@@ -150,17 +150,17 @@ function ContributePage(props) {
       setSampleYearsBP(event.target.value)
     }
     const onSampleLonChange = (event)=>{
-      const value = event.target.value
-      if (value >90){setSampleLon(90)}
-      else if (value<0){setSampleLon(0)}
-      else {setSampleLon(value)}
-  }
-  const onSampleLatChange = (event)=>{
-      const value = event.target.value
-      if (value >90){setSampleLat(90)}
-      else if (value<0){setSampleLat(0)}
-      else {setSampleLat(value)}
-  }
+        const value = event.target.value
+        if (value >90){setSampleLon(90)}
+        else if (value<0){setSampleLon(0)}
+        else {setSampleLon(value)}
+    }
+    const onSampleLatChange = (event)=>{
+        const value = event.target.value
+        if (value >90){setSampleLat(90)}
+        else if (value<0){setSampleLat(0)}
+        else {setSampleLat(value)}
+    }
     const onFollowChange = (event)=>{
       setFollow(event.target.value)
     }
@@ -266,66 +266,38 @@ function ContributePage(props) {
             const image_path = Images[i]
             const image_name = Images[i].split("_").slice(1).join("_").slice(0,-4)
             const info = extractInfo(image_name,volcID,image_path)
-            const changeToPascalCase =(s)=>{
-              let arr = s.split(" ")
-              for(var i=0;i<arr.length;i++){
-                arr[i] = arr[i][0].toUpperCase() + arr[i].slice(1)
-              }
-              return arr.join(" ")
+            if (info == undefined) {alert ("Your filenames are not following our naming convention")}
+            else {
+                const changeToPascalCase =(s)=>{
+                let arr = s.split(" ")
+                for(var i=0;i<arr.length;i++){
+                    arr[i] = arr[i][0].toUpperCase() + arr[i].slice(1)
+                }
+                return arr.join(" ")
+                }
+                const par = info.particle
+                const particle = {
+                volc_name: volcName,
+                id: par.id,
+                mag: par.magnification,
+                gsLow: par.gsLow,
+                gsUp: par.gsUp,
+                multi_focus: par.multi_focus,
+                image_name: image_name,
+                image_path:image_path
+                }
+                if(par.index){ particle.index = par.index}
+                if(par.particleType){ particle.pType = changeToPascalCase(par.particleType)}
+                if(par.glassyType){ particle.gType = changeToPascalCase(par.glassyType)}
+                if(par.crystallinity){ particle.crys = changeToPascalCase(par.crystallinity)}
+                if(par.alteration){ particle.alteration = changeToPascalCase(par.alteration)}
+                if(par.shape){ particle.shape = changeToPascalCase(par.shape)}
+                newData.push(particle)
             }
-            const parInfo = info.particle
-            const particle = {
-              volc_name: volcName,
-              id: parInfo.id,
-              mag: parInfo.magnification,
-              gsLow: parInfo.gsLow,
-              gsUp: parInfo.gsUp,
-              multi_focus: parInfo.multi_focus,
-              image_name: image_name,
-              image_path:image_path
-            }
-            if(parInfo.index){ particle.index = parInfo.index}
-            if(parInfo.particleType){ particle.pType = changeToPascalCase(parInfo.particleType)}
-            if(parInfo.glassyType){ particle.gType = changeToPascalCase(parInfo.glassyType)}
-            if(parInfo.crystallinity){ particle.crys = changeToPascalCase(parInfo.crystallinity)}
-            if(parInfo.alteration){ particle.alteration = changeToPascalCase(parInfo.alteration)}
-            if(parInfo.shape){ particle.shape = changeToPascalCase(parInfo.shape)}
-            newData.push(particle)
-          }
+         }
           setData(newData)
         }
       }
-    }
-    const groupData = (data)=>{
-      let group = {}
-      var idCounter = 0
-      for (var i=0;i<data.length;i++){
-        const breakDown = data[i].image_name.split("_")
-        if(breakDown.length==1 || isNaN(breakDown[breakDown.length-1])){
-          const key = data[i].image_name
-            if(group[key]!==undefined){
-              group[key].dataList[0] = data[i]
-            }else{
-              group[key]={}
-              group[key].id = idCounter++
-              group[key].dataList={
-                "0": data[i]
-              }
-            }
-        }else{
-          const key = breakDown.slice(0,-1).join("_")
-          const index = breakDown[breakDown.length-1]
-          if(group[key]!==undefined){
-            group[key].dataList[index] = data[i]
-          }else{
-            group[key]={}
-              group[key].id = idCounter++
-              group[key].dataList={}
-              group[key].dataList[index] = data[i]
-          }
-        }
-      }
-      return group
     }
     const [failed,setFailed] = useState(false)
     const onSubmit = async(event) => {
@@ -333,34 +305,29 @@ function ContributePage(props) {
         if(checkValidData()){
           setIsLoading(true)
           if(followConvention==false){
-            const group = groupData(data)
-            console.log(group)
-            Object.keys(group).map(key=>{
-              Object.keys(group[key].dataList).map(par=>{
-                const parInfo = group[key].dataList[par]
+            data.map(par=>{
                 const particle ={
                   volc_num: volcID,
-                  volc_name: parInfo.volc_name,
+                  volc_name: par.volc_name,
                   afe_id: 1,
                   sample_id:1,
-                  id:group[key].id,
-                  index:par,
+                  id:0,
+                  index:0,
                   instrument:"b",
-                  imgURL:parInfo.image_path,
-                  gsLow:parInfo.gsLow,
-                  gsUp: parInfo.gsUp,
-                  multi_focus: false,
-                  magnification: parInfo.mag,
-                  particleType: parInfo.pType, 
-                  glassyType: parInfo.gType,
-                  crystallinity:parInfo.crys, 
-                  alteration: parInfo.alteration, 
-                  shape:parInfo.shape
+                  imgURL:par.image_path,
+                  gsLow:par.gsLow,
+                  gsUp: par.gsUp,
+                  multi_focus: true,
+                  magnification: par.mag,
+                  particleType: par.pType, 
+                  glassyType: par.gType,
+                  crystallinity:par.crys, 
+                  alteration: par.alteration, 
+                  shape:par.shape
                 }
                 axios.post("/volcanoes/particles/add", particle)
                   .catch(err=>console.log(err),setFailed(true))
                 })
-              })
             }else if(followConvention == true){
               for(var i=0;i<data.length;i++){
                 const particle={
@@ -436,10 +403,6 @@ function ContributePage(props) {
                 <FileUpload refreshFunction={updateImages}/>
             </div>
               <Grid container spacing={2}>
-              <Grid xs={12} item>
-                  <Typography style={{color:"red"}}>*Note: If different images have the same filename but with different index number at the end, we will assume those are come from the same particle (No index means index 0). Otherwise, we will assume every image is come from different particles. </Typography>
-                  <Typography style={{color:"red"}}> Example: par1_1.jpeg, par1_2.jpeg, par1_3.jpeg, par2.jpeg</Typography>
-                </Grid>
                 <Grid xs={12} item>
                 <Autocomplete
                   disablePortal
@@ -541,6 +504,7 @@ function ContributePage(props) {
                         type="number"
                         value={sampleLon}
                         onChange={onSampleLonChange}
+                        inputProps={{min:0,max:90}}
                         fullWidth 
                         required >
                     </TextField>
@@ -553,11 +517,7 @@ function ContributePage(props) {
                         type="number"
                         value={sampleLat}
                         onChange={onSampleLatChange}
-                        InputProps={{
-                          inputProps: { 
-                              max: 90, min: 0 
-                          }
-                        }}
+                        inputProps={{min:0,max:90}}
                         fullWidth 
                         required >
                     </TextField>

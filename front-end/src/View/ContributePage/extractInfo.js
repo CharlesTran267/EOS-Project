@@ -1,5 +1,8 @@
 export default function extractInfo(file,volc_num,filepath){
     const breakDown = file.split('_')
+    if(breakDown.length!=7) {return undefined}
+    if(breakDown[6].length!=8) {return undefined}
+    if(breakDown[4][1]== undefined) {return undefined}
     const afe = {
         volc_num: volc_num,
         afe_id: breakDown[0].slice(-1)
@@ -93,6 +96,9 @@ export default function extractInfo(file,volc_num,filepath){
             }
             
     }
+    Object.keys(particle).map(key=>{
+        if(particle.key == undefined) return undefined
+    })
     const info = {
         afe: afe,
         sample: sample,

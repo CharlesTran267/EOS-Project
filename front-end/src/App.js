@@ -11,6 +11,7 @@ import LoginPage from './View/LoginPage/LoginPage';
 import RegisterPage from './View/RegisterPage/RegisterPage';
 import ProfilePage from './View/ProfilePage/ProfilePage';
 import ContributePage from './View/ContributePage/ContributePage.js';
+import Multifocus from './View/ContributePage/Multifocus/Multi_focus';
 import GralParDetailPage from './View/Par_Gral_DetailPage/GralParDetailPage'
 function App() {
   const classes = AppStyles();
@@ -27,7 +28,8 @@ function App() {
             <Route  path="/par_gral/par_gralDetailPage" component={Auth(GralParDetailPage,null)}/>
             <Route path={'/database/catalogue'} component={Auth(CataloguePage,null)}/>
             <Route path={'/home'} component={Auth(Home,null)}/>
-            <Route path={'/contribute'} component={Auth(ContributePage,null)}/>
+            <Route path={'/contribute/binocular'} component={Auth(ContributePage,null)}/>
+            <Route path={'/contribute/multifocus'} component={Auth(Multifocus,null)}/>
             <Route path="/login" component={Auth(LoginPage,false)}/>
             <Route path="/register" component={Auth(RegisterPage,false)}/>
             <Route path={'/'}>

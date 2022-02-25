@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import moment from "moment";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -80,7 +81,7 @@ function RegisterPage(props) {
               alert(response.payload.err.errmsg)
             }
           })
-
+          // axios.post("/mail/sendMail",{email:dataToSubmit.email, name: dataToSubmit.name})
           setSubmitting(false);
         }, 500);
       }}
