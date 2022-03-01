@@ -14,11 +14,13 @@ import DatePicker from '@mui/lab/DatePicker';
 import DatePickerCustom from './DatePickerCustom.js';
 import extractInfo from './extractInfo.js';
 const gsValue = [0,1,2,3,4];
-const pTypes  = ["Pyroxene","Plagioclase","Other minerals","Altered material","Glassy"];
-const gTypes = ["Juvenile","Non-juvenile"];
-const crystallinity = ["Low Transparent","Low Black", "Mid", "High"];
-const alterations = ["None", "Slight", "Moderate"];
-const shapes = ["Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy"]
+const bComps  = ["Free Crystal","Altered Material","Lithic","Juvenile"];
+const jTypes = ["Recycled Juvenile","Hydrothermally Altered Juvenile","Juvenile"]
+const cTypes = ["Plagioclase","Pyroxene", "Amfibole","Sulfur"]
+const aTypes = ["Weathered Material", "Hydrothermally Altered Material"];
+const crystallinity = ["Low Black", "Low Transparent", "Mid Black", "Mid Transparent","High Black", "High Transparent"];
+const alterations = ["None", "Slight", "Moderate", "High"];
+const shapes = ["Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy","Pumice"]
 const dateFormatValues = ["mm/dd/yyyy", "mm/yyyy", "Year only", "Years BP", "Unknown"]
 const booleanList = {
   "Yes": true,
@@ -60,7 +62,6 @@ function ContributePage(props) {
     const [afeFormat, setAFEFormat] = useState("")
     const [afeDate,setAFEDate] = useState(null)
     const [afeYearsBP, setAFEYearsBP] = useState()
-
     const [sampleFormat, setSampleFormat] = useState("")
     const [sampleDate,setSampleDate] = useState(null)
     const [sampleYearsBP, setSampleYearsBP] = useState()
@@ -68,12 +69,20 @@ function ContributePage(props) {
       date:null,
       helperText:""
     })
-    const [sampleLon,setSampleLon] = useState()
-    const [sampleLat,setSampleLat] = useState()
+    const [eStartValid,setEStartValid] =useState({
+      error:false,
+      helperText:""
+    })
     const [eEndDate, setEEnd] = useState({
       date:null,
       helperText:""
     })
+    const [eEndValid,setEEndValid] =useState({
+      error:false,
+      helperText:""
+    })
+    const [sampleLon,setSampleLon] = useState()
+    const [sampleLat,setSampleLat] = useState()
     const [followConvention, setFollow] = useState(null)
     const [followValid,setFollowValid] = useState({
       error:false,
@@ -94,15 +103,19 @@ function ContributePage(props) {
         error:false,
         helperText:""
     })
-    const [pType,setPType] = useState("");
-    const [gType,setGType] = useState('');
+    const [bComp,setBComp] = useState("");
+    const [cType,setCType] = useState("")
+    const [aType,setAType] = useState("")
+    const [jType,setJType] = useState("")
     const [crys,setCrys] = useState("");
     const [alteration, setAlt] = useState("");
     const [shape, setShape] = useState('');
     const [buttonClicked, setButtonClicked] = useState(false)
     const [data,setData] = useState([])
+    const [afeList,setAFEList] = useState([])
+    const [sampleList, setSampleList] = useState([])
     const [Images, setImages] = useState([])
-
+    const [addable, setAddable] = useState(false)
     useEffect(()=>{
       console.log(volcID,afeDate)
       if(volcID && afeDate){
@@ -173,11 +186,17 @@ function ContributePage(props) {
     const onGsUpChange = (event)=>{
       setGsUp(event.target.value)
     } 
-    const onPTypeChange = (event)=>{
-      setPType(event.target.value)
+    const onBCompChange = (event)=>{
+      setBComp(event.target.value)
     } 
-    const onGTypeChange = (event)=>{
-      setGType(event.target.value)
+    const onCTypeChange = (event)=>{
+      setCType(event.target.value)
+    } 
+    const onATypeChange = (event)=>{
+      setAType(event.target.value)
+    } 
+    const onJTypeChange = (event)=>{
+      setJType(event.target.value)
     } 
     const onCrysChange = (event)=>{
       setCrys(event.target.value)
@@ -207,6 +226,56 @@ function ContributePage(props) {
       if(!volcName){setVolcValid(nullError);valid=false}
       else{
         setVolcValid(isValid);
+      }
+      if(eStartDate.date){
+        if(eEndDate.date){
+          if(eStartDate.date>eEndDate.date){
+            setEStartValid({
+              error:true,
+              helperText:"Eruption Start Date cannot be later than End Date"
+            })
+            valid=false
+          }else{
+            if(afeDate>=eStartDate.date){
+              setEStartValid(isValid)
+            }else{
+              setEStartValid({
+                error:true,
+                helperText:"Eruption Start Date cannot be after Ash Emission Date"
+              })
+              valid=false
+            }
+            if(afeDate<=eEndDate.date){
+              setEEndValid(isValid)
+            }else{
+              setEEndValid({
+                error:true,
+                helperText:"Eruption End Date cannot be before Ash Emission Date"
+              })
+              valid=false
+            }
+          }
+        }else{
+          if(afeDate.date>eStartDate.date){
+            setEStartValid({
+              error:true,
+              helperText:"Eruption Start Date cannot be after Ash Emission Date"
+            })
+            valid=false
+          }else{
+            setEStartValid(isValid)
+          }
+        }
+      }else{
+        if(eEndDate.date){
+          setEEndValid({
+            error:true,
+            helperText:"Please fill Start Date first!"
+          })
+          valid=false
+        }else{
+          setEEndValid(isValid)
+        }
       }
       if(followConvention==null){setFollowValid(nullError);valid=false}
       else{
@@ -248,8 +317,7 @@ function ContributePage(props) {
                 mag: magnification,
                 gsLow: gsLow,
                 gsUp: gsUp,
-                pType: pType,
-                gType: gType,
+                bComp: bComp,
                 crys: crys,
                 alteration: alteration,
                 shape: shape,
@@ -262,37 +330,50 @@ function ContributePage(props) {
           setData(newData)
         }else if (followConvention==true){
           let newData = []
+          let newAFEList = []
+          let newSampleList = []
           for(var i=0;i<Images.length;i++){
             const image_path = Images[i]
             const image_name = Images[i].split("_").slice(1).join("_").slice(0,-4)
             const info = extractInfo(image_name,volcID,image_path)
-            const changeToPascalCase =(s)=>{
-              let arr = s.split(" ")
-              for(var i=0;i<arr.length;i++){
-                arr[i] = arr[i][0].toUpperCase() + arr[i].slice(1)
-              }
-              return arr.join(" ")
+            console.log(info)
+            if (info == undefined) {alert (`Your file ${image_name} are not following our naming convention`)}
+            else {
+                const changeToPascalCase =(s)=>{
+                let arr = s.split(" ")
+                for(var i=0;i<arr.length;i++){
+                    arr[i] = arr[i][0].toUpperCase() + arr[i].slice(1)
+                }
+                return arr.join(" ")
+                }
+                const par = info.particle
+                newAFEList.push(info.afe)
+                newSampleList.push(info.sample)
+                const particle = {
+                volc_name: volcName,
+                id: par.id,
+                mag: par.magnification,
+                gsLow: par.gsLow,
+                gsUp: par.gsUp,
+                multi_focus: par.multi_focus,
+                image_name: image_name,
+                image_path:image_path
+                }
+                if(par.index){ particle.index = par.index}
+                if(par.basic_component){ particle.bComp = changeToPascalCase(par.basic_component)}
+                if(par.juvenile_type){ particle.jType = changeToPascalCase(par.juvenile_type)}
+                if(par.crystal_type){ particle.cType = changeToPascalCase(par.crystal_type)}
+                if(par.altered_material_type){ particle.aType = changeToPascalCase(par.altered_material_type)}
+                if(par.crystallinity_and_color){ particle.crys = changeToPascalCase(par.crystallinity_and_color)}
+                if(par.alteration_degree){ particle.alteration = changeToPascalCase(par.alteration_degree)}
+                if(par.shape){ particle.shape = changeToPascalCase(par.shape)}
+                newData.push(particle)
+                
             }
-            const parInfo = info.particle
-            const particle = {
-              volc_name: volcName,
-              id: parInfo.id,
-              mag: parInfo.magnification,
-              gsLow: parInfo.gsLow,
-              gsUp: parInfo.gsUp,
-              multi_focus: parInfo.multi_focus,
-              image_name: image_name,
-              image_path:image_path
-            }
-            if(parInfo.index){ particle.index = parInfo.index}
-            if(parInfo.particleType){ particle.pType = changeToPascalCase(parInfo.particleType)}
-            if(parInfo.glassyType){ particle.gType = changeToPascalCase(parInfo.glassyType)}
-            if(parInfo.crystallinity){ particle.crys = changeToPascalCase(parInfo.crystallinity)}
-            if(parInfo.alteration){ particle.alteration = changeToPascalCase(parInfo.alteration)}
-            if(parInfo.shape){ particle.shape = changeToPascalCase(parInfo.shape)}
-            newData.push(particle)
           }
           setData(newData)
+          setAFEList(newAFEList)
+          setSampleList(newSampleList)
         }
       }
     }
@@ -341,79 +422,96 @@ function ContributePage(props) {
                 const particle ={
                   volc_num: volcID,
                   volc_name: parInfo.volc_name,
-                  afe_id: 1,
+                  afe_id: "unknown",
                   sample_id:1,
                   id:group[key].id,
                   index:par,
-                  instrument:"b",
+                  instrument:"binocular",
                   imgURL:parInfo.image_path,
                   gsLow:parInfo.gsLow,
                   gsUp: parInfo.gsUp,
                   multi_focus: false,
                   magnification: parInfo.mag,
-                  particleType: parInfo.pType, 
-                  glassyType: parInfo.gType,
-                  crystallinity:parInfo.crys, 
-                  alteration: parInfo.alteration, 
-                  shape:parInfo.shape
+                  basic_component: parInfo.bComp.toLowerCase(), 
+                  crystallinity_and_color:parInfo.crys.toLowerCase(), 
+                  alteration_degree: parInfo.alteration.toLowerCase(), 
+                  shape:parInfo.shape.toLowerCase()
                 }
+                if(parInfo.jType) particle.juvenile_type = parInfo.jType.toLowerCase();
+                if(parInfo.cType) particle.crystal_type = parInfo.cType.toLowerCase();
+                if(parInfo.aType) particle.altered_material_type = parInfo.aType.toLowerCase();
                 axios.post("/volcanoes/particles/add", particle)
                   .catch(err=>console.log(err),setFailed(true))
                 })
               })
             }else if(followConvention == true){
               for(var i=0;i<data.length;i++){
+                console.log(data[i])
                 const particle={
                   volc_num: volcID,
                   volc_name: data[i].volc_name,
-                  afe_id: 1,
-                  sample_id:1,
+                  afe_id: afeList? afeList[i].afe_id: "unknown",
+                  sample_id:sampleList? sampleList[i].sample_id:"unknown",
                   id: data[i].id,
                   index: data[i].index,
-                  instrument:"b",
+                  instrument:"binocular",
                   imgURL:data[i].image_path,
                   gsLow:data[i].gsLow,
                   gsUp: data[i].gsUp,
                   multi_focus: data[i].multi_focus,
                   magnification: data[i].mag,
-                  particleType: data[i].pType, 
-                  glassyType: data[i].gType,
-                  crystallinity:data[i].crys, 
-                  alteration: data[i].alteration, 
-                  shape:data[i].shape
+                  basic_component: data[i].bComp.toLowerCase(), 
                 }
+                if(data[i].crys) particle.crystallinity_and_color = data[i].crys.toLowerCase();
+                if(data[i].alteration) particle.alteration_degree = data[i].alteration.toLowerCase();
+                if(data[i].shape) particle.shape = data[i].shape.toLowerCase();
+                if(data[i].jType) particle.juvenile_type = data[i].jType.toLowerCase();
+                if(data[i].cType) particle.crystal_type = data[i].cType.toLowerCase();
+                if(data[i].aType) particle.altered_material_type = data[i].aType.toLowerCase();
+                console.log(particle)
                 axios.post("/volcanoes/particles/add", particle)
                   .catch(err=>console.log(err),setFailed(true))
+                if (afeList){
+                const afe = {
+                  volc_num : volcID,
+                  afe_id : afeList[i].afe_id,
+                }
+                if(afeDate) afe.afe_date = afeDate
+                if(afeYearsBP) afe.yearsBP = afeYearsBP
+                console.log(afe)
+                axios.post("/volcanoes/afes/add",afe)
+                 .catch(err=> console.log(err),setFailed(true))}
+                if(sampleList){
+                  const sample={
+                    volc_num: volcID,
+                    afe_id: sampleList[i].afe_id,
+                    sample_id: sampleList[i].sample_id,
+                  }
+                  if(sampleDate) {sample.sample_date = sampleDate}
+                  if (sampleLat) {sample.sample_loc_lat = sampleLat}
+                  if (sampleLon) {sample.sample_loc_lon = sampleLon}
+                  console.log(sample)
+                  axios.post("/volcanoes/samples/add",sample)
+                  .catch(err=> console.log(err),setFailed(true)) 
+                }
               }
             }
           }
-          if(afeDate){
-            const afe = {
-              afe_id:1,
-              volc_num:volcID,
-              volc_name:volcName,
-              afe_date:afeDate,
-            }
-            if(afeYearsBP) afe.yearsBP = afeYearsBP
-            axios.post("/volcanoes/afes/add",afe)
-            .catch(err=> console.log(err),setFailed(true))
-          }
-          if(sampleDate || sampleLat || sampleLon){
-            const sample={
+          if(addable){
+            const eruption={
+              in_GVP: false,
+              ed_stime: eStartDate.date,
               volc_num: volcID,
-              afe_id:1,
-              sample_id:1,
             }
-            if(sampleDate) {sample.sample_date = sampleDate}
-            if (sampleLat) {sample.sample_loc_lat = sampleLat}
-            if (sampleLon) {sample.sample_loc_lon = sampleLon}
-            axios.post("/volcanoes/samples/add",sample)
-            .catch(err=> console.log(err),setFailed(true)) 
+            if(eEndDate.date) {eruption.ed_etime = eEndDate.date}
+            console.log(eruption)
+            axios.post("/volcanoes/eruptions/add",eruption)
+            .catch(err=> console.log(err),setFailed(true))
           }
           axios.post("/upload/mesureTool",{len:Images.length}).catch(err=>console.log(err))
           setIsLoading(false);
           if(!failed) {
-            navigate('/database/catalogue')
+            // navigate('/database/catalogue')
           }
           else{
             return alert("Upload failed! Please try again!")
@@ -477,44 +575,48 @@ function ContributePage(props) {
                 </Grid>
                 <Grid xs={12} sm={6} item>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
+                <DatePicker
                     label="Eruption Start Date"
                     value={eStartDate.date}
                     onChange={(newValue)=>{
                       setEStart({...eStartDate,date:newValue.toISOString().slice(0,10)}) //change format date
                     }}
-                    readOnly="true"
+                    readOnly={!addable}
                     renderInput={(params) => 
                     <TextField
                       {...params}
+                      error={eStartValid.error}
                       variant="outlined" 
                       InputLabelProps={{
                         shrink: true
                       }}
                       helperText={!eStartDate.date?
                         (<div>
-                          <p style={{display:"inline",color:"red"}}>{eStartDate.helperText}</p>
-                        </div>):null}
+                          <p style={{display:"inline",color:"red"}}>{eStartDate.helperText}.</p>
+                          {eStartDate.helperText?<p style={{display:"inline",color:"#0291c9",cursor:"pointer",textDecoration:"underline"}} onClick={()=>setAddable(true)}> Add a new Eruption</p>:null}
+                        </div>):eStartValid.helperText}
                       fullWidth />}
                   />
                 </LocalizationProvider>
                 </Grid>
                 <Grid xs={12} sm={6} item>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
+                <DatePicker
                     label="Eruption End Date" 
                     value={eEndDate.date}
                     onChange={(newValue)=>{
                       setEEnd({...eEndDate,date:newValue.toISOString().slice(0,10)}) //change format date
                     }}
-                    readOnly="true"
+                    readOnly={!addable}
                     renderInput={(params) => 
                     <TextField
                       {...params}
+                      error={eEndValid.error}
                       variant="outlined" 
                       InputLabelProps={{
                         shrink: true
                       }}
+                      helperText={eEndValid.helperText}
                       fullWidth />}
                   />
                 </LocalizationProvider>
@@ -536,19 +638,18 @@ function ContributePage(props) {
                 <Grid item xs={12} sm={6}>
                     <TextField 
                         placeholder="Enter number from 0 to 90" 
-                        label="Collection Location (longitude)" 
+                        label="Collection Location Longitude" 
                         variant="outlined" 
                         type="number"
                         value={sampleLon}
                         onChange={onSampleLonChange}
-                        fullWidth 
-                        required >
+                        fullWidth>
                     </TextField>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <TextField 
                         placeholder="Enter number from 0 to 90" 
-                        label="Collection Location (latitude)" 
+                        label="Collection Location Latitude" 
                         variant="outlined" 
                         type="number"
                         value={sampleLat}
@@ -558,8 +659,7 @@ function ContributePage(props) {
                               max: 90, min: 0 
                           }
                         }}
-                        fullWidth 
-                        required >
+                        fullWidth>
                     </TextField>
                 </Grid>
                 <Grid xs ={12}  item>
@@ -635,19 +735,64 @@ function ContributePage(props) {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <TextField 
-                        label="Particle Type" 
+                        label="Basic Component" 
                         variant="outlined" 
                         select
-                        value={pType}
-                        onChange={onPTypeChange}
+                        value={bComp}
+                        onChange={onBCompChange}
                         fullWidth 
                         optional >
-                            {pTypes.map(item => (
+                            {bComps.map(item => (
                            <MenuItem key = {item} value={item}>{item} </MenuItem>
                             ))}
                     </TextField>
                 </Grid>
+                {bComp == "Free Crystal"?
                 <Grid item xs={12} sm={6}>
+                    <TextField 
+                        label="Crystal Type" 
+                        variant="outlined" 
+                        select
+                        value={cType}
+                        onChange={onCTypeChange}
+                        fullWidth 
+                        optional >
+                            {cTypes.map(item => (
+                           <MenuItem key = {item} value={item}>{item} </MenuItem>
+                            ))}
+                    </TextField>
+                </Grid>
+                :bComp == "Altered Material"?
+                <Grid item xs={12} sm={6}>
+                  <TextField 
+                      label="Altered Material Type" 
+                      variant="outlined" 
+                      select
+                      value={aType}
+                      onChange={onATypeChange}
+                      fullWidth 
+                      optional >
+                          {aTypes.map(item => (
+                        <MenuItem key = {item} value={item}>{item} </MenuItem>
+                          ))}
+                  </TextField>
+                </Grid>
+                :bComp == "Juvenile"?
+                <Grid item xs={12} sm={6}>
+                  <TextField 
+                      label="Juvenile Type" 
+                      variant="outlined" 
+                      select
+                      value={jType}
+                      onChange={onJTypeChange}
+                      fullWidth 
+                      optional >
+                          {jTypes.map(item => (
+                        <MenuItem key = {item} value={item}>{item} </MenuItem>
+                          ))}
+                  </TextField>
+                </Grid>:<Grid item xs ={12} sm={6}> </Grid>}
+                <Grid item xs={12} sm={4}>
                 <TextField 
                         label="Shape" 
                         variant="outlined" 
@@ -663,21 +808,7 @@ function ContributePage(props) {
                 </Grid>
                 <Grid item xs={12} sm={4}>
                 <TextField 
-                        label="Glassy Type" 
-                        variant="outlined" 
-                        select
-                        value={gType}
-                        onChange={onGTypeChange}
-                        fullWidth 
-                        optional >
-                            {gTypes.map(item => (
-                            <MenuItem key = {item} value={item}>{item} </MenuItem>
-                            ))}
-                    </TextField>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                <TextField 
-                        label="Crystallinity" 
+                        label="Crystallinity and Color" 
                         variant="outlined" 
                         select
                         value={crys}
@@ -691,7 +822,7 @@ function ContributePage(props) {
                 </Grid>
                 <Grid item xs={12} sm={4}>
                 <TextField 
-                        label="Alteration" 
+                        label="Alteration Degree" 
                         variant="outlined" 
                         select
                         value={alteration}

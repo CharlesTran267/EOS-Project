@@ -1,20 +1,20 @@
 export default function extractInfo(file,volc_num,filepath){
     const breakDown = file.split('_')
-    if(breakDown.length!=7) {return undefined}
+    if(breakDown.length!=8) {return undefined}
     if(breakDown[6].length!=8) {return undefined}
     if(breakDown[4][1]== undefined) {return undefined}
     const afe = {
         volc_num: volc_num,
-        afe_id: breakDown[0].slice(-1)
+        afe_id: breakDown[0]
     }
     const sample = {
         volc_num: volc_num,
-        afe_id: breakDown[0].slice(-1),
-        sample_id: breakDown[1]
+        afe_id: breakDown[0],
+        sample_id: parseInt(breakDown[1],10)
     }
     const particle = {
         volc_num: volc_num,
-        afe_id: breakDown[0].slice(-1),
+        afe_id: breakDown[0],
         sample_id: breakDown[1],
         id: breakDown[3],
         batch: breakDown[2],
@@ -32,25 +32,29 @@ export default function extractInfo(file,volc_num,filepath){
     }
     const label = breakDown[7]
     switch(label){
-        case "pg": particle.particleType = "free crystal"; particle.crystalType = "plagioclase";break;
-        case "px": particle.particleType = "free crystal";particle.crystalType = "pyroxene";break;
-        case "amf": particle.particleType = "free crystal";particle.crystalType = "amfibole";break;
-        case "su": particle.particleType = "free crystal";particle.crystalType = "sulfide";break;
-        case "ol": particle.particleType = "free crystal";particle.crystalType = "olivine";break;
+        case "pg": particle.basic_component = "free crystal"; particle.crystal_type = "plagioclase";break;
+        case "px": particle.basic_component = "free crystal";particle.crystal_type = "pyroxene";break;
+        case "amf": particle.basic_component = "free crystal";particle.crystal_type = "amfibole";break;
+        case "su": particle.basic_component = "free crystal";particle.crystal_type = "sulfide";break;
+        case "ol": particle.basic_component = "free crystal";particle.crystal_type = "olivine";break;
         default: 
-            if(label[0]=='J'){
-                particle.particleType = "juvenile"
-                particle.glassyType = "juvenile"
-                switch(label.slice(1,5)){
-                    case "lctr": particle.crystallinity = "low transparent"; break;
-                    case "lcbl": particle.crystallinity = "low black"; break;
-                    case "mctr" : particle.crystallinity = "mid"; break;
-                    case "mcbl": particle.crystallinity = "mid"; break;
-                    case "hctr": particle.crystallinity = "high"; break;
-                    case "hcbl": particle.crystallinity = "high";break;
-                    default: particle.crystallinity = ""
+            if(label[0]=='J' || label[0] == "R" || label[0] == "H"){
+                particle.basic_component = "juvenile"
+                switch(label[0]){
+                    case "J": particle.juvenile_type = "juvenile"; break;
+                    case "R": particle.juvenile_type = "recycled juvenile"; break;
+                    case "H": particle.juvenile_type = "hydrothermally altered juvenile"; break;
                 }
-                switch(label.slice(6)){
+                switch(label.slice(1,5)){
+                    case "lctr": particle.crystallinity_and_color = "low crystallinity transparent"; break;
+                    case "lcbl": particle.crystallinity_and_color = "low crystallinity black"; break;
+                    case "mctr" : particle.crystallinity_and_color = "mid crystallinity transparent"; break;
+                    case "mcbl": particle.crystallinity_and_color = "mid crystallinity black"; break;
+                    case "hctr": particle.crystallinity_and_color = "high crystallinity transparent"; break;
+                    case "hcbl": particle.crystallinity_and_color = "high crystallinity black";break;
+                    default: particle.crystallinity_and_color = ""
+                }
+                switch(label.slice(5)){
                     case "b": particle.shape = "blocky";break;
                     case "f": particle.shape = "fluidal";break;
                     case "s": particle.shape = "spongy";break;
@@ -59,45 +63,44 @@ export default function extractInfo(file,volc_num,filepath){
                     case "p": particle.shape = "pumice";break;
                     default: particle.shape = "";break;
                 }
-            }else if(label.slice(0,3)=="NJli"){
-                particle.particleType = "altered material"
-                particle.glassyType = "non-juvenile";
+            }else if(label.slice(0,3)=="NJhy"){
+                particle.basic_component = "altered material"
                 if(label=="NJliagg") {
                     particle.shape = "aggregates"
                 }else{
                     switch(label.slice(4)){
-                        case "n": particle.alteration = "none"; break;
-                        case "l": particle.alteration = "slight";break;
-                        case "m": particle.alteration = "moderate"; break;
-                        case "h": particle.alteration = "high"; break;
-                        default : particle.alteration = ""
+                        case "n": particle.alteration_degree = "none"; particle.altered_material_type = "weathered material"; break;
+                        case "l": particle.alteration_degree = "slight"; particle.altered_material_type = "hydrothermally altered material";break;
+                        case "m": particle.alteration_degree = "moderate"; particle.altered_material_type = "hydrothermally altered material"; break;
+                        case "h": particle.alteration_degree = "high"; particle.altered_material_type = "hydrothermally altered material"; break;
+                        default : particle.alteration_degree = ""
                     }
                 }
             }
             else{
-                particle.particleType = "lithics"
+                particle.basic_component = "lithic"
                 particle.glassyType = "non-juvenile";
                 switch(label.slice(2,6)){
-                    case "lctr": particle.crystallinity = "low transparent"; break;
-                    case "lcbl": particle.crystallinity = "low black"; break;
-                    case "mctr" : particle.crystallinity = "mid"; break;
-                    case "mcbl": particle.crystallinity = "mid"; break;
-                    case "hctr": particle.crystallinity = "high"; break;
-                    case "hcbl": particle.crystallinity = "high";break;
-                    default: particle.crystallinity = ""
+                    case "lctr": particle.crystallinity_and_color = "low transparent"; break;
+                    case "lcbl": particle.crystallinity_and_color = "low black"; break;
+                    case "mctr" : particle.crystallinity_and_color = "mid"; break;
+                    case "mcbl": particle.crystallinity_and_color = "mid"; break;
+                    case "hctr": particle.crystallinity_and_color = "high"; break;
+                    case "hcbl": particle.crystallinity_and_color = "high";break;
+                    default: particle.crystallinity_and_color = ""
                 }
                 switch(label.slice(-1)){
-                    case "n": particle.alteration = "none"; break;
-                    case "l": particle.alteration = "slight";break;
-                    case "m": particle.alteration = "moderate"; break;
-                    case "h": particle.alteration = "high"; break;
-                    default : particle.alteration = ""
+                    case "n": particle.alteration_degree = "none"; break;
+                    case "l": particle.alteration_degree = "slight";break;
+                    case "m": particle.alteration_degree = "moderate"; break;
+                    case "h": particle.alteration_degree = "high"; break;
+                    default : particle.alteration_degree = ""
                 }
             }
             
     }
     Object.keys(particle).map(key=>{
-        if(particle.key == undefined) return undefined
+        if(particle[key] == undefined) return undefined
     })
     const info = {
         afe: afe,

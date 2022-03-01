@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const eruptionSchema = new Schema ({
-    vd_num:{type:Number,required:true},
+    volc_num:{type:Number,required:true},
+    in_GVP:{type:Boolean},
     ed_code:{type:String},
     ed_num:{type:Number},
     ed_name:{type:String},

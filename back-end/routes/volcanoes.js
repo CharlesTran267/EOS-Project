@@ -82,7 +82,7 @@ router.route('/getEruptions').get((req, res) => {
 });
 
 router.route('/eruptions/add').post((req, res) => {
-  if(req.body.start<=req.body.end){
+  if(req.body.ed_stime<=req.body.ed_etime){
     const newEruption = new Eruption(req.body);
     newEruption.save()
     .then(() => res.json('Eruption added!'))

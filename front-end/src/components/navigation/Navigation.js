@@ -40,7 +40,7 @@ export default function Navigation() {
             className={classes.navBtn}
             color='inherit'
             onClick={() => handleOnClick('/home')}
-          >
+          >   
             Home
           </Button>
           <Button

@@ -80,7 +80,7 @@ function FileUpload(props) {
                                 <IconButton onClick={() => onDelete(image)} style={{position:"absolute",top:2,right:10, zIndex:1, width:"12px", height:"12px"}}>
                                     <RemoveCircleIcon sx={{ color: "#FF0D86" }}/>
                                 </IconButton>
-                                <img className={classes.image} src={`${image}`} alt={`Img-${index}`}/>
+                                <img className={classes.image} src={`/${image}`} alt={`Img-${index}`}/>
                             </span>
                         )):null}
                     </div>

@@ -11,7 +11,7 @@ export default function Table({data,setData}){
             return true
         }
     },{
-        title: "GS Lower Bound", field:"gsLow",lookup:{1:"1",2:"2",3:"3",4:"4"},type:"numeric", validate: rowData =>{
+        title: "GS Lower Bound", field:"gsLow",lookup:{0:"0",1:"1",2:"2",3:"3",4:"4"},type:"numeric", validate: rowData =>{
             if(!rowData.gsLow) {return "Required"}
             return true
         }
@@ -21,19 +21,25 @@ export default function Table({data,setData}){
             return true
         }
     },{
-        title:"Particle Type", field:"pType", lookup:{"Pyroxene":"Pyroxene","Plagioclase":"Plagioclase","Other minerals":"Other minerals","Altered material":"Altered material","Glassy":"Glassy"}
+        title:"Basic Component", field:"bComp", lookup:{"Free Crystal":"Free Crystal","Altered Material":"Altered Material","Lithic":"Lithic","Juvenile":"Juvenile"}
         ,validate: rowData => ({ isValid: true, helperText: "Optional" })
     },{
-        title:"Glassy Type", field:"gType", lookup:{"Juvenile":"Juvenile","Non-juvenile":"Non-juvenile"}
+        title:"Juvenile Type", field:"jType", lookup:{"Recycled Juvenile":"Recycled Juvenile","Hydrothermally Altered Juvenile":"Hydrothermally Altered Juvenile","Juvenile":"Juvenile"}
         ,validate: rowData => ({ isValid: true, helperText: "Optional" })
     },{
-        title:"Crystallinity", field:"crys", lookup:{"Low Transparent":"Low Transparent", "Low Black":"Low Black", "Mid":"Mid", "High":"High"}
+        title:"Crystal Type", field:"cType", lookup:{"Plagioclase":"Plagioclase","Pyroxene":"Pyroxene","Amfibole":"Amfibole","Sulfur":"Sulfur"}
         ,validate: rowData => ({ isValid: true, helperText: "Optional" })
     },{
-        title:"Alteration", field:"alteration", lookup:{"None":"None", "Slight":"Slight","Moderate":"Moderate"}
+        title:"Altered Material Type", field:"aType", lookup:{"Weathered Material":"Weathered Material","Hydrothermally Altered Material":"Hydrothermally Altered Material"}
         ,validate: rowData => ({ isValid: true, helperText: "Optional" })
     },{
-        title:"Shape", field:"shape", lookup:{"Blocky":"Blocky", "Fluidal":"Fluidal", "Microtubular":"Microtubular", "Highly vesicular":"Highly vesicular", "Spongy":"Spongy"}
+        title:"Crystallinity and Color", field:"crys", lookup:{"Low Crystallinity Transparent":"Low Transparent", "Low Crystallinity Black":"Low Black", "Mid Crystallinity Transparent":"Mid Transparent","Mid Crystallinity Black":"Mid Black", "High Crystallinity Transparent":"High Transparent", "High Crystallinity Black":"High Black"}
+        ,validate: rowData => ({ isValid: true, helperText: "Optional" })
+    },{
+        title:"Alteration Degree", field:"alteration", lookup:{"None":"None", "Slight":"Slight","Moderate":"Moderate"}
+        ,validate: rowData => ({ isValid: true, helperText: "Optional" })
+    },{
+        title:"Shape", field:"shape", lookup:{"Blocky":"Blocky", "Fluidal":"Fluidal", "Microtubular":"Microtubular", "Highly vesicular":"Highly vesicular", "Spongy":"Spongy", "Pumice":"Pumice"}
         ,validate: rowData => ({ isValid: true, helperText: "Optional" })
     },{
         title: "Image name", field:"image_name", editable:"never"

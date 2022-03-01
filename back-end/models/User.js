@@ -26,6 +26,10 @@ const userSchema = mongoose.Schema({
         type:Number,
         default: 0 
     },
+    confirmed:{
+        type: Boolean,
+        default: false
+    },
     image: String,
     token : {
         type: String,

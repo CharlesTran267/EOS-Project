@@ -26,5 +26,5 @@
     "id":8,
     "choices":["Aleration","None", "Slight", "Moderate"]},
   "shape" :{"id": 9,
-    "choices":["Shape","Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy"]}
+    "choices":["Shape","Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy","Pumice"]}
 }
