@@ -200,7 +200,7 @@ function CatalogPage() {
             <h2 style={{fontWeight:700, fontSize: "30px", marginBottom:"10px"}}>Particle: </h2>
             <div style={{display: "flex",flexDirection:"row",flexWrap:"wrap"}}>
             {fetchedData[key].slice(0,20).map((ele)=>
-            ele.volc_num==357070?
+            ele.volc_num==2?
             <VolcanoCard
               info={ele}
               type={key}
