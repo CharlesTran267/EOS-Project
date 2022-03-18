@@ -38,7 +38,7 @@ export default function DatePickerCustom(props){
                 <Grid item xs={6}>
                     {props.dateFormat=="Years BP"?
                     <TextField 
-                        placeholder="Enter positive number only" 
+                        placeholder="Enter years before present" 
                         label={props.label}
                         variant="outlined" 
                         type="number"

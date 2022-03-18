@@ -6,6 +6,14 @@ let {Sample} = require('../models/sample');
 let {Particle} = require('../models/particle');
 
 // Volcano routes
+router.route('/renameVolcTable').post(async(req,res)=>{
+  await Volcano.updateMany({}, { "$rename": req.body }, function(err, blocks) {
+    if(err) { res.status(400).json("rename failed"); }
+    else{
+      res.json("rename successfully")
+    }
+});
+})
 router.route('/getVolcanoes').get((req, res) => {
   Volcano.find()
     .exec((err, volcanoes) => {
@@ -82,7 +90,7 @@ router.route('/getEruptions').get((req, res) => {
 });
 
 router.route('/eruptions/add').post((req, res) => {
-  if(req.body.ed_stime<=req.body.ed_etime){
+  if(!req.body.ed_starttime || !req.body.ed_endtime || req.body.ed_starttime<=req.body.ed_endtime){
     const newEruption = new Eruption(req.body);
     newEruption.save()
     .then(() => res.json('Eruption added!'))
@@ -117,7 +125,7 @@ router.get("/eruptions_by_id", (req, res) => {
 router.get("/eruption_by_date",(req,res)=>{
   let date = req.query.date;
   let volc = req.query.volc;
-  Eruption.find({vd_num:volc,ed_stime:{$lte: date},ed_etime:{$gte:date}})
+  Eruption.find({volc_num:volc,ed_stime:{$lte: date},ed_etime:{$gte:date}})
     .exec((err, eruption) => {
       if (err) return res.status(400).send(err)
       return res.status(200).send(eruption)

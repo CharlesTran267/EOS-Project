@@ -192,7 +192,7 @@ function CatalogPage() {
             <div>
             <h2 style={{fontWeight:700, fontSize: "30px", marginBottom:"10px"}}>Volcano: </h2>
             <VolcanoCard
-              info={fetchedData[key][1]}
+              info={fetchedData[key][0]}
               type={key}
             />
             </div>):null):(
@@ -200,7 +200,7 @@ function CatalogPage() {
             <h2 style={{fontWeight:700, fontSize: "30px", marginBottom:"10px"}}>Particle: </h2>
             <div style={{display: "flex",flexDirection:"row",flexWrap:"wrap"}}>
             {fetchedData[key].slice(0,20).map((ele)=>
-            ele.volc_num==2?
+            ele.volc_num==1?
             <VolcanoCard
               info={ele}
               type={key}

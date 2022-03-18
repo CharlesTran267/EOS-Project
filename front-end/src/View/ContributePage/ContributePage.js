@@ -117,8 +117,8 @@ function ContributePage(props) {
     const [Images, setImages] = useState([])
     const [addable, setAddable] = useState(false)
     useEffect(()=>{
-      console.log(volcID,afeDate)
       if(volcID && afeDate){
+        console.log(afeDate)
         axios.get(`/volcanoes/eruption_by_date?date=${afeDate}&volc=${volcID}`)
         .then(res=>{
           if(res.data.length!=0){
@@ -153,14 +153,22 @@ function ContributePage(props) {
     const onAFEFormatChange = (event)=>{
       setAFEFormat(event.target.value)
     }
-    const onAFEYearsBPChange = (event)=>{
-      setAFEYearsBP(event.target.value)
+    const onAFEYearsBPChange = (event)=>{    
+      let yearsBP = 0-Math.abs(event.target.value)
+      setAFEYearsBP(yearsBP)
+      var convertedDate = new Date()
+      convertedDate.setFullYear(convertedDate.getFullYear()+yearsBP)
+      setAFEDate(convertedDate)
     }
     const onSampleFormatChange = (event)=>{
       setSampleFormat(event.target.value)
     }
     const onSampleYearsBPChange = (event)=>{
-      setSampleYearsBP(event.target.value)
+      let yearsBP = 0-Math.abs(event.target.value)
+      setSampleYearsBP(yearsBP)
+      var convertedDate = new Date()
+      convertedDate.setFullYear(convertedDate.getFullYear()+yearsBP)
+      setSampleDate(convertedDate)
     }
     const onSampleLonChange = (event)=>{
       const value = event.target.value
@@ -210,9 +218,7 @@ function ContributePage(props) {
     const updateImages = (newImages) => {
         setImages(newImages)
     }
-    useEffect(()=>{
-        console.log(afeDate,eStartDate.date,eEndDate.date)
-    },[afeDate,eStartDate,eEndDate])
+
     const checkValidData = ()=>{
       let valid = true;
       const nullError={
@@ -477,8 +483,6 @@ function ContributePage(props) {
                   afe_id : afeList[i].afe_id,
                 }
                 if(afeDate) afe.afe_date = afeDate
-                if(afeYearsBP) afe.yearsBP = afeYearsBP
-                console.log(afe)
                 axios.post("/volcanoes/afes/add",afe)
                  .catch(err=> console.log(err),setFailed(true))}
                 if(sampleList){
@@ -490,7 +494,6 @@ function ContributePage(props) {
                   if(sampleDate) {sample.sample_date = sampleDate}
                   if (sampleLat) {sample.sample_loc_lat = sampleLat}
                   if (sampleLon) {sample.sample_loc_lon = sampleLon}
-                  console.log(sample)
                   axios.post("/volcanoes/samples/add",sample)
                   .catch(err=> console.log(err),setFailed(true)) 
                 }
