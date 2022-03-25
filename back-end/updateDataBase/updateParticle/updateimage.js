@@ -1,5 +1,5 @@
 
-const mesurement = require('./imageMesurement.json')
+const mesurement = require('../imageMesurement.json')
 const axios =  require('axios')
 
 Object.keys(mesurement).map(par=>{

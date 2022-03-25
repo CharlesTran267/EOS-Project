@@ -34,26 +34,13 @@ router.route('/:id').delete((req, res) => {
     .then(() => res.json('Volcano deleted.'))
     .catch(err => res.status(400).json('Error: ' + err));
 });
-router.get("/volcanoes_by_id", (req, res) => {
-  let type = req.query.type
-  let volcanoIds = req.query.id
+router.get("/volcano_by_number", (req, res) => {
+  let volc_num = req.query.volc_num
 
-  console.log("req.query.id", req.query.id)
-
-  if (type === "array") {
-      let ids = req.query.id.split(',');
-      volcanoIds = [];
-      volcanoIds = ids.map(item => {
-          return item
-      })
-  }
-
-  console.log("volcanoeIDs", volcanoIds)
-
-  Volcano.find({ 'id': { $in: volcanoIds } })
-      .exec((err, volcanoes) => {
+  Volcano.find({ 'volc_num': volc_num })
+      .exec((err, volcano) => {
           if (err) return res.status(400).send(err)
-          return res.status(200).send(volcanoes)
+          return res.status(200).send(volcano)
       })
 });
 // Volcano2 routes
@@ -92,7 +79,12 @@ router.route('/getEruptions').get((req, res) => {
 router.route('/eruptions/add').post((req, res) => {
   if(!req.body.ed_starttime || !req.body.ed_endtime || req.body.ed_starttime<=req.body.ed_endtime){
     const newEruption = new Eruption(req.body);
-    newEruption.save()
+    const query = {
+      volc_num: newEruption.volc_num,
+      ed_num: newEruption.ed_num
+    }
+    const options = {upsert:true, new:true, setDefaultsOnInsert: true}
+    AFE.findOneAndUpdate(query,newEruption,options)
     .then(() => res.json('Eruption added!'))
     .catch(err => res.status(400).json('Error: ' + err));
   }

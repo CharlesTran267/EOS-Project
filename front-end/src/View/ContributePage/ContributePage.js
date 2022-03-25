@@ -503,9 +503,10 @@ function ContributePage(props) {
           if(addable){
             const eruption={
               in_GVP: false,
-              ed_stime: eStartDate.date,
+              ed_num:1,
               volc_num: volcID,
             }
+            if(eStartDate.date) {eruption.ed_stime = eStartDate.date}
             if(eEndDate.date) {eruption.ed_etime = eEndDate.date}
             console.log(eruption)
             axios.post("/volcanoes/eruptions/add",eruption)

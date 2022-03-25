@@ -5,6 +5,7 @@ const volcanoSchema = new Schema({
   volc_cavw:{type:String},
   volc_num:{type:Number,required:true},
   volc_name:{type:String,required:true},
+  volc_code:{type:String},
   volc_name2:{type:String},
   volc_tzone:{type:String},
   volc_mcont:{type:String},

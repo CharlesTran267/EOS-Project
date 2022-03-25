@@ -11,7 +11,7 @@ import LoginPage from './View/LoginPage/LoginPage';
 import RegisterPage from './View/RegisterPage/RegisterPage';
 import ProfilePage from './View/ProfilePage/ProfilePage';
 import ContributePage from './View/ContributePage/ContributePage.js';
-import Multifocus from './View/ContributePage/Multi_focus.js';
+import Multifocus from './View/ContributePage/Multi_focus';
 import GralParDetailPage from './View/Par_Gral_DetailPage/GralParDetailPage'
 function App() {
   const classes = AppStyles();

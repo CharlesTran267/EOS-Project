@@ -38,6 +38,7 @@ export default function extractInfo(file,volc_num,filepath){
         case "su": particle.basic_component = "free crystal";particle.crystal_type = "sulfide";break;
         case "ol": particle.basic_component = "free crystal";particle.crystal_type = "olivine";break;
         default: 
+            console.log(label.slice(0,3))
             if(label[0]=='J' || label[0] == "R" || label[0] == "H"){
                 particle.basic_component = "juvenile"
                 switch(label[0]){
@@ -63,7 +64,7 @@ export default function extractInfo(file,volc_num,filepath){
                     case "p": particle.shape = "pumice";break;
                     default: particle.shape = "";break;
                 }
-            }else if(label.slice(0,3)=="NJhy"){
+            }else if(label.slice(0,4)=="NJhy"){
                 particle.basic_component = "altered material"
                 if(label=="NJliagg") {
                     particle.shape = "aggregates"
