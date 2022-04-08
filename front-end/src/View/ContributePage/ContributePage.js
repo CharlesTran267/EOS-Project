@@ -13,6 +13,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
 import DatePickerCustom from './DatePickerCustom.js';
 import extractInfo from './extractInfo.js';
+import { Menu } from 'antd';
 const gsValue = [0,1,2,3,4];
 const bComps  = ["Free Crystal","Altered Material","Lithic","Juvenile"];
 const jTypes = ["Recycled Juvenile","Hydrothermally Altered Juvenile","Juvenile"]
@@ -62,9 +63,11 @@ function ContributePage(props) {
     const [afeFormat, setAFEFormat] = useState("")
     const [afeDate,setAFEDate] = useState(null)
     const [afeYearsBP, setAFEYearsBP] = useState()
+    const [eruption,setEd] = useState()
     const [sampleFormat, setSampleFormat] = useState("")
     const [sampleDate,setSampleDate] = useState(null)
     const [sampleYearsBP, setSampleYearsBP] = useState()
+    const [eruptionList, setEList] = useState([])
     const [eStartDate, setEStart] = useState({
       date:null,
       helperText:""
@@ -118,28 +121,40 @@ function ContributePage(props) {
     const [addable, setAddable] = useState(false)
     useEffect(()=>{
       if(volcID && afeDate){
-        console.log(afeDate)
-        axios.get(`/volcanoes/eruption_by_date?date=${afeDate}&volc=${volcID}`)
+        console.log(afeDate,volcID)
+        axios.get(`/volcanoes/nearest_eruptions?afe_date=${afeDate}&volc=${volcID}`)
         .then(res=>{
-          if(res.data.length!=0){
-            setEStart({
-              date:res.data[0].ed_stime.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
-              helperText:""
+          // if(res.data.length!=0){
+          //   setEStart({
+          //     date:res.data[0].ed_stime.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
+          //     helperText:""
+          //   })
+          //   setEEnd({
+          //     date:res.data[0].ed_etime.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
+          //     helperText:""
+          //   })
+          // }else{
+          //   setEStart({
+          //     date:null,
+          //     helperText:"No Eruption Found"
+          //   })
+          //   setEEnd({
+          //     date:null,
+          //     helperText:""
+          //   })
+          // }
+          console.log(res.data)
+          let newEList = []
+          res.data.map(e=>{
+            newEList.push({
+              volc_num: e.volc_num,
+              ed_code : e.ed_code,
+              ed_stime: e.ed_stime,
+              ed_etime: e.ed_etime,
             })
-            setEEnd({
-              date:res.data[0].ed_etime.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
-              helperText:""
-            })
-          }else{
-            setEStart({
-              date:null,
-              helperText:"No Eruption Found"
-            })
-            setEEnd({
-              date:null,
-              helperText:""
-            })
-          }
+          })
+          newEList.push("Add new Eruption")
+          setEList(newEList)
         })
         .catch(err=>console.log(err))
       }
@@ -241,25 +256,6 @@ function ContributePage(props) {
               helperText:"Eruption Start Date cannot be later than End Date"
             })
             valid=false
-          }else{
-            if(afeDate>=eStartDate.date){
-              setEStartValid(isValid)
-            }else{
-              setEStartValid({
-                error:true,
-                helperText:"Eruption Start Date cannot be after Ash Emission Date"
-              })
-              valid=false
-            }
-            if(afeDate<=eEndDate.date){
-              setEEndValid(isValid)
-            }else{
-              setEEndValid({
-                error:true,
-                helperText:"Eruption End Date cannot be before Ash Emission Date"
-              })
-              valid=false
-            }
           }
         }else{
           if(afeDate.date>eStartDate.date){
@@ -477,14 +473,20 @@ function ContributePage(props) {
                 console.log(particle)
                 axios.post("/volcanoes/particles/add", particle)
                   .catch(err=>console.log(err),setFailed(true))
-                if (afeList){
-                const afe = {
-                  volc_num : volcID,
-                  afe_id : afeList[i].afe_id,
+                if (eruption && eruption.ed_code){
+                  axios.get(`/volcanoes/next_afe_code?ed=${eruption.ed_code}`).then((res)=>{
+                    console.log(res.data)
+                    let afe = {
+                      volc_num : volcID,
+                      volcName:volcName,
+                      afe_code: res.data,
+                    }
+                    if(afeDate) afe.afe_date = afeDate
+                    console.log(afe)
+                    axios.post("/volcanoes/afes/add",afe)
+                     .catch(err=> console.log(err),setFailed(true))
+                  }).catch(err=> console.log(err),setFailed(true))
                 }
-                if(afeDate) afe.afe_date = afeDate
-                axios.post("/volcanoes/afes/add",afe)
-                 .catch(err=> console.log(err),setFailed(true))}
                 if(sampleList){
                   const sample={
                     volc_num: volcID,
@@ -501,16 +503,18 @@ function ContributePage(props) {
             }
           }
           if(addable){
-            const eruption={
-              in_GVP: false,
-              ed_num:1,
-              volc_num: volcID,
-            }
-            if(eStartDate.date) {eruption.ed_stime = eStartDate.date}
-            if(eEndDate.date) {eruption.ed_etime = eEndDate.date}
-            console.log(eruption)
-            axios.post("/volcanoes/eruptions/add",eruption)
-            .catch(err=> console.log(err),setFailed(true))
+            axios.get(`/volcanoes/next_eruption_code?volc=${volcID}`).then(res=>{
+              const eruption={
+                in_GVP: false,
+                ed_code: res.data,
+                volc_num: volcID,
+                volc_name: volcName
+              }
+              if(eStartDate.date) {eruption.ed_stime = eStartDate.date}
+              if(eEndDate.date) {eruption.ed_etime = eEndDate.date}
+              axios.post("/volcanoes/eruptions/add",eruption)
+              .catch(err=> console.log(err),setFailed(true))
+            })
           }
           axios.post("/upload/mesureTool",{len:Images.length}).catch(err=>console.log(err))
           setIsLoading(false);
@@ -521,9 +525,6 @@ function ContributePage(props) {
             return alert("Upload failed! Please try again!")
           }
       }
-      useEffect(()=>{
-        console.log(volcanoList[3])
-      },[volcanoList])
     return (
         <div style={{ maxWidth:"80%",margin: '2rem auto' }}>
             <Typography gutterBottom variant="h4" align="center" style={{fontWeight:"600"}} >
@@ -576,6 +577,36 @@ function ContributePage(props) {
                 </Grid>
                 <Grid xs ={12}  item>
                   <Typography style={{fontWeight:600}}>Eruption:</Typography>
+                </Grid>
+                <Grid xs ={12}  item>
+                  <TextField 
+                      readOnly={volcName && afeDate}
+                      label="Nearest Eruptions"
+                      onChange ={(newValue)=>{
+                        let value = newValue.target.value
+                        if (value.ed_code){
+                          setEd(value)
+                          setEStart({...eStartDate,date:value.ed_stime.toString().slice(0,10)})
+                          setEEnd({...eEndDate,date:value.ed_etime.toString().slice(0,10)})
+                          setAddable(false)
+                        }else{
+                          setEd(null)
+                          setEStart({...eStartDate,date:null})
+                          setEEnd({...eEndDate,date:null})
+                          setAddable(true)
+                        }
+                      }} 
+                      variant="outlined"
+                      value = {eruption}
+                      select
+                      fullWidth 
+                      required >
+                          {eruptionList.map(e => (
+                          e.ed_code?
+                          <MenuItem key = {e.ed_code} value={e}><span style={{fontWeight:600}}>Eruption Code: </span> &ensp; {e.ed_code} &ensp; <span style={{fontWeight:600}}>-&ensp;Start: </span> &ensp; {e.ed_stime?e.ed_stime.toString().slice(0,10):"Unknown"} &ensp; <span style={{fontWeight:600}}> -&ensp;End: </span> &ensp; {e.ed_etime?e.ed_etime.toString().slice(0,10):"Unknown"} </MenuItem>
+                          :<MenuItem key = {e} value ={e} style={{fontWeight:600}}>{e}</MenuItem>
+                          ))}
+                  </TextField>
                 </Grid>
                 <Grid xs={12} sm={6} item>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>

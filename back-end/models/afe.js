@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const afeSchema = new Schema({
     volc_num: {type: Number,required:true},
-    afe_id:{type:String,required: true},
+    ed_code:{type:String},
+    afe_code:{type:String,required: true},
     afe_date: {type: Date}, // when user provide yearsBP, convert to afe_date
     yearsBP:{type:Number}, 
     onset_unrest_e: {type: Date},

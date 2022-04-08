@@ -81,10 +81,10 @@ router.route('/eruptions/add').post((req, res) => {
     const newEruption = new Eruption(req.body);
     const query = {
       volc_num: newEruption.volc_num,
-      ed_num: newEruption.ed_num
+      ed_code: newEruption.ed_code
     }
     const options = {upsert:true, new:true, setDefaultsOnInsert: true}
-    AFE.findOneAndUpdate(query,newEruption,options)
+    Eruption.findOneAndUpdate(query,newEruption,options)
     .then(() => res.json('Eruption added!'))
     .catch(err => res.status(400).json('Error: ' + err));
   }
@@ -123,6 +123,50 @@ router.get("/eruption_by_date",(req,res)=>{
       return res.status(200).send(eruption)
   })
 })
+router.get("/nearest_eruptions",async(req,res)=>{
+  let date = new Date(req.query.afe_date)
+  let volc_num = Number(req.query.volc)
+  await Eruption.aggregate([
+    {
+        $match:{volc_num: volc_num}
+    },
+    {
+        $project : {
+            volc_num:1,
+            ed_num:1,
+            ed_code:1,
+            ed_stime : 1,
+            ed_etime:1,
+            difference : {
+                $abs : {
+                    $subtract : ["$ed_stime",date]
+                }
+            }
+        }
+    },
+    {
+        $sort : {difference : 1}
+    }
+    ]).then(eruptions=>{
+      eruptions = eruptions.filter(e=>e.difference!= null)
+      if(eruptions.length>3){
+        eruptions = eruptions.slice(0,3)
+      }
+      return res.status(200).send(eruptions)
+    })
+    .catch(err=> res.status(400).send(err))
+})
+router.get("/next_eruption_code",async(req,res)=>{
+  let volc_num = Number(req.query.volc)
+  await Eruption.find({volc_num: volc_num},function(err,eruptions){
+    if(err){
+      res.status(400).send(err)
+    }else{
+      let next_ed_code = eruptions[0].ed_code.slice(0,-1) + eruptions.length.toString()
+      res.status(200).send(next_ed_code)
+    }
+  })
+})
 // afe routes
 router.route('/getAFE').get((req, res) => {
   AFE.find()
@@ -136,7 +180,7 @@ router.route('/afes/add').post((req, res) => {
     const newAFE = req.body;
     const query = {
       volc_num: newAFE.volc_num,
-      afe_id: newAFE.afe_id
+      afe_code: newAFE.afe_code
     }
     const options = {upsert:true, new:true, setDefaultsOnInsert: true}
     AFE.findOneAndUpdate(query,newAFE,options)
@@ -170,6 +214,22 @@ router.get("/afes_by_id", (req, res) => {
           return res.status(200).send(afes)
       })
 });
+router.get("/next_afe_code",async(req,res)=>{
+  let ed_code = req.query.ed
+  await AFE.find({afe_code:{$regex: ed_code }},function(err,afes){
+    if(err){
+      res.status(400).send(err)
+    }else{
+      let next_afe_code
+      if(afes.length==0){
+        next_afe_code = ed_code +"_DB0"
+      }else{
+        next_afe_code = afes[0].afe_code.slice(0,-1)+afes.length.toString()
+      }
+      res.status(200).send(next_afe_code)
+    }
+  })
+})
 // sample routes
 router.route('/getSample').get((req, res) => {
   Sample.find()
