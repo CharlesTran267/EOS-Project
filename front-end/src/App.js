@@ -13,6 +13,7 @@ import ProfilePage from './View/ProfilePage/ProfilePage';
 import ContributePage from './View/ContributePage/ContributePage.js';
 import Multifocus from './View/ContributePage/Multi_focus';
 import GralParDetailPage from './View/Par_Gral_DetailPage/GralParDetailPage'
+import NewDashBoard from './View/AnalyticPlots/NewDashBoard';
 function App() {
   const classes = AppStyles();
 // true for logged in, false for not logged in, null for either 
@@ -27,6 +28,7 @@ function App() {
             <Route  path="/volcano/:volcanoId" component={Auth(VolcanoDetailPage,null)}/>
             <Route  path="/par_gral/par_gralDetailPage" component={Auth(GralParDetailPage,null)}/>
             <Route path={'/database/catalogue'} component={Auth(CataloguePage,null)}/>
+            <Route path={'/database/analytic'} component={Auth(NewDashBoard,null)}/>
             <Route path={'/home'} component={Auth(Home,null)}/>
             <Route path={'/contribute/binocular'} component={Auth(ContributePage,null)}/>
             <Route path={'/contribute/multifocus'} component={Auth(Multifocus,null)}/>
@@ -43,3 +45,4 @@ function App() {
 }
 
 export default App;
+ 
