@@ -1,0 +1,69 @@
+.OverviewPlotOption{
+	color: black;
+	width: 100px;
+	margin-left:-12px;
+	border: solid 2px blue;
+
+}
+
+.DetailPlotsOption{
+	color: black;
+	width:100px;
+	margin-left: -12px;
+	border: solid 2px blue;
+
+}
+
+.switchBar{
+
+	width: 100%
+}
+
+.OverviewPlotOption:hover{
+	background-color: blue;
+	color: white;
+}
+
+.DetailPlotsOption:hover{
+	background-color: blue;
+	color: white;
+}
+
+.detailPlot1{
+	display:flex;
+}
+
+.detailPlot2{
+	display:flex;
+}
+
+.overviewPlot{
+	display:flex;
+	
+}
+
+.overview{
+	display:flex;
+	
+}
+
+.volcToCompare{
+	display:flex
+}
+
+.DropDownHistogram{
+	display: flex
+}
+
+.ternaryPlots{
+	display: flex;
+	margin-top: 9%;
+}
+
+.sunBurstPlots{
+	display: flex
+}
+
+.binaryPlots{
+	display: flex
+}
