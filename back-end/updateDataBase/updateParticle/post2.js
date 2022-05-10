@@ -68,12 +68,12 @@ function getInfo(file,volc_num,filepath){
                 particle.particleType = "juvenile"
                 particle.glassyType = "juvenile"
                 switch(label.slice(1,5)){
-                    case "lctr": particle.crystallinity = "low transparent"; break;
-                    case "lcbl": particle.crystallinity = "low black"; break;
-                    case "mctr" : particle.crystallinity = "mid"; break;
-                    case "mcbl": particle.crystallinity = "mid"; break;
-                    case "hctr": particle.crystallinity = "high"; break;
-                    case "hcbl": particle.crystallinity = "high";break;
+                    case "lctr": particle.crystallinity = "low";particle.color="transparent" ;break;
+                    case "lcbl": particle.crystallinity = "low";particle.color ="black"; break;
+                    case "mctr" : particle.crystallinity = "mid";particle.color="transparent" ; break;
+                    case "mcbl": particle.crystallinity = "mid"; particle.color ="black";break;
+                    case "hctr": particle.crystallinity = "high"; particle.color="transparent" ;break;
+                    case "hcbl": particle.crystallinity = "high";particle.color ="black";break;
                     default: particle.crystallinity = ""
                 }
                 switch(label.slice(6)){
@@ -104,12 +104,12 @@ function getInfo(file,volc_num,filepath){
                 particle.particleType = "lithics"
                 particle.glassyType = "non-juvenile";
                 switch(label.slice(2,6)){
-                    case "lctr": particle.crystallinity = "low transparent"; break;
-                    case "lcbl": particle.crystallinity = "low black"; break;
-                    case "mctr" : particle.crystallinity = "mid"; break;
-                    case "mcbl": particle.crystallinity = "mid"; break;
-                    case "hctr": particle.crystallinity = "high"; break;
-                    case "hcbl": particle.crystallinity = "high";break;
+                    case "lctr": particle.crystallinity = "low";particle.color="transparent" ;break;
+                    case "lcbl": particle.crystallinity = "low";particle.color ="black"; break;
+                    case "mctr" : particle.crystallinity = "mid";particle.color="transparent" ; break;
+                    case "mcbl": particle.crystallinity = "mid"; particle.color ="black";break;
+                    case "hctr": particle.crystallinity = "high"; particle.color="transparent" ;break;
+                    case "hcbl": particle.crystallinity = "high";particle.color ="black";break;
                     default: particle.crystallinity = ""
                 }
                 switch(label.slice(-1)){
