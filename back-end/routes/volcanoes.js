@@ -156,6 +156,94 @@ router.get("/nearest_eruptions",async(req,res)=>{
     })
     .catch(err=> res.status(400).send(err))
 })
+router.get("/nearest_eruptions_yearsBP",async(req,res)=>{
+  let yearsBP = Number(req.query.yearsBP)
+  let volc_num = Number(req.query.volc)
+  await Eruption.aggregate([
+    {
+        $match:{volc_num: volc_num}
+    },
+    {
+        $project : {
+            volc_num:1,
+            ed_num:1,
+            ed_code:1,
+            ed_yearsBP:1,
+            difference : {
+                $abs : {
+                    $subtract : ["$ed_yearsBP",yearsBP]
+                }
+            }
+        }
+    },
+    {
+        $sort : {difference : 1}
+    }
+    ]).then(eruptions=>{
+      eruptions = eruptions.filter(e=>e.difference!= null)
+      if(eruptions.length>3){
+        eruptions = eruptions.slice(0,3)
+      }
+      return res.status(200).send(eruptions)
+    })
+    .catch(err=> res.status(400).send(err))
+})
+router.get("/post_eruption",async(req,res)=>{
+  let date = new Date(req.query.afe_date)
+  let volc_num = Number(req.query.volc)
+  await Eruption.aggregate([
+    {
+        $match:{volc_num: volc_num}
+    },
+    {
+        $project : {
+            volc_num:1,
+            ed_num:1,
+            ed_code:1,
+            ed_stime : 1,
+            ed_etime:1,
+            difference : {
+              $subtract : [date,"$ed_stime"]
+            }
+        }
+    },
+    {
+        $sort : {difference : 1}
+    }
+    ]).then(eruptions=>{
+      eruptions = eruptions.filter(e=>e.difference!= null && e.difference>0)
+      return res.status(200).send(eruptions[0])
+    })
+    .catch(err=> res.status(400).send(err))
+})
+router.get("/post_eruption_yearsBP",async(req,res)=>{
+  let yearsBP = Number(req.query.yearsBP)
+  let volc_num = Number(req.query.volc)
+  await Eruption.aggregate([
+    {
+        $match:{volc_num: volc_num}
+    },
+    {
+        $project : {
+            volc_num:1,
+            ed_num:1,
+            ed_code:1,
+            ed_yearsBP:1,
+            difference : {
+              $subtract : [yearsBP,"$ed_yearsBP"]
+            }
+        }
+    },
+    {
+        $sort : {difference : 1}
+    }
+    ]).then(eruptions=>{
+      eruptions = eruptions.filter(e=>e.difference!= null && e.difference<0)
+      console.log(eruptions)
+      return res.status(200).send(eruptions[0])
+    })
+    .catch(err=> res.status(400).send(err))
+})
 router.get("/next_eruption_code",async(req,res)=>{
   let volc_num = Number(req.query.volc)
   await Eruption.find({volc_num: volc_num},function(err,eruptions){
@@ -243,7 +331,7 @@ router.route('/samples/add').post((req, res) => {
   const newSample = req.body;
   const query = {
     volc_num: newSample.volc_num,
-    afe_id: newSample.afe_id,
+    afe_code: newSample.afe_code,
     sample_id: newSample.sample_id
   }
   const options = {upsert:true, new:true, setDefaultsOnInsert: true}

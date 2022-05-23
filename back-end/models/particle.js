@@ -6,7 +6,7 @@ const particleSchema = new Schema({
     volc_num: {type:Number,required:true},
     volc_name:{type:String},
     ed_num:{type: Number},
-    afe_id:{type:String, required:true},
+    afe_code:{type:String, required:true},
     sample_id :{type:Number, required: true},
     id: {type:Number, required: true},
     batch:{type:Number},
