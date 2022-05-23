@@ -13,7 +13,6 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
 import DatePickerCustom from './DatePickerCustom.js';
 import extractInfo from './extractInfo.js';
-import { Menu } from 'antd';
 const gsValue = [0,1,2,3,4];
 const bComps  = ["Free Crystal","Altered Material","Lithic","Juvenile"];
 const jTypes = ["Recycled Juvenile","Hydrothermally Altered Juvenile","Juvenile"]
@@ -120,45 +119,62 @@ function ContributePage(props) {
     const [Images, setImages] = useState([])
     const [addable, setAddable] = useState(false)
     useEffect(()=>{
-      if(volcID && afeDate){
+      if(volcID && (afeDate || afeYearsBP) ){
         console.log(afeDate,volcID)
-        axios.get(`/volcanoes/nearest_eruptions?afe_date=${afeDate}&volc=${volcID}`)
-        .then(res=>{
-          // if(res.data.length!=0){
-          //   setEStart({
-          //     date:res.data[0].ed_stime.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
-          //     helperText:""
-          //   })
-          //   setEEnd({
-          //     date:res.data[0].ed_etime.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
-          //     helperText:""
-          //   })
-          // }else{
-          //   setEStart({
-          //     date:null,
-          //     helperText:"No Eruption Found"
-          //   })
-          //   setEEnd({
-          //     date:null,
-          //     helperText:""
-          //   })
-          // }
-          console.log(res.data)
-          let newEList = []
-          res.data.map(e=>{
-            newEList.push({
-              volc_num: e.volc_num,
-              ed_code : e.ed_code,
-              ed_stime: e.ed_stime,
-              ed_etime: e.ed_etime,
+        if(afeFormat=="Years BP"){
+          axios.get(`/volcanoes/nearest_eruptions_yearsBP?yearsBP=${afeYearsBP}&volc=${volcID}`)
+          .then(res=>{
+            let newEList = []
+            res.data.map(e=>{
+              newEList.push({
+                volc_num: e.volc_num,
+                ed_code : e.ed_code,
+                ed_yearsBP: e.ed_yearsBP
+              })
             })
+            newEList.push("Unknown")
+            setEList(newEList)
           })
-          newEList.push("Add new Eruption")
-          setEList(newEList)
-        })
-        .catch(err=>console.log(err))
+        }
+        else{
+          axios.get(`/volcanoes/nearest_eruptions?afe_date=${afeDate}&volc=${volcID}`)
+          .then(res=>{
+            // if(res.data.length!=0){
+            //   setEStart({
+            //     date:res.data[0].ed_stime.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
+            //     helperText:""
+            //   })
+            //   setEEnd({
+            //     date:res.data[0].ed_etime.slice(0,10), // change 2000-12-30T00:00:00.000Z to 2000-12-30
+            //     helperText:""
+            //   })
+            // }else{
+            //   setEStart({
+            //     date:null,
+            //     helperText:"No Eruption Found"
+            //   })
+            //   setEEnd({
+            //     date:null,
+            //     helperText:""
+            //   })
+            // }
+            let newEList = []
+            res.data.map(e=>{
+              newEList.push({
+                volc_num: e.volc_num,
+                ed_code : e.ed_code,
+                ed_stime: e.ed_stime,
+                ed_etime: e.ed_etime,
+              })
+            })
+            newEList.push("Unknown")
+            newEList.push("Add new Eruption")
+            setEList(newEList)
+          })
+          .catch(err=>console.log(err))
       }
-    },[volcID,afeDate])
+    }
+    },[volcID,afeDate,afeYearsBP])
     const onVolcChange = (newValue)=>{
       if(newValue){
         setVolcName(newValue.label);
@@ -171,9 +187,6 @@ function ContributePage(props) {
     const onAFEYearsBPChange = (event)=>{    
       let yearsBP = 0-Math.abs(event.target.value)
       setAFEYearsBP(yearsBP)
-      var convertedDate = new Date()
-      convertedDate.setFullYear(convertedDate.getFullYear()+yearsBP)
-      setAFEDate(convertedDate)
     }
     const onSampleFormatChange = (event)=>{
       setSampleFormat(event.target.value)
@@ -181,9 +194,6 @@ function ContributePage(props) {
     const onSampleYearsBPChange = (event)=>{
       let yearsBP = 0-Math.abs(event.target.value)
       setSampleYearsBP(yearsBP)
-      var convertedDate = new Date()
-      convertedDate.setFullYear(convertedDate.getFullYear()+yearsBP)
-      setSampleDate(convertedDate)
     }
     const onSampleLonChange = (event)=>{
       const value = event.target.value
@@ -411,98 +421,63 @@ function ContributePage(props) {
       return group
     }
     const [failed,setFailed] = useState(false)
+    const [afeCode, setAFECode] = useState(null)
     const onSubmit = async(event) => {
         event.preventDefault();
         if(checkValidData()){
           setIsLoading(true)
-          if(followConvention==false){
-            const group = groupData(data)
-            console.log(group)
-            Object.keys(group).map(key=>{
-              Object.keys(group[key].dataList).map(par=>{
-                const parInfo = group[key].dataList[par]
-                const particle ={
-                  volc_num: volcID,
-                  volc_name: parInfo.volc_name,
-                  afe_id: "unknown",
-                  sample_id:1,
-                  id:group[key].id,
-                  index:par,
-                  instrument:"binocular",
-                  imgURL:parInfo.image_path,
-                  gsLow:parInfo.gsLow,
-                  gsUp: parInfo.gsUp,
-                  multi_focus: false,
-                  magnification: parInfo.mag,
-                  basic_component: parInfo.bComp.toLowerCase(), 
-                  crystallinity_and_color:parInfo.crys.toLowerCase(), 
-                  alteration_degree: parInfo.alteration.toLowerCase(), 
-                  shape:parInfo.shape.toLowerCase()
-                }
-                if(parInfo.jType) particle.juvenile_type = parInfo.jType.toLowerCase();
-                if(parInfo.cType) particle.crystal_type = parInfo.cType.toLowerCase();
-                if(parInfo.aType) particle.altered_material_type = parInfo.aType.toLowerCase();
-                axios.post("/volcanoes/particles/add", particle)
-                  .catch(err=>console.log(err),setFailed(true))
-                })
-              })
-            }else if(followConvention == true){
-              for(var i=0;i<data.length;i++){
-                console.log(data[i])
-                const particle={
-                  volc_num: volcID,
-                  volc_name: data[i].volc_name,
-                  afe_id: afeList? afeList[i].afe_id: "unknown",
-                  sample_id:sampleList? sampleList[i].sample_id:"unknown",
-                  id: data[i].id,
-                  index: data[i].index,
-                  instrument:"binocular",
-                  imgURL:data[i].image_path,
-                  gsLow:data[i].gsLow,
-                  gsUp: data[i].gsUp,
-                  multi_focus: data[i].multi_focus,
-                  magnification: data[i].mag,
-                  basic_component: data[i].bComp.toLowerCase(), 
-                }
-                if(data[i].crys) particle.crystallinity_and_color = data[i].crys.toLowerCase();
-                if(data[i].alteration) particle.alteration_degree = data[i].alteration.toLowerCase();
-                if(data[i].shape) particle.shape = data[i].shape.toLowerCase();
-                if(data[i].jType) particle.juvenile_type = data[i].jType.toLowerCase();
-                if(data[i].cType) particle.crystal_type = data[i].cType.toLowerCase();
-                if(data[i].aType) particle.altered_material_type = data[i].aType.toLowerCase();
-                console.log(particle)
-                axios.post("/volcanoes/particles/add", particle)
-                  .catch(err=>console.log(err),setFailed(true))
-                if (eruption && eruption.ed_code){
-                  axios.get(`/volcanoes/next_afe_code?ed=${eruption.ed_code}`).then((res)=>{
-                    console.log(res.data)
-                    let afe = {
-                      volc_num : volcID,
-                      volcName:volcName,
-                      afe_code: res.data,
-                    }
-                    if(afeDate) afe.afe_date = afeDate
-                    console.log(afe)
-                    axios.post("/volcanoes/afes/add",afe)
-                     .catch(err=> console.log(err),setFailed(true))
-                  }).catch(err=> console.log(err),setFailed(true))
-                }
-                if(sampleList){
-                  const sample={
-                    volc_num: volcID,
-                    afe_id: sampleList[i].afe_id,
-                    sample_id: sampleList[i].sample_id,
-                  }
-                  if(sampleDate) {sample.sample_date = sampleDate}
-                  if (sampleLat) {sample.sample_loc_lat = sampleLat}
-                  if (sampleLon) {sample.sample_loc_lon = sampleLon}
-                  axios.post("/volcanoes/samples/add",sample)
-                  .catch(err=> console.log(err),setFailed(true)) 
-                }
+          if (eruption && eruption.ed_code){
+            console.log("a")
+            axios.get(`/volcanoes/next_afe_code?ed=${eruption.ed_code}`).then((res)=>{
+              setAFECode(res.data)
+              let afe = {
+                volc_num : volcID,
+                volc_name:volcName,
+                afe_code: res.data,
               }
+              if(afeDate) afe.afe_date = afeDate
+              if(afeYearsBP) afe.yearsBP = afeYearsBP
+              axios.post("/volcanoes/afes/add",afe)
+               .catch(err=> console.log(err),setFailed(true))
+            }).catch(err=> console.log(err),setFailed(true))
+          }else if(!addable){
+            console.log("b")
+            if(afeDate){
+              axios.get(`/volcanoes/post_eruption?date=${afeDate}&volc=${volcID}`).then((res)=>{
+                let ed_code_post = res.data.ed_code +"post"
+                axios.get(`/volcanoes/next_afe_code?ed=${ed_code_post}`).then((res)=>{
+                  setAFECode(res.data)
+                  let afe = {
+                    volc_num : volcID,
+                    volc_name:volcName,
+                    afe_code: res.data,
+                    afe_date : afeDate
+                  }
+                  axios.post("/volcanoes/afes/add",afe)
+                   .catch(err=> console.log(err),setFailed(true))
+                }).catch(err=> console.log(err),setFailed(true))
+              }).catch(err=> console.log(err),setFailed(true))
             }
-          }
-          if(addable){
+            if(afeYearsBP){
+              axios.get(`/volcanoes/post_eruption_yearsBP?yearsBP=${afeYearsBP}&volc=${volcID}`).then((res)=>{
+                let ed_code_post = res.data.ed_code +"post"
+                console.log(res.data)
+                axios.get(`/volcanoes/next_afe_code?ed=${ed_code_post}`).then((res)=>{
+                  console.log(res.data)
+                  setAFECode(res.data)
+                  let afe = {
+                    volc_num : volcID,
+                    volc_name:volcName,
+                    afe_code: res.data,
+                    yearsBP : afeYearsBP
+                  }
+                  axios.post("/volcanoes/afes/add",afe)
+                   .catch(err=> console.log(err),setFailed(true))
+                }).catch(err=> console.log(err),setFailed(true))
+              }).catch(err=> console.log(err),setFailed(true))
+            }
+          }else if(addable){
+            console.log("c")
             axios.get(`/volcanoes/next_eruption_code?volc=${volcID}`).then(res=>{
               const eruption={
                 in_GVP: false,
@@ -514,7 +489,19 @@ function ContributePage(props) {
               if(eEndDate.date) {eruption.ed_etime = eEndDate.date}
               axios.post("/volcanoes/eruptions/add",eruption)
               .catch(err=> console.log(err),setFailed(true))
+              let afeCode = res.data + "_DB0"
+              setAFECode(afeCode)
+              let afe={
+                volc_num: volcID,
+                volc_name: volcName,
+                afe_code: afeCode
+              }
+              if(afeDate) afe.afe_date = afeDate
+              if(afeYearsBP) afe.yearsBP = afeYearsBP
+              axios.post("/volcanoes/afes/add",afe)
+                .catch(err=> console.log(err),setFailed(true))
             })
+            }
           }
           axios.post("/upload/mesureTool",{len:Images.length}).catch(err=>console.log(err))
           setIsLoading(false);
@@ -525,6 +512,81 @@ function ContributePage(props) {
             return alert("Upload failed! Please try again!")
           }
       }
+    useEffect(()=>{
+      if(followConvention==false){
+        const group = groupData(data)
+        console.log(group)
+        Object.keys(group).map(key=>{
+          Object.keys(group[key].dataList).map(par=>{
+            const parInfo = group[key].dataList[par]
+            const particle ={
+              volc_num: volcID,
+              volc_name: parInfo.volc_name,
+              afe_code: afeCode,
+              sample_id:1,
+              id:group[key].id,
+              index:par,
+              instrument:"binocular",
+              imgURL:parInfo.image_path,
+              gsLow:parInfo.gsLow,
+              gsUp: parInfo.gsUp,
+              multi_focus: false,
+              magnification: parInfo.mag,
+              basic_component: parInfo.bComp.toLowerCase(), 
+              crystallinity_and_color:parInfo.crys.toLowerCase(), 
+              alteration_degree: parInfo.alteration.toLowerCase(), 
+              shape:parInfo.shape.toLowerCase()
+            }
+            if(parInfo.jType) particle.juvenile_type = parInfo.jType.toLowerCase();
+            if(parInfo.cType) particle.crystal_type = parInfo.cType.toLowerCase();
+            if(parInfo.aType) particle.altered_material_type = parInfo.aType.toLowerCase();
+            axios.post("/volcanoes/particles/add", particle)
+              .catch(err=>console.log(err),setFailed(true))
+            })
+          })
+        }else if(followConvention == true){
+          
+          for(var i=0;i<data.length;i++){
+            const particle={
+              volc_num: volcID,
+              volc_name: data[i].volc_name,
+              afe_code: afeCode,
+              sample_id:sampleList? sampleList[i].sample_id:"unknown",
+              id: data[i].id,
+              index: data[i].index,
+              instrument:"binocular",
+              imgURL:data[i].image_path,
+              gsLow:data[i].gsLow,
+              gsUp: data[i].gsUp,
+              multi_focus: data[i].multi_focus,
+              magnification: data[i].mag,
+              basic_component: data[i].bComp.toLowerCase(), 
+            }
+            if(data[i].crys) particle.crystallinity_and_color = data[i].crys.toLowerCase();
+            if(data[i].alteration) particle.alteration_degree = data[i].alteration.toLowerCase();
+            if(data[i].shape) particle.shape = data[i].shape.toLowerCase();
+            if(data[i].jType) particle.juvenile_type = data[i].jType.toLowerCase();
+            if(data[i].cType) particle.crystal_type = data[i].cType.toLowerCase();
+            if(data[i].aType) particle.altered_material_type = data[i].aType.toLowerCase();
+            console.log(particle)
+            axios.post("/volcanoes/particles/add", particle)
+              .catch(err=>console.log(err),setFailed(true))
+            if(sampleList){
+              const sample={
+                volc_num: volcID,
+                afe_code: afeCode,
+                sample_id: sampleList[i].sample_id,
+              }
+              if(sampleDate) {sample.sample_date = sampleDate}
+              if (sampleLat) {sample.sample_loc_lat = sampleLat}
+              if (sampleLon) {sample.sample_loc_lon = sampleLon}
+              console.log(sample)
+              axios.post("/volcanoes/samples/add",sample)
+              .catch(err=> console.log(err),setFailed(true)) 
+            }
+          }
+        }
+    },[afeCode])
     return (
         <div style={{ maxWidth:"80%",margin: '2rem auto' }}>
             <Typography gutterBottom variant="h4" align="center" style={{fontWeight:"600"}} >
@@ -584,11 +646,25 @@ function ContributePage(props) {
                       label="Nearest Eruptions"
                       onChange ={(newValue)=>{
                         let value = newValue.target.value
-                        if (value.ed_code){
-                          setEd(value)
-                          setEStart({...eStartDate,date:value.ed_stime.toString().slice(0,10)})
-                          setEEnd({...eEndDate,date:value.ed_etime.toString().slice(0,10)})
+                        console.log(value)
+                        if(value == "Unknown"){
+                          setEd(null)
+                          setEStart({...eStartDate,date:null})
+                          setEEnd({...eEndDate,date:null})
                           setAddable(false)
+                        }else if (value.ed_code){
+                          if(afeFormat !="Years BP"){
+                            setEd(value)
+                            setEStart({...eStartDate,date:value.ed_stime.toString().slice(0,10)})
+                            setEEnd({...eEndDate,date:value.ed_etime.toString().slice(0,10)})
+                            setAddable(false)
+                          }
+                          else{
+                            setEd(value)
+                            setEStart({...eStartDate,date:null})
+                            setEEnd({...eEndDate,date:null})
+                            setAddable(false)
+                          }
                         }else{
                           setEd(null)
                           setEStart({...eStartDate,date:null})
@@ -602,9 +678,9 @@ function ContributePage(props) {
                       fullWidth 
                       required >
                           {eruptionList.map(e => (
-                          e.ed_code?
+                          e.ed_code ? afeFormat!="Years BP"?
                           <MenuItem key = {e.ed_code} value={e}><span style={{fontWeight:600}}>Eruption Code: </span> &ensp; {e.ed_code} &ensp; <span style={{fontWeight:600}}>-&ensp;Start: </span> &ensp; {e.ed_stime?e.ed_stime.toString().slice(0,10):"Unknown"} &ensp; <span style={{fontWeight:600}}> -&ensp;End: </span> &ensp; {e.ed_etime?e.ed_etime.toString().slice(0,10):"Unknown"} </MenuItem>
-                          :<MenuItem key = {e} value ={e} style={{fontWeight:600}}>{e}</MenuItem>
+                          :<MenuItem key = {e.ed_code} value={e}><span style={{fontWeight:600}}>Eruption Code: </span> &ensp; {e.ed_code} &ensp; <span style={{fontWeight:600}}>-&ensp;Years BP: </span> &ensp; {e.ed_yearsBP?e.ed_yearsBP:"Unknown"}</MenuItem>:<MenuItem key = {e} value ={e} style={{fontWeight:600}}>{e}</MenuItem>
                           ))}
                   </TextField>
                 </Grid>

@@ -6,7 +6,7 @@ const particleSchema = new Schema({
     volc_num: {type:Number,required:true},
     volc_name:{type:String},
     ed_num:{type: Number},
-    afe_id:{type:String, required:true},
+    afe_code:{type:String, required:true},
     sample_id :{type:Number, required: true},
     id: {type:Number, required: true},
     batch:{type:Number},
@@ -17,7 +17,6 @@ const particleSchema = new Schema({
     gsUp:{type: Number, enum:[0,1,2,3,4]},
     multi_focus:{type:Boolean},
     magnification:{type: Number},
-<<<<<<< HEAD
     basic_component: {type:String, enum:["free crystal","altered material","lithic","juvenile"]}, 
     crystal_type:{type: String},//  enum:["plagioclase","pyroxene", "amfibole","sulfur"]
     juvenile_type:{ type:String, enum:["recycled juvenile","hydrothermally altered juvenile","juvenile"]},
@@ -25,15 +24,6 @@ const particleSchema = new Schema({
     crystallinity_and_color:{type:String, enum:["low crystallinity black", "low crystallinity transparent", "mid crystallinity black", "mid crystallinity transparent","high crystallinity black", "high crystallinity transparent"]}, // 6 comnbinations
     alteration_degree: {type:String, enum:["none", "slight","moderate","high"]}, 
     shape:{type:String, enum: ["shape","blocky", "fluidal", "microtubular","highly vesicular","spongy","pumice"]},
-=======
-    particleType: {type:String}, 
-    glassyType: {type:String},
-    crystallinity:{type:String},
-    color:{type:String} ,
-    alteration: {type:String}, 
-    shape:{type:String},
-    microscope: {type: String},
->>>>>>> bee333f32... fixed bugs
     software: {type: String},
     device: {type: String},
     ligh_intensity: {type: Number},

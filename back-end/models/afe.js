@@ -5,7 +5,7 @@ const afeSchema = new Schema({
     volc_num: {type: Number,required:true},
     ed_code:{type:String},
     afe_code:{type:String,required: true},
-    afe_date: {type: Date}, // when user provide yearsBP, convert to afe_date
+    afe_date: {type: Date},
     yearsBP:{type:Number}, 
     onset_unrest_e: {type: Date},
     onset_new_phase: {type: Date},
