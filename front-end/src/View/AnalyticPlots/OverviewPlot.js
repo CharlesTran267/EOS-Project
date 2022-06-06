@@ -104,12 +104,12 @@ const OverviewPlot = () =>{
 				{content}
 				</div>
 				<div>
-					<AiOutlinePlus onClick ={addPlot}/>
-					<AiOutlineInfo/>
+					<AiOutlinePlus onClick ={addPlot} size = '25px'/>
+					<AiOutlineInfo size = '25px'/>
 				</div>
 			</div>
 			{/* <div>
-				<NestedPieChart onGetSide = {() =>{return [300,500]}} onGetSunBurstVariable = {getSunBurstVariable}  onGetSunBurstDataVariable = {getSunBurstDataVariable} onGetData={getData} />	
+				<NestedPieChart onGetdsfide = {() =>{return [300,500]}} onGetSunBurstVariable = {tetSunBurstVariable}  onGetSunBurstDataVariable = {getSunBurstDataVariable} onGetData={getData} />	
 			</div> */}
 		</div>
 	);

@@ -15,11 +15,14 @@ const BinaryPlot = (props) =>{
 	const [a,setA] = useState([])
 	const [binaryPlotX,setBinaryPlotX] = useState([])
 	const [binaryPlotY,setBinaryPlotY] = useState([])
-	const [s,setS]= useState('blue_std')
 	const [check,setCheck] = useState(0);
-	const [xAxis,setXAxis] = useState('red_std')
-	const [yAxis,setYAxis] = useState('blue_std')
-	const [essentialVariable,setEssentialVariable] = useState('volc_name')
+
+	let initialXAxis = props.onGetInitialXAxis();
+	let initialYAxis = props.onGetInitialYAxis();
+	let initialEssentialVariable = props.onGetEssentialVariable();
+	const [xAxis,setXAxis] = useState(initialXAxis)
+	const [yAxis,setYAxis] = useState(initialYAxis)
+	const [essentialVariable,setEssentialVariable] = useState(initialEssentialVariable)
 	Chart.register(...registerables);
 	let arr = []
 	arr = props.onGetData();
@@ -147,20 +150,24 @@ function GetVariableData(){
 	      }
 		
 	      });
+	const doubleClick = () =>{
+		
+		props.onPassZoomMode([xAxis,yAxis,essentialVariable],"binaryPlot");
+	}
 	
 	console.log(data)
 	
 	return(
 	<div>
 		<div class='select'>
-			<DropDownBar className = 'dropdown' onPassVariableForX = {PassVariableForX} onPassVariableForY = {PassVariableForY} onGetVariableData={GetVariableData}/>	
-			<DropDownBar className = 'dropdown' onPassVariableForX = {PassVariableForX} onPassVariableForY = {PassVariableForY} onGetVariableData={GetVariableData}/>
+			<DropDownBar className = 'dropdown' onPassVariableForX = {PassVariableForX} onPassVariableForY = {PassVariableForY} onGetVariableData={GetVariableData} onGetInitialData={() => { return [initialXAxis,initialYAxis,initialEssentialVariable] }}/>	
+			<DropDownBar className = 'dropdown' onPassVariableForX = {PassVariableForX} onPassVariableForY = {PassVariableForY} onGetVariableData={GetVariableData} onGetInitialData={() => {return [initialXAxis,initialYAxis,initialEssentialVariable] }}/>
 		</div>
 
 		<div>
-			<DropDownForEssential onPassEssentialVariable = {PassEssentialVariable} />
+			<DropDownForEssential onPassEssentialVariable = {PassEssentialVariable} onGetEssential = {()=>{return initialEssentialVariable }} />
 		</div>
-
+<div onDoubleClick={doubleClick}>
 <Plot
         data={data}
 	
@@ -191,9 +198,12 @@ function GetVariableData(){
 		return false
 	}
 
-}
+}	
+	
+	
 	
       />
+</div>
 	</div>
 		
 	);

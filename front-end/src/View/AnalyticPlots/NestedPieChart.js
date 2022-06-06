@@ -65,19 +65,21 @@ function NestedPieChart(props){
 
 	let cc = setSunBurstDataVariable
 	let Data = []
-	if(cc !== 'overview'){
-	for (let i=0;i<data.length;i++){
+// 	if(cc !== 'overview'){
+// 	for (let i=0;i<data.length;i++){
 		
-			if(data[i]['volc_name'] === cc){
-				Data.push(data[i])
-			}
+// 			if(data[i]['volc_name'] === cc){
+// 				Data.push(data[i])
+// 			}
 			
 		
-	}
+// 	}
 
-	data = Data
+// 	data = Data
 
-}
+// }
+
+	
 
 	let crysTable ={}
 	let shapeTable ={}
@@ -87,10 +89,18 @@ function NestedPieChart(props){
 		shapeTable[variable[i].label] = {}
 		alterTable[variable[i].label] = {}
 	}
-	console.log(crysTable)
+	
+	//console.log(crysTable)
+	// for(let i=0;i<data.length;i++){
+	// 	if(data[i]['basic_component'] === 'lithic'){
+	// 		console.log(data[i]['crystalinity_and_color']);
+	// 	}
+	// }
+
 	for(let i=0;i<data.length;i++){
-		if(crysTable[data[i]["basic_component"]]&&data[i]["crystallinity_and_color"])
-			crysTable[data[i]["basic_component"]][data[i]["crystallinity_and_color"]] =0;
+		if(crysTable[data[i]["basic_component"]]&&data[i]["crystallinity_and_color"]){
+			
+			crysTable[data[i]["basic_component"]][data[i]["crystallinity_and_color"]] =0;}
 		else if(crysTable[data[i]['basic_component']])
 			crysTable[data[i]["basic_component"]]['undefined'] =0;
 		else
@@ -130,36 +140,60 @@ function NestedPieChart(props){
 	}
 
 	
-	console.log(crysTable)
-	console.log(shapeTable)
-	console.log(alterTable)
-
+	// console.log(crysTable)
+	// console.log(shapeTable)
+	// console.log(alterTable)
+	
 
 
 	for(const[key,value] of Object.entries(crysTable)  ){
 		for(const[k,v] of Object.entries(value)){
-			// if(k !== 'undefined')
-			// values.push(v);
-			// else
-			values.push(0)
-			if(k !== 'undefined')	
+			let check=0;
+			for(let i=0;i<labels.length;i++){
+				if(labels[i]===k){
+					check = 1;
+				}
+			}
+			
+	
+
+			if(k !== 'undefined' && check === 0){
 			labels.push(k);
-			else
+			parents.push("");
+			values.push(0);}
+			else if(check ===0 && k === 'undefined'){
 			labels.push(k+key)
-			// if(key !== 'undefined')
+			values.push(0)
 			parents.push("")
+		}
+			// if(key !== 'undefined')
+			//parents.push("")
 		}
 	}
 
 	for(let i=0;i<variable.length;i++){
 		
 		for(const[key,value] of Object.entries(crysTable[variable[i].label])){
+			let check = 0;
+			for(let i=0;i<parents.length;i++){
+				if(parents[i]===key){
+					check = 1;
+				}
+			}
+			if(check === 0){
 			labels.push(variable[i].label)
-			if(key === 'undefined')
+			if(key === 'undefined'){
+			
 			parents.push(key+variable[i].label)
+		
+		}
 			else
 			parents.push(key)
 			values.push(crysTable[variable[i].label][key])
+	}
+	else{
+
+	}
 		}
 		// if(crysTable[variable[i].label]['undefined'])
 		// 	if(crysTable[variable[i].label]['undefined']>0)
@@ -175,24 +209,63 @@ function NestedPieChart(props){
 	let ids=[]
 	for(let i=0;i<values.length;i++){
 		if(i>0 && labels[i]===labels[i-1]){
-			ids.push(labels[i]+'1')
+			ids.push(labels[i]+i)
 		}
 		else
 		ids.push(labels[i])
 	}
-	let colors = []
-	for(let i=0;i<labels.length;i++){
-		if(i>0 && labels[i] === labels[i-1])
-			colors.push(colors[i-1]);
-		else
-			colors.push(volColor[labels[i]])
-
-	}
 	
+	let colors = []
+
+	for(let i=0;i<labels.length;i++){
+		if((i>= 0 && i<=5) || (i===7)){
+			colors.push('#FF8886')
+		}
+		else if(i===6){
+			colors.push('#45b6fe')
+		}
+		else if(i===8){
+			colors.push('#FFFBC8')}
+		else if((i>=9 && i<=14) || (i===16)){
+			colors.push('red')
+		}
+		else if(i === 15){
+			colors.push('#3A9BDC')}
+		else if(i===17){	
+			colors.push('yellow')}
+	}
+
+	// for(let i=0;i<labels.length;i++){
+	// 	if(i>0 && i>=9 && labels[i] === labels[i-1])
+	// 		colors.push(colors[i-1]);
+	// 	else
+	// 		colors.push(volColor[labels[i]])
+
+	// }
+
 	console.log(labels)
 	console.log(parents)
 	console.log(values)
-	console.log(ids)
+	console.log(colors)
+
+	let d={}
+	let t = []
+	for(let i=0;i<labels.length;i++){
+		if(i>0 && labels[i]===labels[i-1]){
+			t.push("")
+		}
+		else{
+			t.push(labels[i])
+		}
+	}
+
+
+	console.log(d)
+	
+	const doubleClick = () =>{
+	
+		props.onPassZoomMode(SunBurstFinalVariable,"sunburstPlot");
+	}
 
 	return (
 				<div>
@@ -206,22 +279,23 @@ function NestedPieChart(props){
 				<div>
 					<Button onSubmitSunBurstVariable = {submitSunBurstVariable}/>
 				</div>
-
+		<div onDoubleClick ={doubleClick}>
 			<Plot
         data={[{
-		labels: labels,
+		labels: t,
 		parents: parents,
 		ids: ids,
 		type: "sunburst",
 		values:  values,
 		marker:{line:{width:0},
-			colors:colors
+		colors:colors,
 	}
 		}
 	]}		
 									
         layout={ {width: side[0], height: side[1], title: 'Sunburst'} }
       />
+      </div>
 		</div>
 	)
 }

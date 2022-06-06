@@ -56,7 +56,11 @@ const TernaryPlot = (props) =>{
 			e.push({a:Data[i][variable[0].label], b: Data[i][variable[1].label],c:Data[i][variable[2].label],color:volcColor[Data[i]['volc_name']],name:'Toba'})
 	}
 
-	
+	const doubleClick = () =>{
+		
+		props.onPassZoomMode(TernaryFinalVariable,"ternaryPlot");
+	}
+
 	return(
 
 	<div>
@@ -67,7 +71,7 @@ const TernaryPlot = (props) =>{
 					<Button onSubmitVariable = {submitVariable}/>
 				</div>
 
-
+		<div onDoubleClick ={doubleClick}>
 		<Plot 
 			data = {
 			
@@ -103,23 +107,33 @@ const TernaryPlot = (props) =>{
 		}
 
 
-			layout={ {width: side[0], height: side[1], title: 'Ternary',ternary:
+			layout={ {width: side[0], height: side[1], title: 'Ternary',autosize:true,uirevision:'true',ternary:
 			{
 			sum:1,
-			aaxis:{title: variable[0].label, min: 0, 
-					    linewidth:2, ticks:'outside',
-					    tickmode:'array',tickvals:[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]},
-			baxis:{title: variable[1].label, min: 0, 
-				 linewidth:2, ticks:'outside',
-				 tickmode:'array',tickvals:[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]},
+			aaxis:{title: variable[0].label, min: 0,
+					ticklen: 3, autorange:true,
+					    linewidth:2, tick0:0.2,dtick:0.2,ntick:3,
+					    tickmode:'auto',tickvals:[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+					},
+					    
+			baxis:{title: variable[1].label, min: 0, autorange:true,
+				ticklen:3, tick0:0.2,dtick:0.2,ntick:3,
+				 linewidth:2,
+				 tickmode:'auto',tickvals:[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+				},
+				
 			caxis:{title: variable[2].label, min: 0, 
+				ticklen:3,tick0:0.2,dtick:0.2,ntick:3,
 				 linewidth:2, ticks:'outside',
-				 tickmode:'array',tickvals:[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]}}
+				tickmode:'auto',tickvals:[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9],
+				 autorange:true,
+				}}
 						    
 				    }
 				 }
 			
 		/>
+	</div>
 	</div>
 	);
 }
