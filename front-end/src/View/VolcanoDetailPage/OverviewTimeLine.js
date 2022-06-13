@@ -1,10 +1,82 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import DragBox from './DragBox';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 
-
+const axios = require('axios')
 const OverviewTimeLine = (props) =>{
+  const [eruptions,setEruptions] = useState([])
+  useEffect(() =>{
+		axios.get('/volcanoes/getEruptions')
+		.then(data =>{
+      setEruptions(data.data['eruptions'])
+			console.log(data.data['eruptions'])
+		})
+		
+	
+	},[])
+  let Vol = [];
+  let TaalEruptionYear = [];
+const TaalData = [];
+
+var pathArray = window.location.pathname.split('/');
+let vol =""
+if(pathArray[2] === "1" ){
+  vol = "Pinatubo"
+}
+else{
+  vol="Taal"
+}
+
+for(let i=0;i<eruptions.length;i++){
+  if(eruptions[i]['volc_name'] === vol && eruptions[i]['ed_stime'] && eruptions[i]['ed_etime'] ){
+  let s = eruptions[i]['ed_stime'].substr(0,4);
+  let e = eruptions[i]['ed_etime'].substr(0,4);
+  if(parseInt(s)>=1521  && parseInt(s) <= 2020 && parseInt(e)>=1521  && parseInt(e) <= 2022 ){
+  Vol.push({s:parseInt(s),e:parseInt(e)})
+}
+}
+}
+
+// console.log(TaalEruptionYear)
+let VolEndYear=[]
+// for(let i=0;i<eruptions.length;i++){
+//   if(eruptions[i]['volc_name'] === vol && eruptions[i]['ed_etime']){
+//     let s = eruptions[i]['ed_etime'].substr(0,4);
+//     if(parseInt(s)>=1521  && parseInt(s) <= 2022){
+//     VolEndYear.push(parseInt(s))
+//   }
+//   } 
+// }
+
+for(let i=0;i<Vol.length;i++){
+  TaalEruptionYear.push(Vol[i].s)
+  VolEndYear.push(Vol[i].e)
+}
+
+
+
+
+console.log(VolEndYear.length)
+console.log(TaalEruptionYear.length)
+
+for(let i=0;i<TaalEruptionYear.length;i++){
+  let p = {
+    x: VolEndYear[i]+1,
+    y: 10
+  }
+  TaalData.push(p);
+}
+
+
+for(let i=0;i<TaalEruptionYear.length;i++){
+  let p = {
+    x: TaalEruptionYear[i],
+    y: 10
+  }
+  TaalData.push(p);
+}
+
 
   
   let list = [];
@@ -20,7 +92,6 @@ const OverviewTimeLine = (props) =>{
   const [EruptionLabel,setEruptionLabel] = useState([...list]);
 
   let TaalEndYear = props.onGetTaalEruptionEndYear();
-  let TaalData = props.onGetTaalData();
   let AFEDummyData = props.onGetDummyAFEData();
 
 
@@ -89,13 +160,15 @@ const OverviewTimeLine = (props) =>{
 
 	const graphData = {
 		labels: lb,
-  datasets: [{
+  datasets: [
+    {
       label: 'Line Dataset',
       data: zoomList,
       fill: true,
       showLine: false,
       pointRadius: 0,
-      backgroundColor: 'rgba(0, 100, 0,1)',
+      backgroundColor: 'rgba(0, 100, 0,0.5)',
+     
 
 
   },
@@ -118,6 +191,13 @@ const OverviewTimeLine = (props) =>{
 
 	const opt = {
 		maintainAspectRatio: false,
+    tooltips: {
+      callbacks: {
+          label: function (tooltipItem, data) {
+              return Number(tooltipItem.yLabel).toFixed(2);
+          }
+      }
+  },
             scales: {
               y: {
                 display:false,
@@ -127,7 +207,8 @@ const OverviewTimeLine = (props) =>{
                 display:true,
                 ticks: {
                   autoSkip: true,
-                  maxTicksLimit: 55
+                  maxTicksLimit: 55,
+              
               }
               }
             },
