@@ -10,6 +10,7 @@ import DropDownForHistogramMode from './DropDownForHistogramMode';
 import DropDownForHistogramCompare from './DropDownForHistogramCompare';
 import DropDownBar from './DropDownForBinaryGraph';
 import { AiOutlinePlus,AiOutlineInfo,MdArrowBack } from 'react-icons/all';
+import BoxPlot from './BoxPlot'
 const axios = require('axios')
 
 
@@ -47,6 +48,8 @@ const DetailPlots = () =>{
 	const [zoomInSunBurstPlot,setZoomInSunBurstPlot] = useState(<div></div>)
 	const [histogramSide,setHistogramSide] = useState([600,500])
 	const [histogram,setHistogramPlot] = useState([])
+	const [boxPlot,setBoxPlot] = useState([])
+	const [boxPlotSide,setBoxPlotSide] = useState([600,500])
 	
 	useEffect(() =>{
 		axios.get('/volcanoes/getParticles')
@@ -162,7 +165,12 @@ const PassZoomMode = (b,a) =>{
 		setZoomMode(1);}
 	else if(a==='histogramPlot'){
 	 	setZoomInPlot(<Histogram onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return histogramSide }} onGetData = {getData} onGetHistogramMode = {() =>{return b[0] }} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {() =>{return b[1]}}/>);
+
 		 setZoomMode(1);}
+	else if(a === 'boxPlot'){
+		setZoomInPlot(<BoxPlot onPassZoomMode = {PassZoomMode} onGetSide = {()=>{return([600,800])}} onGetData= {getData} /> )
+		setZoomMode(1);
+	}
 }
 
 const addHistogramPlot = () => {
@@ -195,6 +203,11 @@ const addSunBurstPlot = () =>{
 	// setS(1)
 	setSunBurst([...sunBurst,<div><NestedPieChart onGetSide = {() => {return [300,500]}}  onGetSunBurstVariable = {getSunBurstVariable} onGetSunBurstDataVariable = {getSunBurstDataVariable} onGetData={getData}/></div>])
 	
+}
+
+const addBoxPlot = () =>{
+	setBoxPlotSide([300,500])
+	setBoxPlot([...boxPlot,<BoxPlot onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return [300,500] }} onGetData ={getData} />])
 }
 
 const back = () =>{
@@ -259,7 +272,18 @@ const back = () =>{
 				<AiOutlinePlus onClick = {addSunBurstPlot} size='25px'/>
 				<AiOutlineInfo size='25px'/>
 			</div>
+
 			</div>
+			<div className = 'sunBurstPlots'>
+				<BoxPlot onPassZoomMode={PassZoomMode} onGetSide = {() => {return boxPlotSide}} onGetData = {getData} />
+				{boxPlot}
+				
+			</div>	
+			<div className = 'a'>
+			<AiOutlinePlus onClick = {addBoxPlot} size='25px'/>
+			<AiOutlineInfo size='25px'/>	
+		</div>
+
 		</div>
 			):(<div> 
 				<div>

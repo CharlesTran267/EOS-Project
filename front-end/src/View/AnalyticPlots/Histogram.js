@@ -115,7 +115,10 @@ const Histogram = (props) =>{
 			mode: 'lines',
 			name: 'spline',
 			text: ['tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object'],
-			line: {shape: 'spline'},
+			line: {shape: 'spline',
+			color: 'rgb(55, 128, 191)',
+		
+		},
 			type: 'scatter'
 			      
 		})
@@ -231,7 +234,7 @@ const Histogram = (props) =>{
 				size: bin2, 
 				},
 			marker:{
-				color:'orange'
+				color:'blue'
 			}
 			
 		})
@@ -246,7 +249,9 @@ const Histogram = (props) =>{
 			line: {shape: 'spline'},
 			type: 'scatter',
 			line:{
-			color: 'blue'}
+				color: 'rgb(55, 128, 191)',
+				width: 3
+		}
 			      
 		})
 
@@ -260,7 +265,9 @@ const Histogram = (props) =>{
 			line: {shape: 'spline'},
 			type: 'scatter',
 			line:{
-			color:'orange'}
+				color: 'rgb(55, 128, 191)',
+				width: 3
+		}
 			      
 		})
 
