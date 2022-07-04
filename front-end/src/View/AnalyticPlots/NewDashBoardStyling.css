@@ -3,7 +3,6 @@
 	width: 100px;
 	margin-left:-12px;
 	border: solid 2px blue;
-
 }
 
 .DetailPlotsOption{
@@ -33,6 +32,15 @@
 	display:flex;
 }
 
+.select{
+	display:flex;
+}
+
+.dropdown{	
+	padding-left:30px;
+	margin:0px;
+}
+
 .detailPlot2{
 	display:flex;
 }
@@ -46,7 +54,10 @@
 	display:flex;
 	
 }
-
+.zoomIn{
+	margin:auto;
+	display:block;
+}
 .volcToCompare{
 	display:flex
 }
@@ -66,4 +77,12 @@
 
 .binaryPlots{
 	display: flex
+}
+
+.histogramPlot{
+	display:flex
+}
+
+.a{
+	margin-left:29%;
 }

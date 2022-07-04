@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { Chart, registerables } from 'chart.js';
 import Plot from 'react-plotly.js';
 import DropDownBar from './DropDownForBinaryGraph';
+import DropDownForHistogramMode from './DropDownForHistogramMode';
+import DropDownForHistogramCompare from './DropDownForHistogramCompare';
 const axios = require('axios')
 
 
@@ -17,6 +19,9 @@ const Histogram = (props) =>{
 	const [volTable,setVolTable] = useState({})
 	const [histogramData,setHistogramData] = useState([])
 	const [histogramVariable,setHistogramVariable] = useState('red_std') 
+	const [histogramMode,setHistogramMode] = useState('Overview')
+	const [volcToCompare1,setVolcToCompare1] = useState('Pinatubo')
+	const [volToComapare2,setVolcToCompare2] = useState('Taal')
 
 	const PassHistogramVariable =(a) =>{
 		setHistogramVariable(a)
@@ -32,8 +37,21 @@ const Histogram = (props) =>{
 	
 	let variable = histogramVariable;
 	let pData = []
-	let volcToCompare = props.onGetVolcToCompare();
-	let mode = props.onGetHistogramMode();
+	let volcToCompare = [volcToCompare1,volToComapare2];
+	let mode = histogramMode;
+	let side = props.onGetSide();
+
+	const PassHistogramMode = (a) => {
+		setHistogramMode(a)
+	}
+
+	const PassVolcToCompare1 = (a) =>{
+		setVolcToCompare1(a)
+	}
+	
+	const PassVolcToCompare2 = (a) =>{
+		setVolcToCompare2(a)
+	}
 
 	
 
@@ -97,7 +115,10 @@ const Histogram = (props) =>{
 			mode: 'lines',
 			name: 'spline',
 			text: ['tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object'],
-			line: {shape: 'spline'},
+			line: {shape: 'spline',
+			color: 'rgb(55, 128, 191)',
+		
+		},
 			type: 'scatter'
 			      
 		})
@@ -213,7 +234,7 @@ const Histogram = (props) =>{
 				size: bin2, 
 				},
 			marker:{
-				color:'orange'
+				color:'blue'
 			}
 			
 		})
@@ -228,7 +249,9 @@ const Histogram = (props) =>{
 			line: {shape: 'spline'},
 			type: 'scatter',
 			line:{
-			color: 'blue'}
+				color: 'rgb(55, 128, 191)',
+				width: 3
+		}
 			      
 		})
 
@@ -242,23 +265,45 @@ const Histogram = (props) =>{
 			line: {shape: 'spline'},
 			type: 'scatter',
 			line:{
-			color:'orange'}
+				color: 'rgb(55, 128, 191)',
+				width: 3
+		}
 			      
 		})
 
 	}
 	//console.log(pData)
+	const doubleClick = () =>{
+		// props.onPassZoomInBinaryPlot([xAxis,yAxis,essentialVariable]);
+		 props.onPassZoomMode([mode,histogramVariable],"histogramPlot");
+	}
 	
 	return(
 		<div>
 
+<div className = 'DropDownHistogram'>
+					<DropDownForHistogramMode onPassHistogramMode = {PassHistogramMode} />
+				
+
+					{(histogramMode === 'Compare')?(
+						<div className= 'volcToCompare'>  
+							<DropDownForHistogramCompare onPassVolcToCompare1 = {PassVolcToCompare1} />
+							<DropDownForHistogramCompare onPassVolcToCompare2 = {PassVolcToCompare2} />
+						</div>
+					):(
+						<div> </div>
+					)
+	}
+
+			</div>
+
 		<div>
 				<DropDownBar onPassHistogramVariable = {PassHistogramVariable} onGetVariableData={GetVariableData}/>
 		</div>
-
+<div onDoubleClick = {doubleClick}>
 <Plot
 data={pData}
-layout={ {width: 600, height: 500, title: 'Histogram',
+layout={ {width: side[0], height: side[1], title: 'Histogram',
 xaxis: {
 	title: {
 	  text: histogramVariable + ' frequency',
@@ -282,6 +327,7 @@ xaxis: {
     
 } }
 />
+</div>
 </div>
 	
 );

@@ -23,7 +23,7 @@ const DropDownForEssential = (props) => {
 			props.onPassEssentialVariable(a);
 		}
 		data = Essentials;
-		f = 'volc_name'
+		f = props.onGetEssential();
 	}
 	catch(error){
 

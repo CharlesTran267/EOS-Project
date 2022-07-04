@@ -9,7 +9,8 @@ import DropDownForSunBurst from './DropDownForSunBurst'
 import DropDownForHistogramMode from './DropDownForHistogramMode';
 import DropDownForHistogramCompare from './DropDownForHistogramCompare';
 import DropDownBar from './DropDownForBinaryGraph';
-import { AiOutlinePlus,AiOutlineInfo } from 'react-icons/all';
+import { AiOutlinePlus,AiOutlineInfo,MdArrowBack } from 'react-icons/all';
+import BoxPlot from './BoxPlot'
 const axios = require('axios')
 
 
@@ -36,8 +37,20 @@ const DetailPlots = () =>{
 	const [binarySide,setBinarySide] = useState([600,500])
 	const [ternarySide,setTernarySide] = useState([600,500])
 	const [sunBurstSide,setSunBurstSide] = useState([600,500])
+	const [initialBinaryXAxis,setInitialBinaryXAxis] = useState('red_std')
+	const [initialBinaryYAxis,setInitialBinaryYAxis] = useState('blue_std')
+	const [initialBinaryEssentialVariable,setInitialBinaryEssentialVariable] = useState()
+	const [zoomMode,setZoomMode] = useState(0)
+	const [binaryPlotZoomIn,setBinaryPlotZoomIn]  = useState(<div></div>);
+	const [zoomInPlot,setZoomInPlot] = useState(<div></div>)
+	const [zoomInHistogramPlot,setZoomInHistogramPlot] = useState(<div></div>)
+	const [zoomInTernaryPlot,setZoomInTernaryPlot] = useState(<div></div>) 
+	const [zoomInSunBurstPlot,setZoomInSunBurstPlot] = useState(<div></div>)
+	const [histogramSide,setHistogramSide] = useState([600,500])
+	const [histogram,setHistogramPlot] = useState([])
+	const [boxPlot,setBoxPlot] = useState([])
+	const [boxPlotSide,setBoxPlotSide] = useState([600,500])
 	
-
 	useEffect(() =>{
 		axios.get('/volcanoes/getParticles')
 		.then(data =>{
@@ -122,9 +135,52 @@ const getSunBurstDataVariable = () =>{
 	return sunBurstDataVariable;
 }
 
+const PassZoomInBinaryPlot = (a) =>{
+        console.log(a)
+	setBinaryPlotZoomIn(<BinaryPlot onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return a[2] }} onGetInitialYAxis = {() =>{ return a[1] }} onGetInitialXAxis = {() =>{return a[0] }}  onGetSide={() =>{return side }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>)
+	setInitialBinaryXAxis(a[0]);
+	setInitialBinaryYAxis(a[1]);
+	setInitialBinaryEssentialVariable(a[2]);
+	
+}
+
+const PassZoomInSunBurstPlot = (a) =>{
+	setZoomInSunBurstPlot(<NestedPieChart onPassZoomInSunBurstPlot = {PassZoomInSunBurstPlot} onGetSide = {() =>{return sunBurstSide}} onGetSunBurstVariable = {getSunBurstVariable} onGetSunBurstDataVariable = {getSunBurstDataVariable} onGetData={getData} />);
+}
+
+const PassZoomInTernaryPlot = () =>{
+	setZoomInTernaryPlot(<TernaryPlot onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return ternarySide} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/>)
+}
+const PassZoomMode = (b,a) =>{
+
+	if(a==='binaryPlot'){
+		setZoomInPlot(<BinaryPlot onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return b[2] }} onGetInitialYAxis = {() =>{ return b[1] }} onGetInitialXAxis = {() =>{return b[0] }}  onGetSide={() =>{return [600,800] }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>);
+		setZoomMode(1)
+	}
+	else if(a==='sunburstPlot'){
+		setZoomInPlot(<NestedPieChart onPassZoomInSunBurstPlot = {PassZoomInSunBurstPlot} onGetSide = {() =>{return [600,800]}} onGetSunBurstVariable = {() =>{return b} } onGetSunBurstDataVariable = {getSunBurstDataVariable} onGetData={getData} />);
+		setZoomMode(1);}
+	else if(a==='ternaryPlot'){
+		setZoomInPlot(<div className = 'zoomIn'><TernaryPlot onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return [600,800]} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/></div>);
+		setZoomMode(1);}
+	else if(a==='histogramPlot'){
+	 	setZoomInPlot(<Histogram onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return histogramSide }} onGetData = {getData} onGetHistogramMode = {() =>{return b[0] }} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {() =>{return b[1]}}/>);
+
+		 setZoomMode(1);}
+	else if(a === 'boxPlot'){
+		setZoomInPlot(<BoxPlot onPassZoomMode = {PassZoomMode} onGetSide = {()=>{return([600,800])}} onGetData= {getData} /> )
+		setZoomMode(1);
+	}
+}
+
+const addHistogramPlot = () => {
+	setHistogramSide([300,500])
+	setHistogramPlot([...histogram,<Histogram onPassZoomMode = {PassZoomMode} onGetData = {getData} onGetHistogramMode = {getHistogramMode} onGetSide={()=>{return [300,500]}} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {GetHistogramVariable} />])
+}
+
 const addBinaryPlot = () =>{
 	setBinarySide([300,500])
-	setBinary([...binary,<div><BinaryPlot onGetSide ={()=>{return [300,500]}}  onGetData = {getData} onGetEssentialVariable = {getEssentialVariable} /></div>])
+	setBinary([...binary,<div><BinaryPlot onGetSide ={()=>{return [300,500]}}   onGetData = {getData} onGetEssentialVariable = {()=>{return initialBinaryEssentialVariable }} onGetInitialYAxis ={()=>{ return initialBinaryYAxis }} onGetInitialXAxis = {() => {return initialBinaryXAxis} } onGetEssentialVariable = {getEssentialVariable} /></div>])
 }
 
 const addTernaryPlot = () =>{
@@ -149,6 +205,15 @@ const addSunBurstPlot = () =>{
 	
 }
 
+const addBoxPlot = () =>{
+	setBoxPlotSide([300,500])
+	setBoxPlot([...boxPlot,<BoxPlot onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return [300,500] }} onGetData ={getData} />])
+}
+
+const back = () =>{
+	setZoomMode(0);
+}
+
 	const [binary,setBinary] = useState([])
 	const [ternary,setTernary] = useState([])
 	const [sunBurst,setSunBurst] = useState([])
@@ -156,47 +221,40 @@ const addSunBurstPlot = () =>{
 
 
 	return (
+		
 		<div className='DetailPlots'>
+			{(zoomMode ===0)?(
+		<div>
 			<div className='detailPlot1'>
 			<div>
-			<div className = 'DropDownHistogram'>
-					<DropDownForHistogramMode onPassHistogramMode = {PassHistogramMode} />
+
+				<div className ='histogramPlot'>
+				<Histogram onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return histogramSide }} onGetData = {getData} onGetHistogramMode = {getHistogramMode} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {GetHistogramVariable} />
+				{histogram}
+				</div>
+				<AiOutlinePlus onClick ={addHistogramPlot} size='25px' />
+				<AiOutlineInfo size='25px' />
 				
-
-					{(histogramMode === 'Compare')?(
-						<div className= 'volcToCompare'>  
-							<DropDownForHistogramCompare onPassVolcToCompare1 = {PassVolcToCompare1} />
-							<DropDownForHistogramCompare onPassVolcToCompare2 = {PassVolcToCompare2} />
-						</div>
-					):(
-						<div> </div>
-					)
-					}
-
-			</div>
-				<Histogram onGetData = {getData} onGetHistogramMode = {getHistogramMode} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {GetHistogramVariable} />
-				<AiOutlinePlus />
-				<AiOutlineInfo />
 			</div>
 			
 			<div>
 			<div className = 'binaryPlots' >
-			<BinaryPlot onGetSide={() =>{return binarySide }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>
+			<BinaryPlot onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return initialBinaryEssentialVariable }} onGetInitialYAxis = {() =>{ return initialBinaryYAxis }} onGetInitialXAxis = {() =>{return initialBinaryXAxis }}  onGetSide={() =>{return binarySide }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>
 			{binary}
 			</div>
-			<AiOutlinePlus onClick={addBinaryPlot} />
-			<AiOutlineInfo/>
+			<AiOutlinePlus onClick={addBinaryPlot} size ='25px' />
+			<AiOutlineInfo size='25px'/>
 			</div>
 			
 			</div>
 			<div className='detailPlot2'>
 			<div>
 			<div className = 'ternaryPlots'>
-			<TernaryPlot onGetSide = {() => {return ternarySide} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/>
+			<TernaryPlot onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return ternarySide} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/>
 			{ternary}
 			</div>
-			<AiOutlinePlus onClick = {addTernaryPlot} />
-			<AiOutlineInfo/>
+			<AiOutlinePlus onClick = {addTernaryPlot} size = '25px' />
+			<AiOutlineInfo size = '25px'/>
 			<div>
 					
 				</div>
@@ -208,13 +266,33 @@ const addSunBurstPlot = () =>{
 				</div> */}
 				<div className = 'sunBurstPlots'>
 				
-				<NestedPieChart onGetSide = {() =>{return sunBurstSide}} onGetSunBurstVariable = {getSunBurstVariable} onGetSunBurstDataVariable = {getSunBurstDataVariable} onGetData={getData} />
+				<NestedPieChart onPassZoomMode ={PassZoomMode} onPassZoomInSunBurstPlot = {PassZoomInSunBurstPlot} onGetSide = {() =>{return sunBurstSide}} onGetSunBurstVariable = {getSunBurstVariable} onGetSunBurstDataVariable = {getSunBurstDataVariable} onGetData={getData} />
 				{sunBurst}
 				</div>
-				<AiOutlinePlus onClick = {addSunBurstPlot}/>
-				<AiOutlineInfo/>
+				<AiOutlinePlus onClick = {addSunBurstPlot} size='25px'/>
+				<AiOutlineInfo size='25px'/>
 			</div>
+
 			</div>
+			<div className = 'sunBurstPlots'>
+				<BoxPlot onPassZoomMode={PassZoomMode} onGetSide = {() => {return boxPlotSide}} onGetData = {getData} />
+				{boxPlot}
+				
+			</div>	
+			<div className = 'a'>
+			<AiOutlinePlus onClick = {addBoxPlot} size='25px'/>
+			<AiOutlineInfo size='25px'/>	
+		</div>
+
+		</div>
+			):(<div> 
+				<div>
+				{zoomInPlot}
+				</div>
+				<div>
+					<MdArrowBack onClick={back} size='25px'/>
+				</div>
+			 </div>)}
 		</div>
 
 	);

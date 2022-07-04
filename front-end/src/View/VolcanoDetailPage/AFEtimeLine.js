@@ -4,17 +4,96 @@ import { Legend, Title } from 'chart.js';
 import React from 'react';
 import {Line} from 'react-chartjs-2'; 
 import App from './VolcanoeTimeLine';
-import { useHistory } from 'react-router-dom';
+import { useHistory} from 'react-router-dom';
+import { useState,useEffect } from 'react';
+import { ppid } from 'process';
 
-
+const axios = require('axios')
 const AFEtimeGraph = (props) =>{
+
+	const [eruptions,setEruptions] = useState([])
+  useEffect(() =>{
+		axios.get('/volcanoes/getEruptions')
+		.then(data =>{
+      setEruptions(data.data['eruptions'])
+			console.log(data.data['eruptions'])
+		})
+		
+	
+	},[])
 
 	let AFEDummyData = props.onGetAFEData();
 
-	let TaalData = props.onGetTaalData();
 	let list = props.ll();
 	let graphData = props.dt();
-	let TaalEruptionEndYear = props.onGetTaalEruptionEndYear();
+	//let TaalEruptionEndYear = props.onGetTaalEruptionEndYear();
+
+
+	let TaalData = [];
+
+var pathArray = window.location.pathname.split('/');
+let vol =""
+if(pathArray[2] === "1" ){
+  vol = "Pinatubo"
+}
+else{
+  vol="Taal"
+}
+let Vol = []
+for(let i=0;i<eruptions.length;i++){
+	if(eruptions[i]['volc_name'] === vol && eruptions[i]['ed_stime'] && eruptions[i]['ed_etime'] ){
+	let s = eruptions[i]['ed_stime'].substr(0,4);
+	let e = eruptions[i]['ed_etime'].substr(0,4);
+	if(parseInt(s)>=1521  && parseInt(s) <= 2020 && parseInt(e)>=1521  && parseInt(e) <= 2022 ){
+	Vol.push({s:parseInt(s),e:parseInt(e)})
+      }
+      }
+      }
+
+let TaalEruptionEndYear=[]
+// for(let i=0;i<eruptions.length;i++){
+//   if(eruptions[i]['volc_name'] === vol && eruptions[i]['ed_etime']){
+//     let s = eruptions[i]['ed_etime'].substr(0,4);
+//     if(parseInt(s)>=1521  && parseInt(s) <= 2022){
+//     TaalEruptionEndYear.push({x:parseInt(s),y:10})
+//   }
+//   } 
+// }
+
+for(let i=0;i<Vol.length;i++){
+	TaalData.push(Vol[i].s)
+	TaalEruptionEndYear.push(Vol[i].e+1)
+      }
+console.log(TaalData)
+
+// let intervals = []
+// for(let i=0;i<TaalData.length;i++){
+// 	intervals.push({s:TaalData[i],e:TaalEruptionEndYear[i]})	
+// }
+
+// intervals.sort(function(a,b){return a.s.x<b.s.x})
+// if(intervals.length>0){
+
+// let q =[]
+// let b = intervals[intervals.length-1].s.x
+// let k = intervals[intervals.length-1].e.x
+// for(let i=intervals.length-2;i>=0;i--){		
+// 	if(intervals[i].s.x<=k){
+// 		k = intervals[i].e.x
+// 	}
+// 	else{
+// 		q.push({s:b,e:k})
+// 		b=intervals[i].s.x
+// 		k=intervals[i].e.x
+// 	}
+
+
+// }
+// q.push({s:b,e:k})
+// console.log(q)
+// }
+
+
 	let p = TaalData.filter(n => list.includes(n.x));
 
 	let EndYear = TaalEruptionEndYear.filter(n => list.includes(n.x));
@@ -31,10 +110,26 @@ const AFEtimeGraph = (props) =>{
 		fillList[i].y = 10;
 	}
 
-	let AFEFilteredData = AFEDummyData.filter(n => list.includes(n.x));
+
+
+
 
 	for(let i =0;i<EndYear.length;i++){
 		fillList.push(EndYear[i]);
+	}
+
+	let AFEFilteredData = AFEDummyData.filter(n => list.includes(n.x));
+console.log(TaalData)
+console.log(TaalEruptionEndYear)
+	if(p.length>0 && EndYear.length>0){
+		if(p[0]>EndYear[0]){
+			fillList.unshift({x:list[0],y:10})
+			alert('3')
+		}
+
+		if(p[p.length-1] > EndYear[EndYear.length - 1] ){
+			fillList.push({x:list[list.length-1],y:10})
+		}
 	}
 
 	for(let i =1;i<fillList.length;i++){

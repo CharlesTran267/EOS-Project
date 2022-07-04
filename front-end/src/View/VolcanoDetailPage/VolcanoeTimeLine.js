@@ -18,27 +18,46 @@ const AFEData = [];
       y: 5});
   }
 
+  var pathArray = window.location.pathname.split('/');
+let vol =""
+if(pathArray[2] === "1" ){
+  vol = "Pinatubo"
+}
+else{
+  vol="Taal"
+}
+
 
 const VolcanoTimeLine = () => {
 
+  const [eruptions,setEruptions] = useState([])
   const [volcanoes, setVolcanoes] = useState([]);
+  const [c,setC] = useState(0)
+ 
     
-    useEffect(()=>{
-        
-        axios.get(`/volcanoes/getVolcanoes`)
+  useEffect(() =>{
+		axios.get('/volcanoes/getEruptions')
+		.then(data =>{
+      setEruptions(data.data['eruptions'])
+			console.log(data.data['eruptions'])
+		})
+	  axios.get(`/volcanoes/getVolcanoes`)
 
          .then(response => {
            if(response.data.success){
+             console.log(response.data.volcanoes)
+             console.log('work')
              setVolcanoes(response.data.volcanoes)
            } else{
              alert("Failed to fetch data")
            }
-         })
-   
-     },[])
+         })	
+         
+	},[])
 
 
-const TaalEruptionYear = [2020, 1977, 1976, 1970, 1969, 1968, 1967, 1966, 1965, 1911, 1904, 1903, 1885, 1878, 1874, 1873, 1842, 1825, 1808, 1790, 1754, 1749, 1731, 1729, 1716, 1715, 1709, 1707, 1645, 1641, 1635, 1634, 1609, 1591, 1572];
+
+let TaalEruptionYear = [];
 const TaalData = [];
 
 
@@ -70,13 +89,15 @@ for(let i=0;i<TaalEruptionYear.length;i++){
 check = 1;
 }
 
-const [taalData,setTaalData] = useState(TaalData);
+
 
 const PassTaalData = () =>{
-  return taalData;
+
+  return TaalData;
 }
 
 const PassEndYear = () => {
+  console.log(EndYearData)
   return EndYearData;
 }
 
@@ -137,7 +158,6 @@ const [gData,setgData] = useState([]);
   }
 
 
-
   const AddLable = () => {
     
     return list;
@@ -159,14 +179,14 @@ const redirectPage = () =>{
 
   let OverviewTL = <OverviewTimeLine 
     onPassData = {onGetData}
-    onGetTaalData = {PassTaalData}
+    onGetTaalData = {() =>{return TaalData}}
     onGetTaalEruptionEndYear = {PassEndYear}
     onGetDummyAFEData = {getDummyData}
   />;
 
   let DecadeTL = <TimeLine 
   onPassData = {onUp}
-  onGetTaalData = {PassTaalData}
+  onGetTaalData = {() => {return TaalData}}
   onGetDummyAFEData = {getDummyData}
 />;
 
@@ -196,8 +216,8 @@ const ChangeGraph = (choice) => {
       <div>
             <div className="Row1">
                 <div className = "infoDisplay"> 
-                    <h1>Name: Taal</h1>
-                    <h1>ID Number: 2</h1>
+                    <h1>Name: {vol}</h1>
+                    <h1>ID Number: {pathArray[2]}</h1>
                     <h1>Latest Eruption: 2020</h1>
                 </div>
                 <div className = "giantImage">
@@ -214,7 +234,7 @@ const ChangeGraph = (choice) => {
             <AFEtimeGraph 
   ll = {AddLable}
   dt = {AddGraphData}
-  onGetTaalData = {PassTaalData}
+  onGetTaalData = {()=>{return TaalData}}
   onGetTaalEruptionEndYear = {PassEndYear}
   onGetAFEData = {getDummyData}
   />

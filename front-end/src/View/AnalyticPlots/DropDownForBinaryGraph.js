@@ -23,11 +23,11 @@ const DropDownBar = (props) => {
 	if(time === 0){
 		try{
 			props.onPassVariableForX('red_std');
-			f = "red_std";
+			f = props.onGetInitialData()[0];
 		      }      
 		catch(error){
 			props.onPassVariableForY('blue_std');
-			f = "blue_std";
+			f = props.onGetInitialData()[1];
 		}
 		setTime(1);
 	}
