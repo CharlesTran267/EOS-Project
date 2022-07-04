@@ -82,12 +82,12 @@ export default function extractInfo(file,volc_num,filepath){
                 particle.basic_component = "lithic"
                 particle.glassyType = "non-juvenile";
                 switch(label.slice(2,6)){
-                    case "lctr": particle.crystallinity_and_color = "low transparent"; break;
-                    case "lcbl": particle.crystallinity_and_color = "low black"; break;
-                    case "mctr" : particle.crystallinity_and_color = "mid"; break;
-                    case "mcbl": particle.crystallinity_and_color = "mid"; break;
-                    case "hctr": particle.crystallinity_and_color = "high"; break;
-                    case "hcbl": particle.crystallinity_and_color = "high";break;
+                    case "lctr": particle.crystallinity_and_color = "low crystallinity transparent"; break;
+                    case "lcbl": particle.crystallinity_and_color = "low crystallinity black"; break;
+                    case "mctr" : particle.crystallinity_and_color = "mid crystallinity transparent"; break;
+                    case "mcbl": particle.crystallinity_and_color = "mid crystallinity black"; break;
+                    case "hctr": particle.crystallinity_and_color = "high crystallinity transparent"; break;
+                    case "hcbl": particle.crystallinity_and_color = "high crystallinity black";break;
                     default: particle.crystallinity_and_color = ""
                 }
                 switch(label.slice(-1)){

@@ -55,8 +55,6 @@ export const useStyles = makeStyles((theme) => ({
   container:{
       backgroundSize: "100%",
       display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
       padding: "0 30px",
       height: "800px",
       position: "relative",
@@ -99,9 +97,9 @@ export const useStyles = makeStyles((theme) => ({
     position: "relative",
     padding: "8px 24px",
     marginTop:"20px",
-    display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
+    alignContent:"flex-start",
     alignItems: "flex-start",
     justifyContent: "flex-start",
     opacity: "100%"

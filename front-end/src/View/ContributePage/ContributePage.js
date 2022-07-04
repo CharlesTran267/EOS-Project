@@ -34,7 +34,7 @@ function ContributePage(props) {
       [history]
     );
     
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState()
     const [volcanoList, setVolcanoList] = useState([])
     useEffect(()=>{
       axios.get("/volcanoes/getVolcanoes")
@@ -120,7 +120,6 @@ function ContributePage(props) {
     const [addable, setAddable] = useState(false)
     useEffect(()=>{
       if(volcID && (afeDate || afeYearsBP) ){
-        console.log(afeDate,volcID)
         if(afeFormat=="Years BP"){
           axios.get(`/volcanoes/nearest_eruptions_yearsBP?yearsBP=${afeYearsBP}&volc=${volcID}`)
           .then(res=>{
@@ -348,7 +347,6 @@ function ContributePage(props) {
             const image_path = Images[i]
             const image_name = Images[i].split("_").slice(1).join("_").slice(0,-4)
             const info = extractInfo(image_name,volcID,image_path)
-            console.log(info)
             if (info == undefined) {alert (`Your file ${image_name} are not following our naming convention`)}
             else {
                 const changeToPascalCase =(s)=>{
@@ -420,14 +418,13 @@ function ContributePage(props) {
       }
       return group
     }
-    const [failed,setFailed] = useState(false)
+    const [failed, setFailed] = useState(false)
     const [afeCode, setAFECode] = useState(null)
     const onSubmit = async(event) => {
         event.preventDefault();
         if(checkValidData()){
           setIsLoading(true)
           if (eruption && eruption.ed_code){
-            console.log("a")
             axios.get(`/volcanoes/next_afe_code?ed=${eruption.ed_code}`).then((res)=>{
               setAFECode(res.data)
               let afe = {
@@ -441,7 +438,6 @@ function ContributePage(props) {
                .catch(err=> console.log(err),setFailed(true))
             }).catch(err=> console.log(err),setFailed(true))
           }else if(!addable){
-            console.log("b")
             if(afeDate){
               axios.get(`/volcanoes/post_eruption?date=${afeDate}&volc=${volcID}`).then((res)=>{
                 let ed_code_post = res.data.ed_code +"post"
@@ -461,9 +457,7 @@ function ContributePage(props) {
             if(afeYearsBP){
               axios.get(`/volcanoes/post_eruption_yearsBP?yearsBP=${afeYearsBP}&volc=${volcID}`).then((res)=>{
                 let ed_code_post = res.data.ed_code +"post"
-                console.log(res.data)
                 axios.get(`/volcanoes/next_afe_code?ed=${ed_code_post}`).then((res)=>{
-                  console.log(res.data)
                   setAFECode(res.data)
                   let afe = {
                     volc_num : volcID,
@@ -477,8 +471,8 @@ function ContributePage(props) {
               }).catch(err=> console.log(err),setFailed(true))
             }
           }else if(addable){
-            console.log("c")
             axios.get(`/volcanoes/next_eruption_code?volc=${volcID}`).then(res=>{
+              console.log(res.data)
               const eruption={
                 in_GVP: false,
                 ed_code: res.data,
@@ -503,21 +497,13 @@ function ContributePage(props) {
             })
             }
           }
-          axios.post("/upload/mesureTool",{len:Images.length}).catch(err=>console.log(err))
-          setIsLoading(false);
-          if(!failed) {
-            // navigate('/database/catalogue')
-          }
-          else{
-            return alert("Upload failed! Please try again!")
-          }
+          // axios.post("/upload/mesureTool",{len:Images.length}).catch(err=>console.log(err));
       }
-    useEffect(()=>{
+    useEffect(async()=>{
       if(followConvention==false){
         const group = groupData(data)
-        console.log(group)
         Object.keys(group).map(key=>{
-          Object.keys(group[key].dataList).map(par=>{
+          Object.keys(group[key].dataList).map(async(par)=>{
             const parInfo = group[key].dataList[par]
             const particle ={
               volc_num: volcID,
@@ -540,7 +526,8 @@ function ContributePage(props) {
             if(parInfo.jType) particle.juvenile_type = parInfo.jType.toLowerCase();
             if(parInfo.cType) particle.crystal_type = parInfo.cType.toLowerCase();
             if(parInfo.aType) particle.altered_material_type = parInfo.aType.toLowerCase();
-            axios.post("/volcanoes/particles/add", particle)
+            console.log(particle)
+            await axios.post("/volcanoes/particles/add", particle)
               .catch(err=>console.log(err),setFailed(true))
             })
           })
@@ -568,8 +555,7 @@ function ContributePage(props) {
             if(data[i].jType) particle.juvenile_type = data[i].jType.toLowerCase();
             if(data[i].cType) particle.crystal_type = data[i].cType.toLowerCase();
             if(data[i].aType) particle.altered_material_type = data[i].aType.toLowerCase();
-            console.log(particle)
-            axios.post("/volcanoes/particles/add", particle)
+            await axios.post("/volcanoes/particles/add", particle)
               .catch(err=>console.log(err),setFailed(true))
             if(sampleList){
               const sample={
@@ -580,13 +566,18 @@ function ContributePage(props) {
               if(sampleDate) {sample.sample_date = sampleDate}
               if (sampleLat) {sample.sample_loc_lat = sampleLat}
               if (sampleLon) {sample.sample_loc_lon = sampleLon}
-              console.log(sample)
-              axios.post("/volcanoes/samples/add",sample)
+              await axios.post("/volcanoes/samples/add",sample)
               .catch(err=> console.log(err),setFailed(true)) 
             }
           }
         }
+        if(isLoading == true) setIsLoading(false)
     },[afeCode])
+    useEffect(()=>{
+      if(isLoading === false ){
+        navigate('/database/catalogue')
+      }
+    },[isLoading])
     return (
         <div style={{ maxWidth:"80%",margin: '2rem auto' }}>
             <Typography gutterBottom variant="h4" align="center" style={{fontWeight:"600"}} >
@@ -646,7 +637,6 @@ function ContributePage(props) {
                       label="Nearest Eruptions"
                       onChange ={(newValue)=>{
                         let value = newValue.target.value
-                        console.log(value)
                         if(value == "Unknown"){
                           setEd(null)
                           setEStart({...eStartDate,date:null})

@@ -250,7 +250,7 @@ router.get("/next_eruption_code",async(req,res)=>{
     if(err){
       res.status(400).send(err)
     }else{
-      let next_ed_code = eruptions[0].ed_code.slice(0,-1) + eruptions.length.toString()
+      let next_ed_code = eruptions[0].ed_code.split("_").slice(0,-1).join("_")+ "_" + eruptions.length.toString()
       res.status(200).send(next_ed_code)
     }
   })

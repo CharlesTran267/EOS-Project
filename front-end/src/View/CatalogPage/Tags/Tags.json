@@ -3,28 +3,25 @@
       "id":1,
       "choices": ["Volcano Name", "Pinatubo","Taal"]
    },
-  "silicaContent": {
+  "basicComponent": {
     "id": 2,
-    "choices":["Silica Content","Ultrabasic", "Basic", "Acid"]
+    "choices":["Basic Component","Free Crystal","Altered Material","Lithic","Juvenile"]
   },
-  "tas" :{
+  "crystalType" :{
     "id" : 3,
-    "choices": ["TAS","Basalt", "Basaltic andesite", "Andesite", "Dacite", "Rhyolite", "Trachyte or Trachydacite", "Phonolite", "Trachybasalt", "Basaltic trachyandesite", "Trachyandesite", "Picrobasalt", "Basanite or Tephrite", "Phonotephrite", "Tephriphonolite"]},
-  "eruptiveStyle": {
+    "choices": ["Crystal Type","Plagioclase","Pyroxene", "Amfibole","Sulfur"]},
+  "juvenileType": {
     "id": 4,
-    "choices": ["Eruptive Style", "Phreatic","Fountaining","Strombolian","Vulcanian","Subplinian","Plinian","Ultraplinian","Hyaloclastite","Surtseyan"]},
-  "particleType": {
+    "choices": ["Juvenile Type", "Recycled Juvenile","Hydrothermally Altered Juvenile","Juvenile"]},
+  "alteredMaterialType": {
     "id": 5,
-    "choices":["Particle Type","Pyroxene","Plagioclase","Other minerals","Altered material","Glassy"]},
-  "glassyType" :{
+    "choices":["Altered Material Type","Weathered Material", "Hydrothermally Altered Material"]},
+  "crystallinityAndColor" :{
     "id": 6,
-    "choices":["Glassy Type","Juvenile","Non-juvenile"]},
-  "crystallinity": {
+    "choices":["Crystallinity and Color","Low Black","Low Transparent","Mid Black", "Mid Transparent","High Black", "High Transparent"]},
+  "alterationDegree" :{
     "id":7,
-    "choices":["Crystallinity","Low Transparent","Low Black", "Mid", "High"]},
-  "alteration" :{
-    "id":8,
-    "choices":["Aleration","None", "Slight", "Moderate"]},
-  "shape" :{"id": 9,
+    "choices":["Aleration Degree","None", "Slight", "Moderate","High"]},
+  "shape" :{"id": 8,
     "choices":["Shape","Blocky", "Fluidal", "Microtubular","Highly vesicular","Spongy","Pumice"]}
 }
