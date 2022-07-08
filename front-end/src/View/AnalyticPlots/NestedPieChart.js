@@ -72,8 +72,7 @@ function NestedPieChart(props){
 // 				Data.push(data[i])
 // 			}
 			
-		
-// 	}
+
 
 // 	data = Data
 
@@ -100,7 +99,7 @@ function NestedPieChart(props){
 	for(let i=0;i<data.length;i++){
 		if(crysTable[data[i]["basic_component"]]&&data[i]["crystallinity_and_color"]){
 			
-			crysTable[data[i]["basic_component"]][data[i]["crystallinity_and_color"]] =0;}
+			crysTable[data[i]["basic_component"]][data[i]["crystallinity_and_color"]+data[i]['basic_component']] =0;}
 		else if(crysTable[data[i]['basic_component']])
 			crysTable[data[i]["basic_component"]]['undefined'] =0;
 		else
@@ -120,7 +119,7 @@ function NestedPieChart(props){
 	}
 	for(let i=0;i<data.length;i++){
 		if(data[i]["basic_component"]&&data[i]["crystallinity_and_color"]&&crysTable[data[i]["basic_component"]])
-			crysTable[data[i]["basic_component"]][data[i]["crystallinity_and_color"]] +=1;
+			crysTable[data[i]["basic_component"]][data[i]["crystallinity_and_color"]+data[i]['basic_component']] +=1;
 		else if(data[i]['basic_component']&&crysTable[data[i]["basic_component"]])
 			crysTable[data[i]["basic_component"]]['undefined'] +=1;
 		else
@@ -148,20 +147,12 @@ function NestedPieChart(props){
 
 	for(const[key,value] of Object.entries(crysTable)  ){
 		for(const[k,v] of Object.entries(value)){
-			let check=0;
-			for(let i=0;i<labels.length;i++){
-				if(labels[i]===k){
-					check = 1;
-				}
-			}
 			
-	
-
-			if(k !== 'undefined' && check === 0){
+			if(k !== 'undefined' ){
 			labels.push(k);
 			parents.push("");
 			values.push(0);}
-			else if(check ===0 && k === 'undefined'){
+			else if(k === 'undefined'){
 			labels.push(k+key)
 			values.push(0)
 			parents.push("")
@@ -171,16 +162,13 @@ function NestedPieChart(props){
 		}
 	}
 
+
 	for(let i=0;i<variable.length;i++){
 		
 		for(const[key,value] of Object.entries(crysTable[variable[i].label])){
-			let check = 0;
-			for(let i=0;i<parents.length;i++){
-				if(parents[i]===key){
-					check = 1;
-				}
-			}
-			if(check === 0){
+		
+			
+			
 			labels.push(variable[i].label)
 			if(key === 'undefined'){
 			
@@ -190,10 +178,8 @@ function NestedPieChart(props){
 			else
 			parents.push(key)
 			values.push(crysTable[variable[i].label][key])
-	}
-	else{
+	
 
-	}
 		}
 		// if(crysTable[variable[i].label]['undefined'])
 		// 	if(crysTable[variable[i].label]['undefined']>0)
@@ -207,32 +193,37 @@ function NestedPieChart(props){
 	}
 
 	let ids=[]
-	for(let i=0;i<values.length;i++){
+	for(let i=0;i<labels.length;i++){
 		if(i>0 && labels[i]===labels[i-1]){
 			ids.push(labels[i]+i)
 		}
 		else
 		ids.push(labels[i])
+		
 	}
 	
 	let colors = []
 
 	for(let i=0;i<labels.length;i++){
-		if((i>= 0 && i<=5) || (i===7)){
+		if((i>= 0 && i<=5)){
 			colors.push('#FF8886')
 		}
-		else if(i===6){
+		else if(i>=6 && i <=12){
 			colors.push('#45b6fe')
 		}
-		else if(i===8){
+		else if(i===13){
 			colors.push('#FFFBC8')}
-		else if((i>=9 && i<=14) || (i===16)){
+		else if((i>=14 && i<=19)){
 			colors.push('red')
 		}
-		else if(i === 15){
+		else if(i>=20 && i<=26){
 			colors.push('#3A9BDC')}
-		else if(i===17){	
+		else if(i===27){	
 			colors.push('yellow')}
+	}
+
+	const e = ()=>{
+		return false
 	}
 
 	// for(let i=0;i<labels.length;i++){
@@ -259,6 +250,7 @@ function NestedPieChart(props){
 		}
 	}
 
+	console.log(crysTable)
 
 	console.log(d)
 	
@@ -286,14 +278,17 @@ function NestedPieChart(props){
 		parents: parents,
 		ids: ids,
 		type: "sunburst",
-		values:  values,
+		// values:  values,
+		values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 921, 315, 25, 20, 26, 343, 84, 197, 209, 46, 292, 36, 27, 298],
 		marker:{line:{width:0},
+		sort: false,
+		 branchvalues:"total",
 		colors:colors,
 	}
 		}
 	]}		
 									
-        layout={ {width: side[0], height: side[1], title: 'Sunburst'} }
+        layout={ {width: side[0], height: side[1], title: 'Sunburst',sort:false} }
       />
       </div>
 		</div>

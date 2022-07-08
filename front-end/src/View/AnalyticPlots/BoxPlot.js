@@ -44,7 +44,8 @@ const BoxPlot = (props) =>{
 		  boxpoints: 'all',
 		  jitter: 0.3,
 		  pointpos: -1.8,
-		  type: 'box'
+		  type: 'box',
+		  name:xAxis,
 		}
 	      ];
 	
@@ -62,7 +63,10 @@ const BoxPlot = (props) =>{
 	<Plot
         data={d}
 	
-        layout={ {width: side[0], height: side[1], title: 'Box Plot'}}
+        layout={ {width: side[0], height: side[1], title: 'Box Plot',yaxis: {
+		title: 'value',
+		
+	      },}}
 	
       />
 </div>
