@@ -19,13 +19,7 @@ const AFEData = [];
   }
 
   var pathArray = window.location.pathname.split('/');
-let vol =""
-if(pathArray[2] === "1" ){
-  vol = "Pinatubo"
-}
-else{
-  vol="Taal"
-}
+let vol = pathArray[2]
 
 
 const VolcanoTimeLine = () => {
@@ -54,8 +48,20 @@ const VolcanoTimeLine = () => {
          })	
          
 	},[])
+  // for(let i =0;i<volcanoes.length;i++){
+  //   if(parseInt(pathArray[2]) === volcanoes[i].id ){
+  //     vol = volcanoes[i].volc_name;
+  //     break;
+  //   }
+  // }
+let volc_num = 0
+  for(let i=0;i<volcanoes.length;i++){
+      if(volcanoes[i].volc_name === vol){
+        volc_num = volcanoes[i].volc_num
+      }
+  }
 
-
+  
 
 let TaalEruptionYear = [];
 const TaalData = [];
@@ -107,55 +113,36 @@ const [gData,setgData] = useState([]);
 
   const onGetData = (yD,yU) =>{
     let list = [];
+    console.log(yD)
     for(let i = Math.floor(yD);i<=Math.floor(yU);i++){
-      list.push(i);
+      for(let j=0.01;j<=0.12;j+=0.01){
+        if(j===0.01){
+          list.push(i)
+        }
+        else{ 
+        list.push(i+j);
+        }
+      }
     }
-
     setList([...list]);
   }
 
+  console.log(list)
 
-  const onUp = (begin,end,yD,yU) => {
+
+  const onUp = (yD,yU) => {
     var l = [];
-    let g = end - begin;
-
-    let YU = Math.floor(yU);
-    let YD = Math.floor(yD);
-
-    if(YU > YD){
-      for(let i = YD;i<YU;i++){
-        for(let j = begin;j<=12;j++){
-          if(j === 1){
-            l.push(YD);
-            continue;
-          }
-          else{
-          l.push(j);
-          }
-        }
-        begin = 1;
-        YD+=1;
+    for(let i = Math.floor(yD);i<=Math.floor(yU);i++){
+      for(let j=0;j<0.12;j+=0.01){
+        l.push(i+j);
+        alert(j+i);
+        break;
       }
-
-      for(let i = begin;i <= end;i++){
-        if(i === 1){
-          l.push(YD);
-          continue;
-        }
-        l.push(i);
-      }
-
     }
-    else{
-      
-        for(let i = begin;i<=end;i++){
-            l.push(i);
-        }
-    }
-    
     
     setList([...l]);
   }
+ 
 
 
   const AddLable = () => {
@@ -178,6 +165,7 @@ const redirectPage = () =>{
 }
 
   let OverviewTL = <OverviewTimeLine 
+  onPassVolcName = {() =>{return vol}}
     onPassData = {onGetData}
     onGetTaalData = {() =>{return TaalData}}
     onGetTaalEruptionEndYear = {PassEndYear}
@@ -195,6 +183,7 @@ const redirectPage = () =>{
 const ChangeGraph = (choice) => {
   if(choice === 'overview'){
     setEruptionOption(<OverviewTimeLine 
+      onPassVolcName ={() =>{return vol}}
       onPassData = {onGetData}
       onGetTaalData = {PassTaalData}
       onGetTaalEruptionEndYear = {PassEndYear}
@@ -217,8 +206,8 @@ const ChangeGraph = (choice) => {
             <div className="Row1">
                 <div className = "infoDisplay"> 
                     <h1>Name: {vol}</h1>
-                    <h1>ID Number: {pathArray[2]}</h1>
-                    <h1>Latest Eruption: 2020</h1>
+                    <h1>Volcano Number: {volc_num}</h1>
+                    <h1>Latest Eruption: {2022}</h1>
                 </div>
                 <div className = "giantImage">
                 { volcanoes[1] && ( <img src= {`/${volcanoes[1].imgURL}`} />)}
