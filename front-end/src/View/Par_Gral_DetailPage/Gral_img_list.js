@@ -80,7 +80,7 @@ const ParList = (props) =>{
             <div>
 
 <div class = 'imageList' >
-			    <h1>Particle Imgage</h1>
+
 		    </div>
             <div style={{display: "flex",flexDirection:"row",flexWrap:"wrap"}}>
 		

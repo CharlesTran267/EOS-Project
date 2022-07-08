@@ -20,7 +20,7 @@ const MenuDropDown = (props) => {
 
 	const ChoosePar = () => {
 		setChoice(1);
-		setTitle("Partile");
+		setTitle("Particle");
 		props.onChange('par');
 		
 	}
