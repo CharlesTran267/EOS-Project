@@ -49,11 +49,14 @@ const TernaryPlot = (props) =>{
 
 	let d= []
 	let e = []
+	let f =[]
 	for(let i=0;i<Data.length;i++){
 		if(Data[i]['volc_name'] === 'Kelut')
 			d.push({a:Data[i][variable[0].label], b: Data[i][variable[1].label],c:Data[i][variable[2].label],color:volcColor[Data[i]['volc_name']],name:'Kelut'})
 		if(Data[i]['volc_name'] === 'Toba')
 			e.push({a:Data[i][variable[0].label], b: Data[i][variable[1].label],c:Data[i][variable[2].label],color:volcColor[Data[i]['volc_name']],name:'Toba'})
+		if(Data[i]['volc_name'] === 'Soufrière Guadeloupe')
+			f.push({a:Data[i][variable[0].label], b: Data[i][variable[1].label],c:Data[i][variable[2].label],color:volcColor[Data[i]['volc_name']],name:'Soufrière Guadeloupe'})	
 	}
 
 	const doubleClick = () =>{
@@ -86,7 +89,7 @@ const TernaryPlot = (props) =>{
 					showlegend:true,
 					marker: {
 					    
-					    color: d.map(function(d){return d.color}),
+					    color: 'pink',
 					    line: { width: 2 }
 					}
 				},{
@@ -99,7 +102,20 @@ const TernaryPlot = (props) =>{
 					showlegend:true,
 					marker: {
 					    
-					    color: e.map(function(d){return e.color}),
+					    color: 'blue',
+					    line: { width: 2 }
+					}	
+				},{
+					type: 'scatterternary',
+					mode: 'markers',
+					a: f.map(function(e) { return f.a; }),
+					b: f.map(function(e) { return f.b; }),
+					c: f.map(function(e) { return f.c; }),
+					name:'Soufrière Guadeloupe',
+					showlegend:true,
+					marker: {
+					    
+					    color: 'orange',
 					    line: { width: 2 }
 					}	
 				}

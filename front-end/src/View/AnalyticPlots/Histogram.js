@@ -20,8 +20,8 @@ const Histogram = (props) =>{
 	const [histogramData,setHistogramData] = useState([])
 	const [histogramVariable,setHistogramVariable] = useState('red_std') 
 	const [histogramMode,setHistogramMode] = useState('Overview')
-	const [volcToCompare1,setVolcToCompare1] = useState('Pinatubo')
-	const [volToComapare2,setVolcToCompare2] = useState('Taal')
+	const [volcToCompare1,setVolcToCompare1] = useState('Toba')
+	const [volToComapare2,setVolcToCompare2] = useState('Soufrière Guadeloupe')
 
 	const PassHistogramVariable =(a) =>{
 		setHistogramVariable(a)
@@ -140,9 +140,9 @@ const Histogram = (props) =>{
 			if(Data[i]['volc_name'] === volcToCompare[1])  
 				volc2Data.push(Data[i][variable]);
 		}
-		volc1Data= arr1
-		volc2Data=arr2
-
+		// volc1Data= arr1
+		// volc2Data=arr2		
+		console.log(volc1Data)
 		let max1=0;
 		let min1 =99999
 		let d1 = arr1
@@ -221,7 +221,7 @@ const Histogram = (props) =>{
 				size: bin1, 
 				},
 			marker:{
-				color:'blue'
+				color:'orange'
 			}
 			
 		})
@@ -239,37 +239,37 @@ const Histogram = (props) =>{
 			
 		})
 
-		pData.push({
+		// pData.push({
 			
-			x: arr_X1,
-			y: arr_Y1,
-			mode: 'lines',
-			name: 'spline',
-			text: ['tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object'],
-			line: {shape: 'spline'},
-			type: 'scatter',
-			line:{
-				color: 'rgb(55, 128, 191)',
-				width: 3
-		}
+		// 	x: arr_X1,
+		// 	y: arr_Y1,
+		// 	mode: 'lines',
+		// 	name: 'spline',
+		// 	text: ['tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object'],
+		// 	line: {shape: 'spline'},
+		// 	type: 'scatter',
+		// 	line:{
+		// 		color: 'rgb(55, 128, 191)',
+		// 		width: 3
+		// }
 			      
-		})
+		// })
 
-		pData.push({
+		// pData.push({
 			
-			x: arr_X2,
-			y: arr_Y2,
-			mode: 'lines',
-			name: 'spline',
-			text: ['tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object'],
-			line: {shape: 'spline'},
-			type: 'scatter',
-			line:{
-				color: 'rgb(55, 128, 191)',
-				width: 3
-		}
+		// 	x: arr_X2,
+		// 	y: arr_Y2,
+		// 	mode: 'lines',
+		// 	name: 'spline',
+		// 	text: ['tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object'],
+		// 	line: {shape: 'spline'},
+		// 	type: 'scatter',
+		// 	line:{
+		// 		color: 'rgb(55, 128, 191)',
+		// 		width: 3
+		// }
 			      
-		})
+		// })
 
 	}
 	//console.log(pData)

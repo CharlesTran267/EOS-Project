@@ -3,39 +3,53 @@ import { Line } from 'react-chartjs-2';
 import DragBox from './DragBox';
 import { useState,useEffect } from 'react';
 
+let c = 0
+
 const axios = require('axios')
 const OverviewTimeLine = (props) =>{
   const [eruptions,setEruptions] = useState([])
+  const [volcanoes,setVolcanoes] = useState([])
   useEffect(() =>{
 		axios.get('/volcanoes/getEruptions')
 		.then(data =>{
       setEruptions(data.data['eruptions'])
 			console.log(data.data['eruptions'])
 		})
-		
-	
+	  axios.get(`/volcanoes/getVolcanoes`)
+
+         .then(response => {
+           if(response.data.success){
+             console.log(response.data.volcanoes)
+             console.log('work')
+             setVolcanoes(response.data.volcanoes)
+           } else{
+             alert("Failed to fetch data")
+           }
+         })	
+         
 	},[])
   let Vol = [];
   let TaalEruptionYear = [];
 const TaalData = [];
 
 var pathArray = window.location.pathname.split('/');
-let vol =""
-if(pathArray[2] === "1" ){
-  vol = "Pinatubo"
-}
-else{
-  vol="Taal"
-}
+let vol = props.onPassVolcName();
+
+
 
 for(let i=0;i<eruptions.length;i++){
   if(eruptions[i]['volc_name'] === vol && eruptions[i]['ed_stime'] && eruptions[i]['ed_etime'] ){
-  let s = eruptions[i]['ed_stime'].substr(0,4);
-  let e = eruptions[i]['ed_etime'].substr(0,4);
-  if(parseInt(s)>=1521  && parseInt(s) <= 2020 && parseInt(e)>=1521  && parseInt(e) <= 2022 ){
-  Vol.push({s:parseInt(s),e:parseInt(e)})
-}
-}
+  let s = eruptions[i]['ed_stime'].substr(0,4) + '.' + eruptions[i]['ed_stime'].substr(5,7);
+  let e = eruptions[i]['ed_etime'].substr(0,4) + '.' + eruptions[i]['ed_etime'].substr(5,7);
+
+    if(parseFloat(s) !== parseFloat(e)){
+    Vol.push({s:parseFloat(s),e:parseFloat(e)})
+    }
+    else{
+      Vol.push({s:parseFloat(s),e:parseFloat(e)+1})
+    }
+
+  }
 }
 
 // console.log(TaalEruptionYear)
@@ -56,32 +70,31 @@ for(let i=0;i<Vol.length;i++){
 
 
 
-
-console.log(VolEndYear.length)
-console.log(TaalEruptionYear.length)
-
 for(let i=0;i<TaalEruptionYear.length;i++){
-  let p = {
-    x: VolEndYear[i]+1,
-    y: 10
-  }
-  TaalData.push(p);
-}
-
-
-for(let i=0;i<TaalEruptionYear.length;i++){
-  let p = {
+  let s = {
     x: TaalEruptionYear[i],
     y: 10
   }
-  TaalData.push(p);
+  TaalData.push(s);
+  let e = {
+    x: VolEndYear[i],
+    y:10
+  } 
+  TaalData.push(e)
+
 }
 
 
-  
+
   let list = [];
-	for(let i = 1521;i<=2021;i++){
-		list.push(i);
+	for(let i = 1910;i<=2023;i++){
+		for(let j = 0.01;j<=0.12;j+=0.01){
+      if(j===0.01){
+        list.push(i)
+      }
+      else
+        list.push(i+j);
+    }
 	}
 
   const [lb,setLB] = useState(list);
@@ -96,34 +109,43 @@ for(let i=0;i<TaalEruptionYear.length;i++){
 
 
   let fillList = TaalData;
-	for(let i=0;i<fillList.length;i++){
-		fillList[i].y = 10;
-	}
 
-	for(let i =0;i<TaalEndYear.length;i++){
-		fillList.push(TaalEndYear[i]);
-	}
+  console.log(TaalEruptionYear)
+  console.log(fillList)
 
 	fillList.sort((a,b) => a.x > b.x && 1 || -1 )
 
   let zoomList = [];
+ 
+  if(fillList.length >0 && c ===0){
+  zoomList.push({x:fillList[0].x,
+                  y:0}
+    )
 	for(let i=0;i<fillList.length;i++){
-		zoomList.push(fillList[i]);
-		if(zoomList.length%2 === 0){
-			zoomList.push({
-				x:zoomList[zoomList.length - 1].x,
-				y:0
-			});
-			if(i< fillList.length - 1){
-			zoomList.push({
-				x:fillList[i+1].x,
-				y:0
-			});
-			}
-		}
+    
+    zoomList.push(fillList[i])
+		if(i>=1&& i<fillList.length -1 && i%2 ===1){
+      zoomList.push({
+        x:fillList[i].x,
+        y:0
+      })
+
+      zoomList.push({
+        x:fillList[i+1].x,
+        y:0
+      })
+    }
 	}
 
-  console.log(fillList);
+zoomList.push({
+  x:fillList[fillList.length-1].x,
+  y:0
+})
+
+
+  }
+
+  console.log(zoomList);
 
 
   window.addEventListener("resize", () => {
@@ -139,20 +161,22 @@ for(let i=0;i<TaalEruptionYear.length;i++){
     var e = window.event;
     var w = window.innerWidth;
     var posX = e.clientX;
-    setYearDown(10*(posX/w - 0.01828681424446583)/(0.01936477382) + EruptionLabel[0] );
-    var yD = 10*(posX/w - 0.01828681424446583)/(0.01936477382) + EruptionLabel[0];
-    console.log(yD);
-        
+   
+    setYearDown(2*(posX-20)/24.25 + EruptionLabel[0] );
+    
+    console.log(posX);
+      
   }
 
   const MouseUp = () =>{
     var e = window.event;
     var w = window.innerWidth;
     var posX = e.clientX;
-    setYearUp(10*(posX/w - 0.01828681424446583)/(0.01936477382) + EruptionLabel[0] );
-    var yU = 10*(posX/w - 0.01828681424446583)/(0.01936477382) + EruptionLabel[0];
+    let x = Math.floor((posX-19)/19)
+    setYearUp(2*(posX-20)/24.25 + EruptionLabel[0] );
+    var yU = 2*(posX - 20)/(24.25) + EruptionLabel[0];
     var m = Math.floor((yU-Math.floor(yU)) /0.1) + 1 ;
-    console.log(yU);
+   
     props.onPassData(yearDown,yU);
 
   }
@@ -171,21 +195,7 @@ for(let i=0;i<TaalEruptionYear.length;i++){
      
 
 
-  },
-    {
-      position: 'Right',
-      fill: false,
-      lineTension: 0.5,
-      backgroundColor: 'red',
-      borderColor: 'rgba(0,0,0,1)',
-      pointStyle: 'rectRot',
-      borderWidth: 1,
-      pointRadius: 5,
-      data: AFEDummyData,
-      showLine: false,
-	},
-  
-
+  }
 ],
 }
 
@@ -207,7 +217,7 @@ for(let i=0;i<TaalEruptionYear.length;i++){
                 display:true,
                 ticks: {
                   autoSkip: true,
-                  maxTicksLimit: 55,
+                  maxTicksLimit: 58,
               
               }
               }
@@ -229,6 +239,12 @@ for(let i=0;i<TaalEruptionYear.length;i++){
               
           },
 	}
+
+  for(let i =0;i<zoomList.length;i++){
+    if(zoomList[i].x === 1911.11){
+      alert('hhhhhh')
+    }
+  }
 
 	return(
 <div>

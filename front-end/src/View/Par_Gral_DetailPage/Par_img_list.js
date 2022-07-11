@@ -44,6 +44,7 @@ const ParList = (props) =>{
      },[])
 
 
+
      useEffect(()=>{
         setFetchedData({
           Particles: particles,
@@ -51,21 +52,27 @@ const ParList = (props) =>{
         })
       },[particles])
 
+      console.log(fetchedData['Particles'])
+
+      let splitted = window.location.href.split('/');
+      console.log(splitted)
+      let volc_name = splitted[5]
+     
 
 	return(
 		<div class = 'myList' >
-			<h1>Particle Imgage</h1>
+		
 			{(fetchedData && Object.keys(fetchedData).map((key)=>
-          key=="Generals"?(fetchedData[key].length !=0?(
+          key=="Particles"?(fetchedData[key].length !=0?(
             <div>
             
             <div class = 'imageList' >
-			    <h1>General Imgage</h1>
+			    <h1>Particle Imgage</h1>
 		    </div>
 
 		    <div style={{display: "flex",flexDirection:"row",flexWrap:"wrap"}}>
             {fetchedData[key].map((e) =>
-	    e.volc_num==2?
+	    e.volc_name==volc_name?
 	     <VolcanoCard
               info={e}
               type={key}
@@ -77,7 +84,7 @@ const ParList = (props) =>{
             <div>
             <div style={{display: "flex",flexDirection:"row",flexWrap:"wrap"}}>
             {fetchedData[key].map((ele)=>
-            ele.volc_num==2?
+            ele.volc_name==volc_name?
             <VolcanoCard
               info={ele}
               type={key}

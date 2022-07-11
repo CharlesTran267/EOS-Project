@@ -12,14 +12,26 @@ const axios = require('axios')
 const AFEtimeGraph = (props) =>{
 
 	const [eruptions,setEruptions] = useState([])
+	const [volcanoes,setVolcanoes] = useState([])
+
   useEffect(() =>{
 		axios.get('/volcanoes/getEruptions')
 		.then(data =>{
       setEruptions(data.data['eruptions'])
 			console.log(data.data['eruptions'])
 		})
-		
-	
+	  axios.get(`/volcanoes/getVolcanoes`)
+
+         .then(response => {
+           if(response.data.success){
+             console.log(response.data.volcanoes)
+             console.log('work')
+             setVolcanoes(response.data.volcanoes)
+           } else{
+             alert("Failed to fetch data")
+           }
+         })	
+         
 	},[])
 
 	let AFEDummyData = props.onGetAFEData();
@@ -31,24 +43,37 @@ const AFEtimeGraph = (props) =>{
 
 	let TaalData = [];
 
+	console.log(list)
+
 var pathArray = window.location.pathname.split('/');
-let vol =""
-if(pathArray[2] === "1" ){
-  vol = "Pinatubo"
-}
-else{
-  vol="Taal"
-}
+let vol =pathArray[2]
+// for(let i =0;i<volcanoes.length;i++){
+// 	if(parseInt(pathArray[2]) === volcanoes[i].id ){
+// 	  vol = volcanoes[i].volc_name;
+// 	  break;
+// 	}
+//       }
+
+
+    
 let Vol = []
+
 for(let i=0;i<eruptions.length;i++){
 	if(eruptions[i]['volc_name'] === vol && eruptions[i]['ed_stime'] && eruptions[i]['ed_etime'] ){
-	let s = eruptions[i]['ed_stime'].substr(0,4);
-	let e = eruptions[i]['ed_etime'].substr(0,4);
-	if(parseInt(s)>=1521  && parseInt(s) <= 2020 && parseInt(e)>=1521  && parseInt(e) <= 2022 ){
-	Vol.push({s:parseInt(s),e:parseInt(e)})
+	let s = eruptions[i]['ed_stime'].substr(0,4) + '.' + eruptions[i]['ed_stime'].substr(5,7);
+	let e = eruptions[i]['ed_etime'].substr(0,4) + '.' + eruptions[i]['ed_etime'].substr(5,7);
+      
+	  if(parseFloat(s) !== parseFloat(e)){
+	  Vol.push({s:parseFloat(s),e:parseFloat(e)})
+	  }
+	  else{
+	    Vol.push({s:parseFloat(s),e:parseFloat(e)+1})
+	  }
+
+	}
       }
-      }
-      }
+
+
 
 let TaalEruptionEndYear=[]
 // for(let i=0;i<eruptions.length;i++){
@@ -62,7 +87,7 @@ let TaalEruptionEndYear=[]
 
 for(let i=0;i<Vol.length;i++){
 	TaalData.push(Vol[i].s)
-	TaalEruptionEndYear.push(Vol[i].e+1)
+	TaalEruptionEndYear.push(Vol[i].e)
       }
 console.log(TaalData)
 
@@ -94,9 +119,9 @@ console.log(TaalData)
 // }
 
 
-	let p = TaalData.filter(n => list.includes(n.x));
+	let fillList = TaalData.filter(n => list.includes(n));
 
-	let EndYear = TaalEruptionEndYear.filter(n => list.includes(n.x));
+	let EndYear = TaalEruptionEndYear.filter(n => list.includes(n));
 
 	const history = useHistory();
 
@@ -105,12 +130,12 @@ console.log(TaalData)
 		history.push(path);
 	}
 
-	let fillList = TaalData.filter(n => list.includes(n.x));
-	for(let i=0;i<fillList.length;i++){
-		fillList[i].y = 10;
-	}
 
+	// for(let i=0;i<fillList.length;i++){
+	// 	fillList[i].y = 10;
+	// }
 
+	//console.log(fillList)
 
 
 
@@ -118,46 +143,54 @@ console.log(TaalData)
 		fillList.push(EndYear[i]);
 	}
 
+	fillList.sort()
+	console.log(fillList)
+
+	let fList = []
+	for(let i=0;i<fillList.length;i++){
+		fList.push({x:fillList[i],y:10})
+	}
+
 	let AFEFilteredData = AFEDummyData.filter(n => list.includes(n.x));
-console.log(TaalData)
-console.log(TaalEruptionEndYear)
-	if(p.length>0 && EndYear.length>0){
-		if(p[0]>EndYear[0]){
-			fillList.unshift({x:list[0],y:10})
-			alert('3')
-		}
+// console.log(TaalData)
+// console.log(TaalEruptionEndYear)
+// 	if(p.length>0 && EndYear.length>0){
+// 		if(p[0]>EndYear[0]){
+// 			fillList.unshift({x:list[0],y:10})
+// 			alert('3')
+// 		}
 
-		if(p[p.length-1] > EndYear[EndYear.length - 1] ){
-			fillList.push({x:list[list.length-1],y:10})
-		}
-	}
+// 		if(p[p.length-1] > EndYear[EndYear.length - 1] ){
+// 			fillList.push({x:list[list.length-1],y:10})
+// 		}
+// 	}
 
-	for(let i =1;i<fillList.length;i++){
-		for(let j = i;j>0;j--){
-			if(fillList[j].x < fillList[j-1].x){
-			let temp = fillList[j].x;
-			fillList[j].x = fillList[j-1].x;
-			fillList[j-1].x = temp;
+// 	for(let i =1;i<fillList.length;i++){
+// 		for(let j = i;j>0;j--){
+// 			if(fillList[j].x < fillList[j-1].x){
+// 			let temp = fillList[j].x;
+// 			fillList[j].x = fillList[j-1].x;
+// 			fillList[j-1].x = temp;
 			
-			}
-		}
-	}
+// 			}
+// 		}
+// 	}
 
-	console.log(fillList);
+	console.log(fList);
 
 	
 
 	let zoomList = []
-	for(let i=0;i<fillList.length;i++){
-		zoomList.push(fillList[i]);
+	for(let i=0;i<fList.length;i++){
+		zoomList.push(fList[i]);
 		if(zoomList.length %2 === 0){
 			zoomList.push({
 				x:zoomList[zoomList.length - 1].x,
 				y:0
 			});
-			if(i< fillList.length - 1){
+			if(i< fList.length - 1){
 			zoomList.push({
-				x:fillList[i+1].x,
+				x:fList[i+1].x,
 				y:0
 			});
 			}
