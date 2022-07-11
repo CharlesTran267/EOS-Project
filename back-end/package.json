@@ -18,9 +18,11 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
+    "execution-time": "^1.4.1",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "fs": "0.0.1-security",
+    "gifsicle": "^5.2.1",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "mongodb": "^4.4.0",
@@ -29,8 +31,13 @@
     "node-gyp": "^8.2.0",
     "nodemailer": "^6.7.2",
     "path": "^0.12.7",
+    "pngquant-bin": "^6.0.1",
     "sheetjs": "^2.0.0",
     "string-similarity": "^4.0.4",
+    "tiny-timer": "^1.6.0",
     "xlsx": "^0.18.3"
+  },
+  "devDependencies": {
+    "compress-images": "^2.0.5"
   }
 }

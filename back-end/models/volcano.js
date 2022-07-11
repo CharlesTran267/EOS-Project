@@ -43,10 +43,9 @@ const volcanoSchema = new Schema({
 
 });
 const volcano2Schema = new Schema({
-  name:{type:String,required:true},
-  id:{type:Number},
+  volc_name:{type:String,required:true},
+  volc_num:{type:Number},
   imgURL:{type:String},
-  update:{type:String}
 },{
   timestamps:true
 })

@@ -1,6 +1,7 @@
+import React from "react";
 import { volcanoStyle } from "./volcanoCard.style";
 
-export default function LoadingCard(){
+function LoadingCard (){
     const classes = volcanoStyle();
     return(
         <div className={classes.loadingContainer}>
@@ -11,3 +12,4 @@ export default function LoadingCard(){
         </div>
     )
 }
+export default LoadingCard

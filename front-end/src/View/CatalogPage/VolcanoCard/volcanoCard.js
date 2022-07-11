@@ -2,11 +2,12 @@
 import { volcanoStyle } from "./volcanoCard.style";
 import { Badge } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
-
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import LoadingCard from "./loadingCard";
 export default function VolcanoCard({info,type}) {
     const classes=volcanoStyle();
     const history = useHistory();
-
+    const imgPath = "optimizedImages" + info.imgURL.slice(7)
     const routeChange = () =>{
       let path = `/par_gral/par_gralDetailPage`;
       history.push(path);
@@ -15,18 +16,21 @@ export default function VolcanoCard({info,type}) {
     <div className={classes.container}>
       {type=="Volcanoes"? 
         <div>     
-          <a href={`/volcano/${info.id}`}><img
-          style={{width:"100%" ,height:"200px"}}
-          className={classes.poster}
-          src={`/${info.imgURL}`}
-        /></a>
-          <div className={classes.name}>{info.name}</div>
+          <a href={`/volcano/${info.volc_num}`}>
+            <img
+            style={{width:"100%" ,height:"200px"}}
+            className={classes.poster}
+            src={`/${info.imgURL}`}
+            />
+          </a>
+          <div className={classes.name}>{info.volc_name}</div>
         </div>:
         <div onClick = {routeChange}>
-          <img
+          <LazyLoadImage
           style={{width:"100%" ,height:"200px"}}
           className={classes.poster}
-          src={`/${info.imgURL}`}
+          src={`/${imgPath}`}
+          threshold="500"
         />
           <div className={classes.cardOver}>
             <h3 style={{fontWeight:700}}>Basic Information </h3>

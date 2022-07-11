@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Button,
@@ -11,7 +11,6 @@ import { useHistory } from 'react-router-dom';
 import VolcanoCard from './VolcanoCard/volcanoCard';
 import Tags from './Tags/Tags.js';
 import LoadingCard from './VolcanoCard/loadingCard';
-import useLazyLoad from "./useLazyLoad";
 import stringSimilarity from 'string-similarity'
 const originalTags=['Volcano Name','Basic Component','Crystal Type','Juvenile Type','Altered Material Type','Crystallinity and Color','Aleration Degree','Shape']
 function CatalogPage() {
@@ -20,14 +19,13 @@ function CatalogPage() {
   const [tags,setTags] = useState(originalTags)
   const [selectedTags,setSelectedTags] = useState([]);
   const [fetchedData, setFetchedData] = useState({})
-  const [searchFilter,setSearchFilter] = useState("")
   const [particles,setParticles] = useState([]);
   const [volcanoes,setVolcanoes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchSubmit, setSearchSubmit] = useState();
+  const [filterSubmit, setFilterSubmit] = useState([]);
   const [searchData, setSearchData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [searched, setSearched] = useState(false);
   const handleChange = (event) => {
     const value = event.target.value;
     setSearchTerm(value);
@@ -44,15 +42,9 @@ function CatalogPage() {
           filter.push(selectedTags[i].toLowerCase());
         }
       }
-      var i;
-      for(i=0;i<filter.length;i++){
-        if(filter[i].includes(submit)) break;
+      if(submit){
+        if(!filter.includes(submit.toLowerCase())) filter.push(submit.toLowerCase())
       }
-      if(i==filter.length) filter.push(submit)
-      console.log(filter)
-      var newSearchfilter = [...filter]
-      for(var i=0;i<newSearchfilter.length;i++) if(newSearchfilter[i]) newSearchfilter[i]=newSearchfilter[i][0].toUpperCase()+newSearchfilter[i].slice(1);
-      setSearchFilter(newSearchfilter.join(', '))
       Object.keys(fetchedData).map(key => {
         const data = fetchedData[key].filter(d=>{
           var props_arr = Object.values(d).map(ele=> typeof(ele)==="string"?ele.toLowerCase():null)      
@@ -97,6 +89,7 @@ function CatalogPage() {
       Volcanoes: volcanoes,
       Particles: particles
     })
+    console.log(volcanoes)
     let chosen = ["volc_name","volc_num"]
     particles.map(volc=>{
       Object.keys(volc).map(attr=>{
@@ -104,10 +97,11 @@ function CatalogPage() {
           if(!keyword.includes(volc[attr])){
             keyword.push(volc[attr])
           }
-          setKeyWordList(keyword)
         }
       })
     })
+    console.log(keyword)
+    setKeyWordList(keyword)
   },[volcanoes,particles])
 
   const handleKeyPress =(event)=>{
@@ -118,8 +112,8 @@ function CatalogPage() {
   const [suggestSearch, setSuggestSearch] = useState()
   const [suggest,setSuggest] = useState(false)
   const handleSubmit = (submit) =>{
-    setSearched(true)
     setSearchSubmit(submit)
+    setFilterSubmit(submit && selectedTags.length!=0?submit+", "+selectedTags.join(","):submit + selectedTags.join(","))
     if (submit !==""){
       let max = 0
       let maxWord = ""
@@ -151,40 +145,12 @@ function CatalogPage() {
       getSearchResult(submit, selectedTags)
     }
   }
-  useEffect(()=>{
-    console.log(suggest)
-    console.log(suggestSearch)
-  },[])
-  const triggerRef = useRef(null);
-  const onGrabData = (currentPage) => {
-      return new Promise((resolve) => {
-        if(searchData["Particles"]){
-          console.log(searchData["Particles"])
-          const NUM_PER_PAGE = 5
-          const len = searchData["Particles"].length
-          const NUM_LAST_PAGE = len - Math.floor(len/5)*5
-          let TOTAL_PAGES
-          if(NUM_LAST_PAGE == 0){
-            TOTAL_PAGES = len/5
-          }else{
-            TOTAL_PAGES = Math.floor(len/5)+1
-          }
-          let data 
-          if(currentPage != TOTAL_PAGES){
-            data = searchData["Particles"].slice(
-              (currentPage - 1) * NUM_PER_PAGE,
-              NUM_PER_PAGE * (currentPage));
-          }else{
-            data = searchData["Particles"].slice((currentPage - 1) * NUM_PER_PAGE)
-          }
-          resolve(data);
-        }
-      });
-  };
 
-  let { data, loading } = useLazyLoad({ triggerRef, onGrabData });
   let loadingCards=[1,2,3,4,5]
   let count = 0
+  useEffect(()=>{
+    console.log(filterSubmit)
+  },[filterSubmit])
   return (
     <div className={classes.SearchContainer}>
       <Typography
@@ -219,7 +185,7 @@ function CatalogPage() {
         />
         <Button variant='contained' style={{backgroundColor:"#388e3c", fontWeight:700, fontSize:12, height:40, marginTop:15, marginLeft:100, borderRadius:"20px", color:"white"}} onClick={()=>handleSubmit(searchTerm.toLowerCase())}> Apply Filters</Button>
       </div>
-      {searched && !isLoading?(
+      {filterSubmit.length!=0 && !isLoading?(
         <Typography style={{ marginLeft: 25, paddingBottom: 20 }}>
           {(searchData.Volcanoes && searchData.Volcanoes.length!=0) || (searchData.Particles && searchData.Particles.length!=0)? (
               <Typography
@@ -228,7 +194,7 @@ function CatalogPage() {
                 align='center'
                 style={{ marginBottom: 10 }}
               >
-                Search results for "{searchFilter}"
+                Search results for "{filterSubmit}"
               </Typography>
           ) : suggest?(
             <Typography
@@ -239,7 +205,7 @@ function CatalogPage() {
               >
                 Sorry! There is no result for "{searchSubmit}" in our database.
                 <br/>
-                Did you mean <span style={{textDecoration:"underline",color:"#1890ff",cursor:"pointer"}} onClick={function(){getSearchResult(suggestSearch.toLowerCase(),selectedTags);setSearchTerm(suggestSearch)}}> {suggestSearch}</span>?
+                Did you mean <span style={{textDecoration:"underline",color:"#1890ff",cursor:"pointer"}} onClick={function(){getSearchResult(suggestSearch.toLowerCase(),selectedTags);setSearchTerm(suggestSearch);setSearchSubmit(suggestSearch);setFilterSubmit(suggestSearch && selectedTags.length!=0?suggestSearch+", "+selectedTags.join(","):suggestSearch + selectedTags.join(","))}}> {suggestSearch}</span>?
               </Typography>
           ):(
               <Typography
@@ -248,9 +214,9 @@ function CatalogPage() {
               align='center'
               style={{ marginBottom: 10 }}
             >
-              Sorry! There is no result for "{searchSubmit}" in our database.
+              Sorry! There is no result for "{filterSubmit}" in our database.
               <br/>
-              <a href="/contribute" style={{textDecoration:"underline"}}>Help us expand our Database!</a>
+              <a href="/contribute/binocular" style={{textDecoration:"underline"}}>Help us expand our Database!</a>
             </Typography>
           )}
         </Typography>
@@ -285,7 +251,7 @@ function CatalogPage() {
         <div style={{display: "flex",flexDirection:"row",flexWrap:"wrap"}}>
           {loadingCards.map(num=> <LoadingCard/>)}
         </div>
-      </div>:searched?
+      </div>:filterSubmit.length!=0?
         (searchData && Object.keys(searchData).map((key)=>
             key=="Volcanoes"?(searchData[key].length !=0?
             <div>
@@ -318,9 +284,6 @@ function CatalogPage() {
                 info={ele}
                 type= "Particles"
               />)}
-              {/* <div style={{marginLeft:"0px",display: "flex",flexDirection:"row",flexWrap:"wrap"}} ref={triggerRef} className={clsx("trigger", { visible: loading })}>
-                {loadingCards.map(num=> <LoadingCard/>)}
-              </div> */}
             </div></div>:null)
             
         ))

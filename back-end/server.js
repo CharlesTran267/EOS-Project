@@ -18,6 +18,7 @@ app.use(express.urlencoded({limit: '50mb'}));
 
 app.use("/images",express.static("images"))
 app.use("/uploads",express.static("uploads"))
+app.use("/optimizedImages",express.static("optimizedImages"))
 const uri = process.env.ATLAS_URI;
 mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true}
 );
