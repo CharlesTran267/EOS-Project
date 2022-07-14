@@ -8,15 +8,16 @@ export default function VolcanoCard({info,type}) {
     const classes=volcanoStyle();
     const history = useHistory();
     const imgPath = "optimizedImages" + info.imgURL.slice(7)
-    const routeChange = () =>{
-      let path = `/par_gral/par_gralDetailPage`;
+    const routeChange = (name) =>{
+      let path = `/par_gral/par_gralDetailPage`+'/'+name;
       history.push(path);
     }
+    
   return (
     <div className={classes.container}>
       {type=="Volcanoes"? 
         <div>     
-          <a href={`/volcano/${info.volc_num}`}>
+          <a href={`/volcano/${info.volc_name}`}>
             <img
             style={{width:"100%" ,height:"200px"}}
             className={classes.poster}
@@ -25,7 +26,7 @@ export default function VolcanoCard({info,type}) {
           </a>
           <div className={classes.name}>{info.volc_name}</div>
         </div>:
-        <div onClick = {routeChange}>
+        <div onClick = {() =>{return routeChange(info.volc_name)}}>
           <LazyLoadImage
           style={{width:"100%" ,height:"200px"}}
           className={classes.poster}
