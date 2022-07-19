@@ -149,7 +149,13 @@ def main(filenames):
         except:
             pass
 
-        qia_dict[name] = {"" : name,**dict1,**dict2, **dict3}
+        for e in dict1:
+            qia_dict[name] = dict1[e]
+        for e in dict2:
+            qia_dict[name] = dict2[e]
+        for e in dict3:
+            qia_dict[name] = dict3[e]
+        # qia_dict[name] = {"" : name,**dict1,**dict2, **dict3}
         df = pd.DataFrame.from_dict(qia_dict, orient='index')
         df.to_csv('test.csv')
 
@@ -176,9 +182,9 @@ app = Flask(__name__)
 
 @app.route('/api', methods= ['GET','POST'])
 def index():
-    # length = 0
-    # if request.method == "POST":
-    #     length = request.get_json()['len']
+    length = 0
+    if request.method == "POST":
+        length = request.get_json()['len']
     
     # if request.method == "POST":
     #     print("POST");
@@ -186,22 +192,23 @@ def index():
     #     # # print "get_json: ", request.get_json(force = True);
     #     # print("data: ", request.data);
     #     return 'POST';
-    # else:
-    os.chdir('C:/Users/User/Desktop/EOS Project/back-end/test')
+    # else
+
+    os.chdir('C:/Users/User/Desktop/EOS Project/back-end/uploads')
     filenames = [file for file in os.listdir() if file.endswith('.png')]
     
     # latest_file = max(filenames, key=os.path.getctime)
     # threshold = 0.900
-    # files =  sorted(filenames, key=os.path.getctime,reverse=True)
-    # filtered = []
-    # for i in range(length):
-    #     filtered.append(files[i])
+    files =  sorted(filenames, key=os.path.getctime,reverse=True)
+    filtered = []
+    for i in range(length):
+        filtered.append(files[i])
     # filtered = list(filter(lambda x: os.path.getctime(filenames[0]) - os.path.getctime(x) <= threshold, files))
-        # for f in filenames[:]:
-        #      tCreate = os.path.getctime(f)
-        #      if tCreate == t :
-        #         files.append(f)
-    return main(filenames)
+    # for f in filenames[:]:
+    #     tCreate = os.path.getctime(f)
+    #     if tCreate == t :
+    #         files.append(f)
+    return main(filtered)
 
 
 # @app.route("/add", methods=["POST"], strict_slashes=False)
