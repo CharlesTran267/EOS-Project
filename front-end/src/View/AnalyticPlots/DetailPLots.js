@@ -50,7 +50,8 @@ const DetailPlots = () =>{
 	const [histogram,setHistogramPlot] = useState([])
 	const [boxPlot,setBoxPlot] = useState([])
 	const [boxPlotSide,setBoxPlotSide] = useState([600,500])
-	
+	const [legendSize_Binary,setLegendSize_Binary] = useState(12)
+	const [legendSize_Ternary,setLegendSize_Ternary] = useState(12)
 	useEffect(() =>{
 		axios.get('/volcanoes/getParticles')
 		.then(data =>{
@@ -137,7 +138,7 @@ const getSunBurstDataVariable = () =>{
 
 const PassZoomInBinaryPlot = (a) =>{
         console.log(a)
-	setBinaryPlotZoomIn(<BinaryPlot onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return a[2] }} onGetInitialYAxis = {() =>{ return a[1] }} onGetInitialXAxis = {() =>{return a[0] }}  onGetSide={() =>{return side }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>)
+	setBinaryPlotZoomIn(<BinaryPlot onGetLegendSize = {() => {return 6} } onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return a[2] }} onGetInitialYAxis = {() =>{ return a[1] }} onGetInitialXAxis = {() =>{return a[0] }}  onGetSide={() =>{return side }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>)
 	setInitialBinaryXAxis(a[0]);
 	setInitialBinaryYAxis(a[1]);
 	setInitialBinaryEssentialVariable(a[2]);
@@ -149,19 +150,19 @@ const PassZoomInSunBurstPlot = (a) =>{
 }
 
 const PassZoomInTernaryPlot = () =>{
-	setZoomInTernaryPlot(<TernaryPlot onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return ternarySide} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/>)
+	setZoomInTernaryPlot(<TernaryPlot onGetLegendSize = {() =>{return 6 }} onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return ternarySide} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/>)
 }
 const PassZoomMode = (b,a) =>{
 
 	if(a==='binaryPlot'){
-		setZoomInPlot(<BinaryPlot onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return b[2] }} onGetInitialYAxis = {() =>{ return b[1] }} onGetInitialXAxis = {() =>{return b[0] }}  onGetSide={() =>{return [600,800] }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>);
+		setZoomInPlot(<BinaryPlot onGetLegendSize ={() => {return 6}} onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return b[2] }} onGetInitialYAxis = {() =>{ return b[1] }} onGetInitialXAxis = {() =>{return b[0] }}  onGetSide={() =>{return [600,800] }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>);
 		setZoomMode(1)
 	}
 	else if(a==='sunburstPlot'){
 		setZoomInPlot(<NestedPieChart onPassZoomInSunBurstPlot = {PassZoomInSunBurstPlot} onGetSide = {() =>{return [600,800]}} onGetSunBurstVariable = {() =>{return b} } onGetSunBurstDataVariable = {getSunBurstDataVariable} onGetData={getData} />);
 		setZoomMode(1);}
 	else if(a==='ternaryPlot'){
-		setZoomInPlot(<div className = 'zoomIn'><TernaryPlot onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return [600,800]} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/></div>);
+		setZoomInPlot(<div className = 'zoomIn'><TernaryPlot onGetLegendSize_Ternary= {() => {return 6 }} onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return [600,800]} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/></div>);
 		setZoomMode(1);}
 	else if(a==='histogramPlot'){
 	 	setZoomInPlot(<Histogram onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return histogramSide }} onGetData = {getData} onGetHistogramMode = {() =>{return b[0] }} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {() =>{return b[1]}}/>);
@@ -180,7 +181,8 @@ const addHistogramPlot = () => {
 
 const addBinaryPlot = () =>{
 	setBinarySide([300,500])
-	setBinary([...binary,<div><BinaryPlot onGetSide ={()=>{return [300,500]}}   onGetData = {getData} onGetEssentialVariable = {()=>{return initialBinaryEssentialVariable }} onGetInitialYAxis ={()=>{ return initialBinaryYAxis }} onGetInitialXAxis = {() => {return initialBinaryXAxis} } onGetEssentialVariable = {getEssentialVariable} /></div>])
+	setLegendSize_Binary(6)
+	setBinary([...binary,<div><BinaryPlot onGetLegendSize={() =>{return 6}} onGetSide ={()=>{return [300,500]}}   onGetData = {getData} onGetEssentialVariable = {()=>{return initialBinaryEssentialVariable }} onGetInitialYAxis ={()=>{ return initialBinaryYAxis }} onGetInitialXAxis = {() => {return initialBinaryXAxis} } onGetEssentialVariable = {getEssentialVariable} /></div>])
 }
 
 const addTernaryPlot = () =>{
@@ -190,7 +192,8 @@ const addTernaryPlot = () =>{
 	// }
 	// setT(1)
 	setTernarySide([300,500])
-	setTernary([...ternary,<div><TernaryPlot onGetSide = {() => {return[300,500]}} onGetData={getData} onGetTernaryVariable={getTernaryVariable} /></div>])
+	setLegendSize_Ternary(6)
+	setTernary([...ternary,<div><TernaryPlot onGetLegendSize ={() =>{return 6} } onGetSide = {() => {return[300,500]}} onGetData={getData} onGetTernaryVariable={getTernaryVariable} /></div>])
 	
 }
 
@@ -239,7 +242,7 @@ const back = () =>{
 			
 			<div>
 			<div className = 'binaryPlots' >
-			<BinaryPlot onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return initialBinaryEssentialVariable }} onGetInitialYAxis = {() =>{ return initialBinaryYAxis }} onGetInitialXAxis = {() =>{return initialBinaryXAxis }}  onGetSide={() =>{return binarySide }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>
+			<BinaryPlot onGetLegendSize={() =>{return legendSize_Binary}} onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return initialBinaryEssentialVariable }} onGetInitialYAxis = {() =>{ return initialBinaryYAxis }} onGetInitialXAxis = {() =>{return initialBinaryXAxis }}  onGetSide={() =>{return binarySide }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>
 			{binary}
 			</div>
 			<AiOutlinePlus onClick={addBinaryPlot} size ='25px' />
@@ -250,7 +253,7 @@ const back = () =>{
 			<div className='detailPlot2'>
 			<div>
 			<div className = 'ternaryPlots'>
-			<TernaryPlot onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return ternarySide} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/>
+			<TernaryPlot onGetLegendSize={() =>{return legendSize_Ternary }} onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return ternarySide} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/>
 			{ternary}
 			</div>
 			<AiOutlinePlus onClick = {addTernaryPlot} size = '25px' />

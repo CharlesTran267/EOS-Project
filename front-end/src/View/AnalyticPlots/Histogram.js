@@ -103,6 +103,7 @@ const Histogram = (props) =>{
 			x: d,
 			type: 'histogram',
 			mode: 'lines',
+			name: variable,
 			xbins: {
 				size: bin, 
 				},
@@ -113,7 +114,7 @@ const Histogram = (props) =>{
 			x: arr_X,
 			y: arr_Y,
 			mode: 'lines',
-			name: 'spline',
+			
 			text: ['tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object'],
 			line: {shape: 'spline',
 			color: 'rgb(55, 128, 191)',
@@ -213,28 +214,31 @@ const Histogram = (props) =>{
 		console.log(bin1)
 		console.log(bin2)
 		pData.push({
-			x: arr1,
+			x: volc1Data,
 			type:'histogram',
 			mode:'marker',
 			name: volcToCompare[0],
-			xbins: {
-				size: bin1, 
-				},
+			// xbins: {
+			// 	size: bin1, 
+			// 	},
+			opacity:0.4,
 			marker:{
-				color:'orange'
+				color:'green'
 			}
+			
 			
 		})
 		pData.push({
-			x: arr2,
+			x: volc2Data,
 			type:'histogram',
 			mode:'marker',
 			name: volcToCompare[1],
-			xbins: {
-				size: bin2, 
-				},
+			// xbins: {
+			// 	size: bin2, 
+			// 	},
+			opacity:0.4,
 			marker:{
-				color:'blue'
+				color:'red'
 			}
 			
 		})
@@ -303,7 +307,7 @@ const Histogram = (props) =>{
 <div onDoubleClick = {doubleClick}>
 <Plot
 data={pData}
-layout={ {width: side[0], height: side[1], title: 'Histogram',
+layout={ {width: side[0], height: side[1], title: 'Histogram',barmode: 'overlay',
 xaxis: {
 	title: {
 	  text: histogramVariable + ' frequency',

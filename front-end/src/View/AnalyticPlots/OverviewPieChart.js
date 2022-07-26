@@ -20,7 +20,7 @@ const OverviewPieChart = (props) =>{
 	let dict = {}
 	let total = 0;
 	let side = props.onGetSide();
-	
+	let legendSize = props.onGetLegendSize();
 
 	const PassPieChartVariable = (a) => {
 		setPieChartVariable(a)
@@ -62,10 +62,14 @@ const OverviewPieChart = (props) =>{
 		values : v,
 		type: 'pie',
 	},
-			
+		
 		]
 	}
-        layout={ {width: side[0], height: side[1], title: 'Overview'} }
+        layout={ {width: side[0], height: side[1], title: 'Overview',legend:{
+		font:{
+			size: legendSize
+		}
+	}} }
       	/>
 		</div>
 	</div>

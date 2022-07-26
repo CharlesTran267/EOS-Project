@@ -28,12 +28,18 @@ const OverviewPlot = () =>{
 	const [SunBurstVariable,setSunBurstVariable] = useState()
 	const [SunBurstFinalVariable,setSunBurstFinalVariable] = useState([{value:1,label:"juvenile"},{value:2,label:"lithic"},{value:3,label:"free crystal"}])
 	const [side,setSide] = useState([600,500])
+	const [legendSize,setLegendSize] = useState(12)
 
 	useEffect(() =>{
 		axios.get('/volcanoes/getParticles')
 		.then(data =>{
 			setParArray(data.data['particles']) 
 			console.log(data.data['particles'])
+		})
+
+		axios.get('/volcanoes/getEruptions')
+		.then(data=>{
+			console.log(data)
 		})
 		axios.get('/volcanoes/getVolcanoes')
 		.then(data =>{
@@ -70,7 +76,8 @@ const OverviewPlot = () =>{
 		// }
 		// setD(1)
 		setSide([300,500])
-		setContent([...content,<div><OverviewPieChart onGetSide={() => {return [300,500]}} onGetData = {getData} onGetPieChartVariable = {getPieChartVariable} /></div>])
+		setLegendSize(6)
+		setContent([...content,<div><OverviewPieChart onGetLegendSize = {() => {return 6}} onGetSide={() => {return [300,500]}} onGetData = {getData} onGetPieChartVariable = {getPieChartVariable} /></div>])
 		
 
 	}
@@ -99,7 +106,7 @@ const OverviewPlot = () =>{
 			<div> 
 				<div className ='overview'>
 				
-	<OverviewPieChart onGetSide = {() =>{return side }} onGetData={getData} onGetPieChartVariable={getPieChartVariable} />
+	<OverviewPieChart onGetLegendSize = {() =>{return legendSize }} onGetSide = {() =>{return side }} onGetData={getData} onGetPieChartVariable={getPieChartVariable} />
 				
 				{content}
 				</div>

@@ -20,7 +20,7 @@ const DropDownForHistogramCompare = (props) => {
 
 	
 		data =['Pinatubo', 'Taal', 'Alid', 'Toba', 'Kelut','Soufrière Guadeloupe']
-	
+	if(time ===0 )	{
 		try{
 			props.onPassVolcToCompare1('Toba');
 			f = 'Toba';
@@ -29,11 +29,13 @@ const DropDownForHistogramCompare = (props) => {
 			props.onPassVolcToCompare2('Soufrière Guadeloupe');
 			f = 'Soufrière Guadeloupe';
 		}
+		setTime(1);
+	}
 
 
 		handleChange = function (a){
 			try{
-				props.onPassVolcToComapre1(a);
+				props.onPassVolcToCompare1(a);
 				f = a;
 			      }      
 			catch(error){

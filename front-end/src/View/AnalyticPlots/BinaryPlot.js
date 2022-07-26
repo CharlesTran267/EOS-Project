@@ -20,6 +20,7 @@ const BinaryPlot = (props) =>{
 	let initialXAxis = props.onGetInitialXAxis();
 	let initialYAxis = props.onGetInitialYAxis();
 	let initialEssentialVariable = props.onGetEssentialVariable();
+	let legendSize = props.onGetLegendSize();
 	const [xAxis,setXAxis] = useState(initialXAxis)
 	const [yAxis,setYAxis] = useState(initialYAxis)
 	const [essentialVariable,setEssentialVariable] = useState(initialEssentialVariable)
@@ -156,12 +157,11 @@ function GetVariableData(){
 	}
 	
 	console.log(data)
-	
-	return(
+		return(
 	<div>
 		<div class='select'>
-			<DropDownBar className = 'dropdown' onPassVariableForX = {PassVariableForX} onPassVariableForY = {PassVariableForY} onGetVariableData={GetVariableData} onGetInitialData={() => { return [initialXAxis,initialYAxis,initialEssentialVariable] }}/>	
-			<DropDownBar className = 'dropdown' onPassVariableForX = {PassVariableForX} onPassVariableForY = {PassVariableForY} onGetVariableData={GetVariableData} onGetInitialData={() => {return [initialXAxis,initialYAxis,initialEssentialVariable] }}/>
+			<DropDownBar className = 'dropdown' onPassVariableForY = {PassVariableForY} onGetVariableData={GetVariableData} onGetInitialData={() => { return [initialXAxis,initialYAxis,initialEssentialVariable] }}/>	
+			<DropDownBar className = 'dropdown' onPassVariableForX = {PassVariableForX} onGetVariableData={GetVariableData} onGetInitialData={() => {return [initialXAxis,initialYAxis,initialEssentialVariable] }}/>
 		</div>
 
 		<div>
@@ -171,7 +171,11 @@ function GetVariableData(){
 <Plot
         data={data}
 	
-        layout={ {width: side[0], height: side[1], title: 'Binary Plot',
+        layout={ {width: side[0], height: side[1], title: 'Binary Plot',legend:{
+		font:{
+			size:legendSize
+		}
+	},
 	 xaxis: {
 		title: {
 		  text: xAxis,

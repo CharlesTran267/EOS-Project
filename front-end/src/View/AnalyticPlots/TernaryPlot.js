@@ -2,7 +2,10 @@ import React from 'react';
 import Plot from 'react-plotly.js';
 import Selection from './SelectWithCheckBox';
 import Button from './SubmitButton'
-import {useState} from 'react'
+import {useState,useEffect} from 'react'
+
+const axios = require('axios')
+
 
 let volcColor = {
 	'Pinatubo':'red',
@@ -26,11 +29,34 @@ let rawData = [
 	{journalist:10,developer:10,designer:80,label:'point 10'},
 	{journalist:20,developer:10,designer:70,label:'point 11'},
     ];
-    
+   
 
 const TernaryPlot = (props) =>{
+
 	const [TernaryVariable,setTernaryVariable] = useState()
 	const [TernaryFinalVariable,setTernaryFinalVariable] = useState([{value:1, label:"red_std"},{value:2,label:"blue_std"},{value:3,label:"green_std"}])
+	const [parArray,setParArray] = useState([])
+	const [volTable,setVolTable] = useState({})
+
+	let legendSize = props.onGetLegendSize();
+
+	useEffect(() =>{
+		axios.get('/volcanoes/getParticles')
+		.then(data =>{
+			setParArray(data.data['particles']) 
+			console.log(data.data['particles'])
+		
+
+		})
+
+	},[])
+
+	let volT ={}
+	for(let i=0;i < parArray.length;i++){
+		volT[parArray[i]['volc_name']] = parArray[i]['volc_num']
+	}
+	console.log(volT)
+	
 
 	let side = props.onGetSide()
 	let Data = props.onGetData()
@@ -50,14 +76,39 @@ const TernaryPlot = (props) =>{
 	let d= []
 	let e = []
 	let f =[]
-	for(let i=0;i<Data.length;i++){
-		if(Data[i]['volc_name'] === 'Kelut')
-			d.push({a:Data[i][variable[0].label], b: Data[i][variable[1].label],c:Data[i][variable[2].label],color:volcColor[Data[i]['volc_name']],name:'Kelut'})
-		if(Data[i]['volc_name'] === 'Toba')
-			e.push({a:Data[i][variable[0].label], b: Data[i][variable[1].label],c:Data[i][variable[2].label],color:volcColor[Data[i]['volc_name']],name:'Toba'})
-		if(Data[i]['volc_name'] === 'Soufrière Guadeloupe')
-			f.push({a:Data[i][variable[0].label], b: Data[i][variable[1].label],c:Data[i][variable[2].label],color:volcColor[Data[i]['volc_name']],name:'Soufrière Guadeloupe'})	
+	let t = {}
+
+
+	for(const[key,value] of Object.entries(volT) ){	
+			t[key] = []
+	
 	}
+	for(const[key,value] of Object.entries(volT) ){
+	for(let i=0;i<Data.length;i++){
+			if(Data[i]['volc_name'] === key){
+				t[key].push({a:Data[i][variable[0].label], b: Data[i][variable[1].label],c:Data[i][variable[2].label],color:volcColor[Data[i]['volc_name']],name: key })
+			}
+
+		}
+	}
+
+	let ternaryData = []
+	for(const[key,value] of Object.entries(t)){
+		ternaryData.push({
+			type: 'scatterternary',
+			mode: 'markers',
+			a: value.map(function(d) { return d.a; }),
+			b: value.map(function(d) { return d.b; }),
+			c: value.map(function(d) { return d.c; }),
+			name:key,
+			showlegend:true,
+			marker: {
+			    line: { width: 2 }
+			}	
+		})
+	}
+
+	console.log(ternaryData)
 
 	const doubleClick = () =>{
 		
@@ -77,53 +128,11 @@ const TernaryPlot = (props) =>{
 		<div onDoubleClick ={doubleClick}>
 		<Plot 
 			data = {
-			
-			[
-				{
-					type: 'scatterternary',
-					mode: 'markers',
-					a: d.map(function(d) { return d.a; }),
-					b: d.map(function(d) { return d.b; }),
-					c: d.map(function(d) { return d.c; }),
-					name:'Kelut',
-					showlegend:true,
-					marker: {
-					    
-					    color: 'pink',
-					    line: { width: 2 }
-					}
-				},{
-					type: 'scatterternary',
-					mode: 'markers',
-					a: e.map(function(e) { return e.a; }),
-					b: e.map(function(e) { return e.b; }),
-					c: e.map(function(e) { return e.c; }),
-					name:'Toba',
-					showlegend:true,
-					marker: {
-					    
-					    color: 'blue',
-					    line: { width: 2 }
-					}	
-				},{
-					type: 'scatterternary',
-					mode: 'markers',
-					a: f.map(function(e) { return f.a; }),
-					b: f.map(function(e) { return f.b; }),
-					c: f.map(function(e) { return f.c; }),
-					name:'Soufrière Guadeloupe',
-					showlegend:true,
-					marker: {
-					    
-					    color: 'orange',
-					    line: { width: 2 }
-					}	
-				}
-			]
+			ternaryData
 		}
 
 
-			layout={ {width: side[0], height: side[1], title: 'Ternary',autosize:true,uirevision:'true',ternary:
+			layout={ {width: side[0], height: side[1], title: 'Ternary',autosize:true,uirevision:'true',legend:{font:{size:legendSize}},ternary:
 			{
 			sum:1,
 			aaxis:{title: variable[0].label, min: 0,

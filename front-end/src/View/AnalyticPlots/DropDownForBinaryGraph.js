@@ -31,7 +31,7 @@ const DropDownBar = (props) => {
 		}
 		setTime(1);
 	}
-
+	else{
 		handleChange = function (a){
 			try{
 				props.onPassVariableForX(a);
@@ -40,6 +40,7 @@ const DropDownBar = (props) => {
 				props.onPassVariableForY(a);
 			}
 		}
+	 }
 	}
 	catch(error){
 		f = 'red_std';
