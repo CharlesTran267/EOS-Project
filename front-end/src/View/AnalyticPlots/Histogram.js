@@ -5,6 +5,8 @@ import Plot from 'react-plotly.js';
 import DropDownBar from './DropDownForBinaryGraph';
 import DropDownForHistogramMode from './DropDownForHistogramMode';
 import DropDownForHistogramCompare from './DropDownForHistogramCompare';
+import DropDownForHistogramEsential from './DropDownForHistogramEsential';
+import DropDownForHistogramCompareEruptive from './DropDownForHistogramCompareEruptive';
 const axios = require('axios')
 
 
@@ -22,6 +24,7 @@ const Histogram = (props) =>{
 	const [histogramMode,setHistogramMode] = useState('Overview')
 	const [volcToCompare1,setVolcToCompare1] = useState('Toba')
 	const [volToComapare2,setVolcToCompare2] = useState('Soufrière Guadeloupe')
+	const [histogramEsential,setHistogramEsential] = useState('Volcanoes')
 
 	const PassHistogramVariable =(a) =>{
 		setHistogramVariable(a)
@@ -34,6 +37,17 @@ const Histogram = (props) =>{
 	
 	
 	let Data = props.onGetData()
+	let AFE = props.onGetAFE()
+
+	for(let i=0;i<Data.length;i++){
+		for(let j=0;j<AFE.length;j++){
+			if(Data[i]['afe_code'] === AFE[j]['afe_code']){
+				Data[i]['eruptive_style'] = AFE[j]['eruptive_style']
+			}
+		}
+	}
+	console.log(Data)
+
 	
 	let variable = histogramVariable;
 	let pData = []
@@ -51,6 +65,14 @@ const Histogram = (props) =>{
 	
 	const PassVolcToCompare2 = (a) =>{
 		setVolcToCompare2(a)
+	}
+
+	const PassHistogramEsential = (a) =>{
+		setHistogramEsential(a)
+	}
+
+	const getVar = () =>{
+		return histogramEsential;
 	}
 
 	
@@ -114,7 +136,7 @@ const Histogram = (props) =>{
 			x: arr_X,
 			y: arr_Y,
 			mode: 'lines',
-			
+			name: 'density line',
 			text: ['tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object'],
 			line: {shape: 'spline',
 			color: 'rgb(55, 128, 191)',
@@ -135,10 +157,17 @@ const Histogram = (props) =>{
 		let arr2 = [19, 23, 25, 39, 42, 65, 90, 92, 98, 104, 106, 115, 122, 123, 138, 142, 151, 154, 160, 168, 178, 179, 180, 183, 194, 198, 213, 215, 232, 233, 234, 241, 243, 246, 258, 260, 261, 282, 284, 286, 287, 300, 306, 311, 338, 352, 395, 396, 397, 399, 414, 422, 423, 428, 444, 457, 459, 462, 472, 481]
 		let volc1Data=[]
 		let volc2Data=[]
+		let t =''
+		if(histogramEsential === 'Volcanoes'){
+			t = 'volc_name'
+		}
+		else{
+			t = 'eruptive_style'
+		}
 		for(let i=0;i<Data.length;i++){
-			if(Data[i]['volc_name'] === volcToCompare[0])
+			if(Data[i][t] === volcToCompare[0])
 				volc1Data.push(Data[i][variable]);
-			if(Data[i]['volc_name'] === volcToCompare[1])  
+			if(Data[i][t] === volcToCompare[1])  
 				volc2Data.push(Data[i][variable]);
 		}
 		// volc1Data= arr1
@@ -291,8 +320,18 @@ const Histogram = (props) =>{
 
 					{(histogramMode === 'Compare')?(
 						<div className= 'volcToCompare'>  
-							<DropDownForHistogramCompare onPassVolcToCompare1 = {PassVolcToCompare1} />
-							<DropDownForHistogramCompare onPassVolcToCompare2 = {PassVolcToCompare2} />
+							<DropDownForHistogramEsential onPassHistogramEsential = {PassHistogramEsential} />
+							{(histogramEsential === 'Volcanoes')?(
+							<div>
+							<DropDownForHistogramCompare onPassVolcToCompare1 = {PassVolcToCompare1} onGetVar = {getVar} />
+							<DropDownForHistogramCompare onPassVolcToCompare2 = {PassVolcToCompare2} onGetVar = {getVar} />
+							</div>
+							):(
+							<div>
+								<DropDownForHistogramCompareEruptive onPassVolcToCompare1 = {PassVolcToCompare1} />
+								<DropDownForHistogramCompareEruptive onPassVolcToCompare2 = {PassVolcToCompare2} />
+							</div>
+							)}
 						</div>
 					):(
 						<div> </div>

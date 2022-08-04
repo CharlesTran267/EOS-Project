@@ -11,6 +11,7 @@ import DropDownForHistogramCompare from './DropDownForHistogramCompare';
 import DropDownBar from './DropDownForBinaryGraph';
 import { AiOutlinePlus,AiOutlineInfo,MdArrowBack } from 'react-icons/all';
 import BoxPlot from './BoxPlot'
+import BarChart from './BarChart' 
 const axios = require('axios')
 
 
@@ -52,7 +53,14 @@ const DetailPlots = () =>{
 	const [boxPlotSide,setBoxPlotSide] = useState([600,500])
 	const [legendSize_Binary,setLegendSize_Binary] = useState(12)
 	const [legendSize_Ternary,setLegendSize_Ternary] = useState(12)
+	const [AFEs,setAFEs] = useState([])
 	useEffect(() =>{
+		axios.get('/volcanoes/getAFE')
+		.then(data =>{
+			setAFEs(data.data.afes);
+
+		})
+
 		axios.get('/volcanoes/getParticles')
 		.then(data =>{
 			setParArray(data.data['particles']) 
@@ -111,6 +119,10 @@ const getData = () =>{
 	return parArray;
 }
 
+const getAFE = () =>{
+	return AFEs;
+}
+
 const getTernaryVariable = () =>{
 	return TernaryFinalVariable
 }
@@ -165,7 +177,7 @@ const PassZoomMode = (b,a) =>{
 		setZoomInPlot(<div className = 'zoomIn'><TernaryPlot onGetLegendSize_Ternary= {() => {return 6 }} onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return [600,800]} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/></div>);
 		setZoomMode(1);}
 	else if(a==='histogramPlot'){
-	 	setZoomInPlot(<Histogram onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return histogramSide }} onGetData = {getData} onGetHistogramMode = {() =>{return b[0] }} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {() =>{return b[1]}}/>);
+	 	setZoomInPlot(<Histogram onPassZoomMode = {PassZoomMode} onGetAFE = {getAFE} onGetSide = {() =>{return histogramSide }} onGetData = {getData} onGetHistogramMode = {() =>{return b[0] }} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {() =>{return b[1]}}/>);
 
 		 setZoomMode(1);}
 	else if(a === 'boxPlot'){
@@ -176,7 +188,7 @@ const PassZoomMode = (b,a) =>{
 
 const addHistogramPlot = () => {
 	setHistogramSide([300,500])
-	setHistogramPlot([...histogram,<Histogram onPassZoomMode = {PassZoomMode} onGetData = {getData} onGetHistogramMode = {getHistogramMode} onGetSide={()=>{return [300,500]}} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {GetHistogramVariable} />])
+	setHistogramPlot([...histogram,<Histogram onPassZoomMode = {PassZoomMode} onGetAFE = {getAFE} onGetData = {getData} onGetHistogramMode = {getHistogramMode} onGetSide={()=>{return [300,500]}} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {GetHistogramVariable} />])
 }
 
 const addBinaryPlot = () =>{
@@ -232,7 +244,7 @@ const back = () =>{
 			<div>
 
 				<div className ='histogramPlot'>
-				<Histogram onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return histogramSide }} onGetData = {getData} onGetHistogramMode = {getHistogramMode} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {GetHistogramVariable} />
+				<Histogram onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return histogramSide }} onGetAFE = {getAFE} onGetData = {getData} onGetHistogramMode = {getHistogramMode} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {GetHistogramVariable} />
 				{histogram}
 				</div>
 				<AiOutlinePlus onClick ={addHistogramPlot} size='25px' />
@@ -277,15 +289,25 @@ const back = () =>{
 			</div>
 
 			</div>
+		<div className = 'detailPlot3'>
+		<div>
 			<div className = 'sunBurstPlots'>
 				<BoxPlot onPassZoomMode={PassZoomMode} onGetSide = {() => {return boxPlotSide}} onGetData = {getData} />
 				{boxPlot}
+
 				
 			</div>	
 			<div className = 'a'>
 			<AiOutlinePlus onClick = {addBoxPlot} size='25px'/>
 			<AiOutlineInfo size='25px'/>	
 		</div>
+				<div>
+			<BarChart/>
+				</div>
+		</div>
+		</div>
+
+		
 
 		</div>
 			):(<div> 

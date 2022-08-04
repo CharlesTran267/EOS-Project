@@ -8,29 +8,30 @@ import { Plot } from 'react-plotly.js';
 
 const Essentials = ['Overview','Compare']
 
-const DropDownForHistogramCompare = (props) => {
+const DropDownForHistogramCompareEruptive = (props) => {
 	const [time,setTime] = useState(0);
 	const [time1,setTime1] = useState(0);
 
-	let estential = props.onGetVar();
 	var data;
 	var f;
 	function handleChange(a){
 	}
 
-	if(estential === 'Volcanoes'){
+	
 		
-		data =['Pinatubo', 'Taal', 'Alid', 'Toba', 'Kelut','Soufrière Guadeloupe']
-	if(time ===0 )	{
+		data =["Lava fountaining", "Plinian","Phreatic", "Subplinian", "Dome explosion"]
+	if(time1 ===0 )	{
 		try{
-			props.onPassVolcToCompare1('Toba');
-			f = 'Toba';
+			props.onPassVolcToCompare1('Lava fountaining');
+			f = 'Lava fountaining';
 		      }      
 		catch(error){
-			props.onPassVolcToCompare2('Soufrière Guadeloupe');
-			f = 'Soufrière Guadeloupe';
+			props.onPassVolcToCompare2('Plinian');
+			f = 'Plinian';
 		}
-		setTime(1)
+
+		setTime1(1)
+		
 	}
 
 
@@ -45,8 +46,7 @@ const DropDownForHistogramCompare = (props) => {
 			}
 		}
 		
-	}
-
+	
 	
 	const [title,setTitle] = useState(f);
 
@@ -88,4 +88,4 @@ const DropDownForHistogramCompare = (props) => {
 }
 
 
-export default DropDownForHistogramCompare;
+export default DropDownForHistogramCompareEruptive;

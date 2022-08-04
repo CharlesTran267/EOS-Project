@@ -6,37 +6,41 @@ import { useState } from 'react';
 
 import { Plot } from 'react-plotly.js';
 
-const Essentials = ['Overview','Compare']
+const Essentials = ['Eruptive Style','Volcanoes']
 
-const DropDownForHistogramCompare = (props) => {
+const DropDownForHistogramEsential = (props) => {
 	const [time,setTime] = useState(0);
-	const [time1,setTime1] = useState(0);
 
-	let estential = props.onGetVar();
+
 	var data;
 	var f;
 	function handleChange(a){
 	}
 
-	if(estential === 'Volcanoes'){
+	try{
 		
-		data =['Pinatubo', 'Taal', 'Alid', 'Toba', 'Kelut','Soufrière Guadeloupe']
-	if(time ===0 )	{
+		handleChange = function(a){
+			props.onPassHistogramEsential(a);
+		}
+		data = Essentials;
+		f = 'Volcanoes'
+	}
+	catch(error){
+	
+		data =['Pinatubo', 'Taal', 'Alid', 'Toba', 'Kelut']
+
 		try{
-			props.onPassVolcToCompare1('Toba');
-			f = 'Toba';
+			props.onPassVolcToCompare1('Pinatubo');
+			f = 'Pinatubo';
 		      }      
 		catch(error){
-			props.onPassVolcToCompare2('Soufrière Guadeloupe');
-			f = 'Soufrière Guadeloupe';
+			props.onPassVolcToCompare2('Taal');
+			f = 'Taal';
 		}
-		setTime(1)
-	}
-
 
 		handleChange = function (a){
 			try{
-				props.onPassVolcToCompare1(a);
+				props.onPassVolcToComapre1(a);
 				f = a;
 			      }      
 			catch(error){
@@ -44,9 +48,8 @@ const DropDownForHistogramCompare = (props) => {
 				f = a;
 			}
 		}
-		
 	}
-
+	
 	
 	const [title,setTitle] = useState(f);
 
@@ -88,4 +91,4 @@ const DropDownForHistogramCompare = (props) => {
 }
 
 
-export default DropDownForHistogramCompare;
+export default DropDownForHistogramEsential;
