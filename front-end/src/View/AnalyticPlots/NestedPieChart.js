@@ -139,9 +139,9 @@ function NestedPieChart(props){
 	}
 
 	
-	// console.log(crysTable)
-	// console.log(shapeTable)
-	// console.log(alterTable)
+	console.log(crysTable)
+	console.log(shapeTable)
+	console.log(alterTable)
 	
 
 
@@ -152,11 +152,11 @@ function NestedPieChart(props){
 			labels.push(k);
 			parents.push("");
 			values.push(0);}
-			else if(k === 'undefined'){
-			labels.push(k+key)
-			values.push(0)
-			parents.push("")
-		}
+		// 	else if(k === 'undefined'){
+		// 	labels.push(k+key)
+		// 	values.push(0)
+		// 	parents.push("")
+		// }
 			// if(key !== 'undefined')
 			//parents.push("")
 		}
@@ -169,15 +169,17 @@ function NestedPieChart(props){
 		
 			
 			
-			labels.push(variable[i].label)
-			if(key === 'undefined'){
 			
-			parents.push(key+variable[i].label)
-		
+			if(key === 'undefined'){
+			// labels.push(variable[i].label)
+			// parents.push(key+variable[i].label)
+			// values.push(0)
 		}
-			else
+			else{
+			labels.push(variable[i].label)
 			parents.push(key)
 			values.push(crysTable[variable[i].label][key])
+			}
 	
 
 		}
@@ -205,21 +207,19 @@ function NestedPieChart(props){
 	let colors = []
 
 	for(let i=0;i<labels.length;i++){
-		if((i>= 0 && i<=5)){
+		if((i>= 0 && i<=4)){
 			colors.push('#FF8886')
 		}
-		else if(i>=6 && i <=12){
+		else if(i>=5 && i <=10){
 			colors.push('#45b6fe')
 		}
-		else if(i===13){
-			colors.push('#FFFBC8')}
-		else if((i>=14 && i<=19)){
+		
+		else if((i>=11 && i<=15)){
 			colors.push('red')
 		}
-		else if(i>=20 && i<=26){
+		else if(i>=16 && i<=21){
 			colors.push('#3A9BDC')}
-		else if(i===27){	
-			colors.push('yellow')}
+		
 	}
 
 	const e = ()=>{
@@ -279,9 +279,10 @@ function NestedPieChart(props){
 		ids: ids,
 		type: "sunburst",
 		// values:  values,
-		values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 921, 315, 25, 20, 26, 343, 84, 197, 209, 46, 292, 36, 27, 298],
+		values: values,
+		sort:false,
 		marker:{line:{width:0},
-		sort: false,
+		
 		 branchvalues:"total",
 		colors:colors,
 	}

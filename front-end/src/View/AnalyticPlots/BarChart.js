@@ -6,6 +6,12 @@ import Plot from 'react-plotly.js';
 
 let data = []
 const axios = require('axios')
+const color_dict = {
+	'juvenile' : 'red',
+	'lithic' : 'green',
+	'free crystal' : 'blue',
+	'altered material' : 'orange'
+}
 
 const BarChart = () =>{
 	const [AFEs,setAFEs] = useState()
@@ -91,6 +97,8 @@ const BarChart = () =>{
 	
 	data = []
 
+	
+
 
 	console.log(eruptive_basicComponent)
 
@@ -105,12 +113,14 @@ const BarChart = () =>{
 		}
 
 	
-
 		data.push({
 			x:x,
 			y:y,
 			name: k,
-			type: 'bar'
+			type: 'bar',
+			marker:{
+			color: color_dict[k],
+			}
 		})
 	}
 
