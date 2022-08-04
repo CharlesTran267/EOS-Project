@@ -11,12 +11,8 @@ import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios';
 
-const AFEData = [];
 
-  for(let i = 0;i<15;i++){
-    AFEData.push({x : Math.floor(Math.random() * (2020 - 1550) + 1550),
-      y: 5});
-  }
+
 
   var pathArray = window.location.pathname.split('/');
 let vol = pathArray[2]
@@ -27,9 +23,18 @@ const VolcanoTimeLine = () => {
   const [eruptions,setEruptions] = useState([])
   const [volcanoes, setVolcanoes] = useState([]);
   const [c,setC] = useState(0)
+  const [AFE,setAFE] = useState([])
+
+  let AFEData = []
  
-    
-  useEffect(() =>{
+
+      useEffect(() =>{
+    axios.get('/volcanoes/getAFE')
+        .then(data =>{
+          setAFE(data.data.afes)
+          console.log(data.data.afes)
+        })
+
 		axios.get('/volcanoes/getEruptions')
 		.then(data =>{
       setEruptions(data.data['eruptions'])
@@ -59,6 +64,15 @@ let volc_num = 0
       if(volcanoes[i].volc_name === vol){
         volc_num = volcanoes[i].volc_num
       }
+  }
+
+
+
+  for(let i =0;i<AFE.length;i++){
+    
+      let s = AFE[i]['afe_date'].substr(0,4) + '.' + AFE[i]['afe_date'].substr(5,7);
+      AFEData.push({x: parseFloat(s),y:5});
+    
   }
 
   

@@ -9,7 +9,17 @@ const axios = require('axios')
 const OverviewTimeLine = (props) =>{
   const [eruptions,setEruptions] = useState([])
   const [volcanoes,setVolcanoes] = useState([])
+  const [AFE,setAFE] = useState([])
+
+
   useEffect(() =>{
+    axios.get('/volcanoes/getAFE')
+    .then(data =>{
+      setAFE(data.data.afes)
+      console.log(data.data.afes)
+    })
+
+
 		axios.get('/volcanoes/getEruptions')
 		.then(data =>{
       setEruptions(data.data['eruptions'])
@@ -32,8 +42,18 @@ const OverviewTimeLine = (props) =>{
   let TaalEruptionYear = [];
 const TaalData = [];
 
+
+
 var pathArray = window.location.pathname.split('/');
 let vol = props.onPassVolcName();
+
+let volc_num = 0;
+for (let i=0;i<volcanoes.length;i++){
+  if(volcanoes[i]['volc_name'] === vol ){
+    volc_num = volcanoes[i]['volc_num'];
+    break;
+  }
+}
 
 
 
@@ -105,8 +125,19 @@ for(let i=0;i<TaalEruptionYear.length;i++){
   const [EruptionLabel,setEruptionLabel] = useState([...list]);
 
   let TaalEndYear = props.onGetTaalEruptionEndYear();
-  let AFEDummyData = props.onGetDummyAFEData();
+  // let AFEDummyData = props.onGetDummyAFEData();
+  let AFEDummyData = []
 
+ 
+  for(let i =0;i<AFE.length;i++){
+    if(AFE[i]['volc_num'] === volc_num){
+    let s = AFE[i]['afe_date'].substr(0,4) + '.' + AFE[i]['afe_date'].substr(5,7);
+    AFEDummyData.push({x:parseFloat(s),y:5});
+    }
+  
+}
+
+  console.log(AFEDummyData)
 
   let fillList = TaalData;
 
@@ -195,6 +226,19 @@ zoomList.push({
      
 
 
+  },
+  {
+    position: 'Right',
+    fill: false,
+    lineTension: 0.5,
+    backgroundColor: 'red',
+    pointStyle: 'rectRot',
+    pointRadius: 5,
+    borderColor: 'rgba(0,0,0,1)',
+    borderWidth: 2,
+    data: AFEDummyData,
+    showLine: false,
+    pointRadius: 5,
   }
 ],
 }
