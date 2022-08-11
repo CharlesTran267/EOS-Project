@@ -18,10 +18,10 @@ const DropDownForSunBurst = (props) => {
 		props.onPassSunBurstDataVariable(a)
 	}
 
-	data =['overview','Pinatubo', 'Taal', 'Alid', 'Toba', 'Kelut']
+	data =['crystallinity','shape', 'alteration']
 	
 	
-	const [title,setTitle] = useState('overview');
+	const [title,setTitle] = useState('crystallinity');
 
 	function ChooseVariable (x) {
 		setTitle(x);

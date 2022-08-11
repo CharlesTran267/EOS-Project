@@ -26,15 +26,15 @@ function getRandomColor() {
 	return color;
       }
 var volColor = {
-	'juvenile' : '#A91B0D',
-	'lithic' : '#3A43BA',
-	'free crystal' : '#26D701'
+	'juvenile' : ['red','#FF8886'],
+	'lithic' : ['3A9BDC','#45b6fe'],
+	'free crystal' : ['yellow','#26D701']
 }
 
 function NestedPieChart(props){
 	const [SunBurstVariable,setSunBurstVariable] = useState()
 	const [SunBurstFinalVariable,setSunBurstFinalVariable] = useState([{value:1,label:"juvenile"},{value:2,label:"lithic"},{value:3,label:"free crystal"}])
-	const [sunBurstDataVariable,setSunBurstDataVariable] = useState('overview')
+	const [sunBurstDataVariable,setSunBurstDataVariable] = useState('crystallinity')
 	
 	let side = props.onGetSide()
 	let data=props.onGetData();
@@ -62,9 +62,10 @@ function NestedPieChart(props){
 	const submitSunBurstVariable =()=>{
 		setSunBurstFinalVariable(SunBurstVariable)
 	}
+	
 
-	let cc = setSunBurstDataVariable
-	let Data = []
+	// let cc = setSunBurstDataVariable
+	// let Data = []
 // 	if(cc !== 'overview'){
 // 	for (let i=0;i<data.length;i++){
 		
@@ -142,10 +143,21 @@ function NestedPieChart(props){
 	console.log(crysTable)
 	console.log(shapeTable)
 	console.log(alterTable)
+
+	let table = {}
+	if(sunBurstDataVariable === 'crystallinity'){
+		table = crysTable
+	}
+	else if(sunBurstDataVariable === 'shape'){
+		table = shapeTable
+	}
+	else{
+		table = alterTable
+	}
 	
 
 
-	for(const[key,value] of Object.entries(crysTable)  ){
+	for(const[key,value] of Object.entries(table)  ){
 		for(const[k,v] of Object.entries(value)){
 			
 			if(k !== 'undefined' ){
@@ -165,7 +177,7 @@ function NestedPieChart(props){
 
 	for(let i=0;i<variable.length;i++){
 		
-		for(const[key,value] of Object.entries(crysTable[variable[i].label])){
+		for(const[key,value] of Object.entries(table[variable[i].label])){
 		
 			
 			
@@ -178,7 +190,7 @@ function NestedPieChart(props){
 			else{
 			labels.push(variable[i].label)
 			parents.push(key)
-			values.push(crysTable[variable[i].label][key])
+			values.push(table[variable[i].label][key])
 			}
 	
 
@@ -205,21 +217,20 @@ function NestedPieChart(props){
 	}
 	
 	let colors = []
+	let front = []
+	let back = []
+	for(let i =labels.length -1;i>=labels.length/2;i--){
+		back.unshift(volColor[labels[i]][0]);
+		front.unshift(volColor[labels[i]][1]);
+		
+	}
 
-	for(let i=0;i<labels.length;i++){
-		if((i>= 0 && i<=4)){
-			colors.push('#FF8886')
-		}
-		else if(i>=5 && i <=10){
-			colors.push('#45b6fe')
-		}
-		
-		else if((i>=11 && i<=15)){
-			colors.push('red')
-		}
-		else if(i>=16 && i<=21){
-			colors.push('#3A9BDC')}
-		
+	for(let i=0;i<front.length;i++){
+		colors.push(front[i]);
+	}
+
+	for(let i=0;i<back.length;i++){
+		colors.push(back[i])
 	}
 
 	const e = ()=>{
@@ -263,10 +274,10 @@ function NestedPieChart(props){
 				<div>
 				<div>
 					<DropDownForSunBurst  onPassSunBurstDataVariable= {PassSunBurstDataVariable} />
-					
 				</div>
 				<div>
 					<SelectForSunBurst onPassSunBurstVariable = {PassSunBurstVariable}/>
+					
 				</div>
 				<div>
 					<Button onSubmitSunBurstVariable = {submitSunBurstVariable}/>

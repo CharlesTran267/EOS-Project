@@ -13,9 +13,11 @@ const color_dict = {
 	'altered material' : 'orange'
 }
 
-const BarChart = () =>{
+const BarChart = (props) =>{
 	const [AFEs,setAFEs] = useState()
 	const [particles,setParticles] = useState()
+
+	let side = props.onGetSide();
 	useEffect(()=>{
 		axios.get("/volcanoes/getAFE")
 		.then(response => {
@@ -52,7 +54,9 @@ const BarChart = () =>{
 
 	console.log(eruptiveArray)
 	
+	
 
+	
 	let AFE_eruptive = {}
 	let AFE_Table = {} 
 
@@ -135,17 +139,20 @@ const BarChart = () =>{
 	// 	type: 'bar'
 	// }
 
+	
+
 
 	}
 	return (
-	<div>
-		
+	<div >
+	<div onDoubleClick = {() =>{props.onPassZoomMode([],'barChart')}} >
 	<Plot
         data={data}
 	
-        layout={ {width: 500, height: 600, title: 'Bar Chart',barmode :'stack' } }
+        layout={ {width: side[0], height: side[1], title: 'Bar Chart',barmode :'stack' } }
 	
 		/>
+	</div>
 	</div>
       );
 }

@@ -13,6 +13,10 @@
 
 }
 
+.detailPlot3 {
+	display:flex;
+}
+
 .switchBar{
 
 	width: 100%
@@ -84,5 +88,22 @@
 }
 
 .a{
-	margin-left:29%;
+	margin-left:0%;
+}
+
+.boxPlot{
+	margin-left:3.5%
+}
+
+.barChart{
+	margin-left:3%;
+	margin-top:4%
+}
+
+.b{
+	display:flex
+}
+
+.dp{
+	display:flex
 }

@@ -31,6 +31,9 @@ const OverviewPlot = () =>{
 	const [legendSize,setLegendSize] = useState(12)
 
 	useEffect(() =>{
+		
+
+
 		axios.get('/volcanoes/getParticles')
 		.then(data =>{
 			setParArray(data.data['particles']) 

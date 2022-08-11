@@ -54,6 +54,9 @@ const DetailPlots = () =>{
 	const [legendSize_Binary,setLegendSize_Binary] = useState(12)
 	const [legendSize_Ternary,setLegendSize_Ternary] = useState(12)
 	const [AFEs,setAFEs] = useState([])
+	const [barChart,setBarChart] = useState([])
+	const [barChartSide,setBarChartSide] = useState([600,500])
+
 	useEffect(() =>{
 		axios.get('/volcanoes/getAFE')
 		.then(data =>{
@@ -164,6 +167,7 @@ const PassZoomInSunBurstPlot = (a) =>{
 const PassZoomInTernaryPlot = () =>{
 	setZoomInTernaryPlot(<TernaryPlot onGetLegendSize = {() =>{return 6 }} onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return ternarySide} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/>)
 }
+
 const PassZoomMode = (b,a) =>{
 
 	if(a==='binaryPlot'){
@@ -182,6 +186,10 @@ const PassZoomMode = (b,a) =>{
 		 setZoomMode(1);}
 	else if(a === 'boxPlot'){
 		setZoomInPlot(<BoxPlot onPassZoomMode = {PassZoomMode} onGetSide = {()=>{return([600,800])}} onGetData= {getData} /> )
+		setZoomMode(1);
+	}
+	else if(a=== 'barChart'){
+		setZoomInPlot(<BarChart onPassZoomMode ={PassZoomMode} onGetSide = {() =>{return ([600,800]) }} />) 
 		setZoomMode(1);
 	}
 }
@@ -223,6 +231,11 @@ const addSunBurstPlot = () =>{
 const addBoxPlot = () =>{
 	setBoxPlotSide([300,500])
 	setBoxPlot([...boxPlot,<BoxPlot onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return [300,500] }} onGetData ={getData} />])
+}
+
+const addBarChartPlot = () =>{
+	setBarChartSide([300,500])
+	setBarChart([...barChart,<BarChart onPassZoomMode = {PassZoomMode} onGetSide= {() => {return [300,500]} } /> ])
 }
 
 const back = () =>{
@@ -284,29 +297,42 @@ const back = () =>{
 				<NestedPieChart onPassZoomMode ={PassZoomMode} onPassZoomInSunBurstPlot = {PassZoomInSunBurstPlot} onGetSide = {() =>{return sunBurstSide}} onGetSunBurstVariable = {getSunBurstVariable} onGetSunBurstDataVariable = {getSunBurstDataVariable} onGetData={getData} />
 				{sunBurst}
 				</div>
-				<AiOutlinePlus onClick = {addSunBurstPlot} size='25px'/>
-				<AiOutlineInfo size='25px'/>
+				<div className = 'a'>
+			<AiOutlinePlus onClick = {addSunBurstPlot} size='25px'/>
+			<AiOutlineInfo size='25px'/>	
+		</div>
 			</div>
 
 			</div>
 		<div className = 'detailPlot3'>
-		<div>
-			<div className = 'sunBurstPlots'>
+		
+			<div className = 'boxPlot'>
+			<div className = 'bp' >
 				<BoxPlot onPassZoomMode={PassZoomMode} onGetSide = {() => {return boxPlotSide}} onGetData = {getData} />
 				{boxPlot}
-
-				
-			</div>	
-			<div className = 'a'>
+			</div>
+				<div className = 'a'>
 			<AiOutlinePlus onClick = {addBoxPlot} size='25px'/>
 			<AiOutlineInfo size='25px'/>	
 		</div>
-				<div>
-			<BarChart/>
-				</div>
+			</div>	
+			
+		
+				<div className = 'barChart' >
+		<div className = 'b'>
+			<BarChart onPassZoomMode = {PassZoomMode} onGetSide =  { () => {return barChartSide} }  />
+			{barChart}
 		</div>
+			<div className = 'a'>
+			<AiOutlinePlus onClick = {addBarChartPlot} size='25px'/>
+			<AiOutlineInfo size='25px'/>	
+		</div>
+				</div>
+				
+				
 		</div>
 
+		
 		
 
 		</div>
