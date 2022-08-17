@@ -32,7 +32,11 @@ const OverviewPlot = () =>{
 
 	useEffect(() =>{
 		
+		axios.get('/volcanoes/getAFE')
+		.then(data =>{
 
+		  console.log(data.data.afes)
+		}).catch(err=> console.log(err))
 
 		axios.get('/volcanoes/getParticles')
 		.then(data =>{
@@ -105,9 +109,9 @@ const OverviewPlot = () =>{
 
 	
 	return(
-		<div className = 'overviewPlot' >
-			<div> 
-				<div className ='overview'>
+		<div className = 'overviewPlot'  >
+			<div style={{border:"solid", borderColor:"#29b6f6"}}> 
+				<div style={{margin:"30px"}} className ='overview'>
 				
 	<OverviewPieChart onGetLegendSize = {() =>{return legendSize }} onGetSide = {() =>{return side }} onGetData={getData} onGetPieChartVariable={getPieChartVariable} />
 				

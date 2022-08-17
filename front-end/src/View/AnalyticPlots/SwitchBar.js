@@ -1,12 +1,15 @@
 import React from 'react'
 import {useState,useEffect} from 'react'
 import './NewDashBoardStyling.css'
+import {Button} from '@material-ui/core'
 const SwitchBar = (props) => {
 	const [mode,setMode] = useState('Overview')
+	const [overviewVariant, setOverViewVariant] = useState("contained")
 	const switchOverview = () =>{
 		if(mode !== 'Overview'){
 			props.onPassMode('Overview')
 			setMode('Overview')
+			setOverViewVariant("contained")
 		}
 	}
 
@@ -14,6 +17,7 @@ const SwitchBar = (props) => {
 		if(mode !== 'Plots'){
 			props.onPassMode('Plots')
 			setMode('Plots')
+			setOverViewVariant("outlined")
 		}
 	}
 
@@ -23,9 +27,9 @@ const SwitchBar = (props) => {
 
 	return(
 		<div>
-			<div className = 'switchBar'>
-			<h3 className = 'OverviewPlotOption' onClick = {switchOverview}  >Overview</h3>
-			<h3 className = 'DetailPlotsOption' onClick = {switchDetail} >Plots</h3>
+			<div className = 'switchBar' style={{marginTop:"20px",marginBottom:"30px"}}>
+				<Button className = 'OverviewPlotOption' variant={overviewVariant} color="primary" style={{marginRight:"100px"}} onClick = {switchOverview}  >Overview</Button>
+				<Button className = 'DetailPlotsOption' variant={overviewVariant=='contained'?"outlined":"contained"} color="primary" onClick = {switchDetail} >Plots</Button>
 			</div>
 		</div>
 	);

@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import { Plot } from 'react-plotly.js';
 
-const Essentials = ['basic_component','volc_name','glassy_type']
+const Essentials = ['main_type','volc_name','glassy_type']
 
 const DropDownForPie = (props) => {
 	const [time,setTime] = useState(0);

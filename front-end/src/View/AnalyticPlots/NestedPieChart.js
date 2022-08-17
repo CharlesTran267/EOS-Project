@@ -11,6 +11,9 @@ import DropDownForSunBurst from './DropDownForSunBurst';
 // var values = [0, 0, 0, 0];
 // var labels = ["juvenile", "lithic", "free crystal", "undefined"];
 // var parents =  ["", "", "", ""];
+var main_type = "main_type"
+var crystallinity = "crystallinity"
+var alteration_degree = "hydrop_alter_degree"
 function intToChar(int) {
 	const code = 'A'.charCodeAt(0);
 	console.log(code); // 👉️ 65
@@ -98,43 +101,43 @@ function NestedPieChart(props){
 	// }
 
 	for(let i=0;i<data.length;i++){
-		if(crysTable[data[i]["basic_component"]]&&data[i]["crystallinity_and_color"]){
+		if(crysTable[data[i][main_type]]&&data[i][crystallinity]){
 			
-			crysTable[data[i]["basic_component"]][data[i]["crystallinity_and_color"]+data[i]['basic_component']] =0;}
-		else if(crysTable[data[i]['basic_component']])
-			crysTable[data[i]["basic_component"]]['undefined'] =0;
+			crysTable[data[i][main_type]][data[i][crystallinity]+data[i][main_type]] =0;}
+		else if(crysTable[data[i][main_type]])
+			crysTable[data[i][main_type]]['undefined'] =0;
 		else
 			crysTable['undefined'] = 0
-		if(shapeTable[data[i]["basic_component"]]&&data[i]["shape"])	
-			shapeTable[data[i]["basic_component"]][data[i]["shape"]] =0;
-		else if(shapeTable[data[i]['basic_component']])
-			shapeTable[data[i]["basic_component"]]['undefined'] =0;
+		if(shapeTable[data[i][main_type]]&&data[i]["shape"])	
+			shapeTable[data[i][main_type]][data[i]["shape"]] =0;
+		else if(shapeTable[data[i][main_type]])
+			shapeTable[data[i][main_type]]['undefined'] =0;
 		else
 			shapeTable['undefined'] = 0
-		if(alterTable[data[i]["basic_component"]]&&data[i]["alteration_degree"])
-			alterTable[data[i]["basic_component"]][data[i]["alteration_degree"]] =0;
-		else if(alterTable[data[i]['basic_component']])
-			alterTable[data[i]["basic_component"]]['undefined'] =0;
+		if(alterTable[data[i][main_type]]&&data[i][alteration_degree])
+			alterTable[data[i][main_type]][data[i][alteration_degree]] =0;
+		else if(alterTable[data[i][main_type]])
+			alterTable[data[i][main_type]]['undefined'] =0;
 		else
 			alterTable['undefined'] = 0
 	}
 	for(let i=0;i<data.length;i++){
-		if(data[i]["basic_component"]&&data[i]["crystallinity_and_color"]&&crysTable[data[i]["basic_component"]])
-			crysTable[data[i]["basic_component"]][data[i]["crystallinity_and_color"]+data[i]['basic_component']] +=1;
-		else if(data[i]['basic_component']&&crysTable[data[i]["basic_component"]])
-			crysTable[data[i]["basic_component"]]['undefined'] +=1;
+		if(data[i][main_type]&&data[i][crystallinity]&&crysTable[data[i][main_type]])
+			crysTable[data[i][main_type]][data[i][crystallinity]+data[i][main_type]] +=1;
+		else if(data[i][main_type]&&crysTable[data[i][main_type]])
+			crysTable[data[i][main_type]]['undefined'] +=1;
 		else
 			crysTable['undefined'] +=1;
-		if(data[i]["basic_component"]&&data[i]["shape"]&&shapeTable[data[i]["basic_component"]])
-			shapeTable[data[i]["basic_component"]][data[i]["shape"]] +=1;
-		else if(data[i]['basic_component']&&shapeTable[data[i]['basic_component']])
-			shapeTable[data[i]["basic_component"]]['undefined'] +=1;
+		if(data[i][main_type]&&data[i]["shape"]&&shapeTable[data[i][main_type]])
+			shapeTable[data[i][main_type]][data[i]["shape"]] +=1;
+		else if(data[i][main_type]&&shapeTable[data[i][main_type]])
+			shapeTable[data[i][main_type]]['undefined'] +=1;
 		else
 			shapeTable['undefined'] +=1;
-		if(data[i]["basic_component"]&&data[i]["alteration_degree"]&&alterTable[data[i]["basic_componet"]])
-			alterTable[data[i]["basic_component"]][data[i]["alteration_degree"]] +=1;
-		else if(data[i]['basic_component']&&alterTable[data[i]['basic_component']])
-			alterTable[data[i]["basic_component"]]['undefined'] +=1;
+		if(data[i][main_type]&&data[i][alteration_degree]&&alterTable[data[i][main_type]])
+			alterTable[data[i][main_type]][data[i][alteration_degree]] +=1;
+		else if(data[i][main_type]&&alterTable[data[i][main_type]])
+			alterTable[data[i][main_type]]['undefined'] +=1;
 		// else
 		// 	alterTable['undefined'] +=1;
 	}

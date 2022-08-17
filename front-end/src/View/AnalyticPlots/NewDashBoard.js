@@ -19,16 +19,15 @@ import DetailPlots from './DetailPLots';
 import './NewDashBoardStyling.css'
 
 const NewDashBoard = () =>{
-	const[mode,setMode] = useState('Overview')
+	const[mode,setMode] = useState('Overview');
 
 const PassMode = (a) =>{
 	setMode(a)
 }
 	return(
-		<div>
-				<div>
-					<SwitchBar onPassMode = {PassMode}/>
-				
+		<div >
+				<div style={{display:"flex",justifyContent:"center"}}>
+					<SwitchBar style={{marginTop:"50px"}} onPassMode = {PassMode}/>
 				</div>
 			<div>
 				<div>

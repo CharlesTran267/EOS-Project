@@ -153,7 +153,7 @@ const getSunBurstDataVariable = () =>{
 
 const PassZoomInBinaryPlot = (a) =>{
         console.log(a)
-	setBinaryPlotZoomIn(<BinaryPlot onGetLegendSize = {() => {return 6} } onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return a[2] }} onGetInitialYAxis = {() =>{ return a[1] }} onGetInitialXAxis = {() =>{return a[0] }}  onGetSide={() =>{return side }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>)
+	setBinaryPlotZoomIn(<BinaryPlot onGetLegendSize = {() => {return 6} } onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return a[2] }} onGetInitialYAxis = {() =>{ return a[1] }} onGetInitialXAxis = {() =>{return a[0] }}  onGetSide={() =>{return side }} onGetData = {getData} />)
 	setInitialBinaryXAxis(a[0]);
 	setInitialBinaryYAxis(a[1]);
 	setInitialBinaryEssentialVariable(a[2]);
@@ -256,7 +256,10 @@ const back = () =>{
 			<div className='detailPlot1'>
 			<div>
 
-				<div className ='histogramPlot'>
+			<div className='detailPlot1' style={{marginBottom:"20px"}}>
+			<div style={{border:"solid", borderColor:"#29b6f6"}}>
+
+			<div className ='histogramPlot' style={{margin:"20px"}}>
 				<Histogram onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return histogramSide }} onGetAFE = {getAFE} onGetData = {getData} onGetHistogramMode = {getHistogramMode} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {GetHistogramVariable} />
 				{histogram}
 				</div>
@@ -264,20 +267,25 @@ const back = () =>{
 				<AiOutlineInfo size='25px' />
 				
 			</div>
+			</div>
+			</div>
+			
 			
 			<div>
-			<div className = 'binaryPlots' >
+			<div style={{border:"solid", borderColor:"#29b6f6"}}>
+				<div className = 'binaryPlots' style={{margin:"20px"}}>
 			<BinaryPlot onGetLegendSize={() =>{return legendSize_Binary}} onPassZoomMode={PassZoomMode} onPassZoomInBinaryPlot ={PassZoomInBinaryPlot} onGetEssentialVariable = {()=>{return initialBinaryEssentialVariable }} onGetInitialYAxis = {() =>{ return initialBinaryYAxis }} onGetInitialXAxis = {() =>{return initialBinaryXAxis }}  onGetSide={() =>{return binarySide }} onGetData = {getData} onGetEssentialVariable = {getEssentialVariable}/>
 			{binary}
 			</div>
 			<AiOutlinePlus onClick={addBinaryPlot} size ='25px' />
 			<AiOutlineInfo size='25px'/>
 			</div>
-			
 			</div>
-			<div className='detailPlot2'>
-			<div>
-			<div className = 'ternaryPlots'>
+
+			</div>
+			<div className='detailPlot2' style={{ mariginBottom:"20px"}}>
+				<div style={{border:"solid", borderColor:"#29b6f6"}}>
+					<div className = 'ternaryPlots' style={{margin:"20px"}}>
 			<TernaryPlot onGetLegendSize={() =>{return legendSize_Ternary }} onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return ternarySide} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/>
 			{ternary}
 			</div>
@@ -287,7 +295,7 @@ const back = () =>{
 					
 				</div>
 			</div>
-			<div>
+			<div style={{border:"solid", borderColor:"#29b6f6", mariginBottom:"20px"}}>
 				{/* <div>
 					<DropDownForSunBurst  onPassSunBurstDataVariable= {PassSunBurstDataVariable} />
 					
@@ -306,8 +314,9 @@ const back = () =>{
 			</div>
 		<div className = 'detailPlot3'>
 		
-			<div className = 'boxPlot'>
-			<div className = 'bp' >
+		<div style={{ marginTop:"20px"}}>
+				<div style={{border:"solid", borderColor:"#29b6f6"}}>
+					<div  className = 'sunBurstPlots' style={{margin:"20px"}}>
 				<BoxPlot onPassZoomMode={PassZoomMode} onGetSide = {() => {return boxPlotSide}} onGetData = {getData} />
 				{boxPlot}
 			</div>
@@ -316,10 +325,13 @@ const back = () =>{
 			<AiOutlineInfo size='25px'/>	
 		</div>
 			</div>	
+		</div>
 			
 		
 				<div className = 'barChart' >
-		<div className = 'b'>
+				<div style={{ marginTop:"20px"}}>
+				<div style={{border:"solid", borderColor:"#29b6f6"}}>
+					<div  className = 'sunBurstPlots' style={{margin:"20px"}}>
 			<BarChart onPassZoomMode = {PassZoomMode} onGetSide =  { () => {return barChartSide} }  />
 			{barChart}
 		</div>
@@ -327,6 +339,8 @@ const back = () =>{
 			<AiOutlinePlus onClick = {addBarChartPlot} size='25px'/>
 			<AiOutlineInfo size='25px'/>	
 		</div>
+				</div>
+				</div>
 				</div>
 				
 				

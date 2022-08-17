@@ -5,6 +5,7 @@ import { reduce } from 'async';
 import Plot from 'react-plotly.js';
 
 let data = []
+var main_type = "main_type"
 const axios = require('axios')
 const color_dict = {
 	'juvenile' : 'red',
@@ -67,10 +68,10 @@ const BarChart = (props) =>{
 	}
 
 	for(let i=0; i<particles.length;i++){
-		if(AFE_Table[particles[i]['afe_code']][particles[i]['basic_component']] >=1 )
-			AFE_Table[particles[i]['afe_code']][particles[i]['basic_component']] += 1 ;
+		if(AFE_Table[particles[i]['afe_code']][particles[i][main_type]] >=1 )
+			AFE_Table[particles[i]['afe_code']][particles[i][main_type]] += 1 ;
 		else 
-			AFE_Table[particles[i]['afe_code']][particles[i]['basic_component']] = 1
+			AFE_Table[particles[i]['afe_code']][particles[i][main_type]] = 1
 	}
 
 
