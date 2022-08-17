@@ -26,14 +26,16 @@ const VolcanoTimeLine = () => {
   const [AFE,setAFE] = useState([])
 
   let AFEData = []
- 
 
       useEffect(() =>{
     axios.get('/volcanoes/getAFE')
         .then(data =>{
-          setAFE(data.data.afes)
+         
+          setAFE(data.data)
           console.log(data.data.afes)
         })
+
+
 
 		axios.get('/volcanoes/getEruptions')
 		.then(data =>{
@@ -59,6 +61,7 @@ const VolcanoTimeLine = () => {
   //     break;
   //   }
   // }
+
 let volc_num = 0
   for(let i=0;i<volcanoes.length;i++){
       if(volcanoes[i].volc_name === vol){
@@ -66,14 +69,15 @@ let volc_num = 0
       }
   }
 
-
-
-  for(let i =0;i<AFE.length;i++){
-    
+useEffect(()=>{
+  if(AFE.length!=0){
+    for(let i =0;i<AFE.length;i++){
       let s = AFE[i]['afe_date'].substr(0,4) + '.' + AFE[i]['afe_date'].substr(5,7);
       AFEData.push({x: parseFloat(s),y:5});
-    
   }
+}
+},[AFE])
+  
 
   
 
@@ -212,9 +216,9 @@ const ChangeGraph = (choice) => {
       onGetDummyAFEData = {getDummyData}
     />);
   }
-}
-  
 
+  
+}
     return (
       <div>
             <div className="Row1">
