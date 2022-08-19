@@ -256,8 +256,8 @@ const back = () =>{
 			<div className='detailPlot1'>
 			<div>
 
-			<div className='detailPlot1' style={{marginBottom:"20px"}}>
-			<div style={{border:"solid", borderColor:"#29b6f6"}}>
+			<div className='detailPlot1' >
+			<div  style={{border:"solid", borderColor:"#29b6f6",marginRight:"-35px"}}>
 
 			<div className ='histogramPlot' style={{margin:"20px"}}>
 				<Histogram onPassZoomMode = {PassZoomMode} onGetSide = {() =>{return histogramSide }} onGetAFE = {getAFE} onGetData = {getData} onGetHistogramMode = {getHistogramMode} onGetVolcToCompare = {getVolcToCompare} onGetHistogramVariable = {GetHistogramVariable} />
@@ -283,8 +283,8 @@ const back = () =>{
 			</div>
 
 			</div>
-			<div className='detailPlot2' style={{ mariginBottom:"20px"}}>
-				<div style={{border:"solid", borderColor:"#29b6f6"}}>
+			<div className='detailPlot2' >
+				<div style={{border:"solid", borderColor:"#29b6f6",marginTop:"30px",marginLeft:"35px"}}>
 					<div className = 'ternaryPlots' style={{margin:"20px"}}>
 			<TernaryPlot onGetLegendSize={() =>{return legendSize_Ternary }} onPassZoomMode = {PassZoomMode} onPassZoomInTernaryPlot= {PassZoomInTernaryPlot} onGetSide = {() => {return ternarySide} } onGetData = {getData} onGetTernaryVariable = {getTernaryVariable}/>
 			{ternary}
@@ -295,7 +295,7 @@ const back = () =>{
 					
 				</div>
 			</div>
-			<div style={{border:"solid", borderColor:"#29b6f6", mariginBottom:"20px"}}>
+			<div style={{border:"solid", borderColor:"#29b6f6", mariginBottom:"20px",paddingLeft:"45px",marginTop:"30px",marginRight:"30px"}}>
 				{/* <div>
 					<DropDownForSunBurst  onPassSunBurstDataVariable= {PassSunBurstDataVariable} />
 					
@@ -315,8 +315,8 @@ const back = () =>{
 		<div className = 'detailPlot3'>
 		
 		<div style={{ marginTop:"20px"}}>
-				<div style={{border:"solid", borderColor:"#29b6f6"}}>
-					<div  className = 'sunBurstPlots' style={{margin:"20px"}}>
+				<div style={{border:"solid", borderColor:"#29b6f6",marginLeft:"0px",marginTop:"15px",padding:"20px"}}>
+					<div  className = 'sunBurstPlots' >
 				<BoxPlot onPassZoomMode={PassZoomMode} onGetSide = {() => {return boxPlotSide}} onGetData = {getData} />
 				{boxPlot}
 			</div>
@@ -329,8 +329,8 @@ const back = () =>{
 			
 		
 				<div className = 'barChart' >
-				<div style={{ marginTop:"20px"}}>
-				<div style={{border:"solid", borderColor:"#29b6f6"}}>
+				<div >
+				<div style={{border:"solid", borderColor:"#29b6f6",marginTop:"-20px",marginLeft:"-25px",paddingRight:"10px"}}>
 					<div  className = 'sunBurstPlots' style={{margin:"20px"}}>
 			<BarChart onPassZoomMode = {PassZoomMode} onGetSide =  { () => {return barChartSide} }  />
 			{barChart}

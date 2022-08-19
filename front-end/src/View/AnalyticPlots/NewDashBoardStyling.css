@@ -86,7 +86,8 @@
 }
 
 .histogramPlot{
-	display:flex
+	display:flex;
+	
 }
 
 .a{
@@ -109,3 +110,18 @@
 .dp{
 	display:flex
 }
+
+.histogramDropDown{
+	display:flex;
+	margin-left:-30px
+
+}
+
+.eleToCompare{
+	display:flex;
+}
+
+.binaryDropDown{
+	display:flex;
+}
+

@@ -159,14 +159,18 @@ function GetVariableData(){
 	console.log(data)
 		return(
 	<div>
+	<div className = 'binaryDropDown' >
+	<div>
+			<DropDownForEssential onPassEssentialVariable = {PassEssentialVariable} onGetEssential = {()=>{return initialEssentialVariable }} />
+		</div>
+
 		<div class='select'>
 			<DropDownBar className = 'dropdown' onPassVariableForY = {PassVariableForY} onGetVariableData={GetVariableData} onGetInitialData={() => { return [initialXAxis,initialYAxis,initialEssentialVariable] }}/>	
 			<DropDownBar className = 'dropdown' onPassVariableForX = {PassVariableForX} onGetVariableData={GetVariableData} onGetInitialData={() => {return [initialXAxis,initialYAxis,initialEssentialVariable] }}/>
 		</div>
 
-		<div>
-			<DropDownForEssential onPassEssentialVariable = {PassEssentialVariable} onGetEssential = {()=>{return initialEssentialVariable }} />
-		</div>
+
+	</div>
 <div onDoubleClick={doubleClick}>
 <Plot
         data={data}

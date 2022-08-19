@@ -317,19 +317,21 @@ const Histogram = (props) =>{
 		<div>
 
 <div className = 'DropDownHistogram'>
-					<DropDownForHistogramMode onPassHistogramMode = {PassHistogramMode} />
+
+			<div className = 'histogramDropDown'>
+					<DropDownForHistogramMode onPassHistogramMode = {PassHistogramMode} />	
 				
 
 					{(histogramMode === 'Compare')?(
 						<div className= 'volcToCompare'>  
 							<DropDownForHistogramEsential onPassHistogramEsential = {PassHistogramEsential} />
 							{(histogramEsential === 'Volcanoes')?(
-							<div>
+							<div className = 'eleToCompare'>
 							<DropDownForHistogramCompare onPassVolcToCompare1 = {PassVolcToCompare1} onGetVar = {getVar} />
 							<DropDownForHistogramCompare onPassVolcToCompare2 = {PassVolcToCompare2} onGetVar = {getVar} />
 							</div>
 							):(
-							<div>
+							<div className = 'eleToCompare'>
 								<DropDownForHistogramCompareEruptive onPassVolcToCompare1 = {PassVolcToCompare1} />
 								<DropDownForHistogramCompareEruptive onPassVolcToCompare2 = {PassVolcToCompare2} />
 							</div>
@@ -344,6 +346,7 @@ const Histogram = (props) =>{
 
 		<div>
 				<DropDownBar onPassHistogramVariable = {PassHistogramVariable} onGetVariableData={GetVariableData}/>
+		</div>
 		</div>
 <div onDoubleClick = {doubleClick}>
 <Plot
