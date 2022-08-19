@@ -11,9 +11,17 @@ import DropDownForSunBurst from './DropDownForSunBurst';
 // var values = [0, 0, 0, 0];
 // var labels = ["juvenile", "lithic", "free crystal", "undefined"];
 // var parents =  ["", "", "", ""];
+
+function IntToChar(int) {
+	// 👇️ for Uppercase letters, replace `a` with `A`
+	const code = 'a'.charCodeAt(0);
+	console.log(code); // 👉️ 97
+      
+	return String.fromCharCode(code + int);
+      }
 var main_type = "main_type"
 var crystallinity = "crystallinity"
-var alteration_degree = "hydrop_alter_degree"
+var alteration_degree = "hydro_alter_degree"
 function intToChar(int) {
 	const code = 'A'.charCodeAt(0);
 	console.log(code); // 👉️ 65
@@ -103,13 +111,13 @@ function NestedPieChart(props){
 	for(let i=0;i<data.length;i++){
 		if(crysTable[data[i][main_type]]&&data[i][crystallinity]){
 			
-			crysTable[data[i][main_type]][data[i][crystallinity]+data[i][main_type]] =0;}
+			crysTable[data[i][main_type]][data[i][crystallinity]] =0;}
 		else if(crysTable[data[i][main_type]])
 			crysTable[data[i][main_type]]['undefined'] =0;
 		else
 			crysTable['undefined'] = 0
 		if(shapeTable[data[i][main_type]]&&data[i]["shape"])	
-			shapeTable[data[i][main_type]][data[i]["shape"]] =0;
+			shapeTable[data[i][main_type]][data[i]["shape"] ] =0;
 		else if(shapeTable[data[i][main_type]])
 			shapeTable[data[i][main_type]]['undefined'] =0;
 		else
@@ -123,13 +131,13 @@ function NestedPieChart(props){
 	}
 	for(let i=0;i<data.length;i++){
 		if(data[i][main_type]&&data[i][crystallinity]&&crysTable[data[i][main_type]])
-			crysTable[data[i][main_type]][data[i][crystallinity]+data[i][main_type]] +=1;
+			crysTable[data[i][main_type]][data[i][crystallinity]] +=1;
 		else if(data[i][main_type]&&crysTable[data[i][main_type]])
 			crysTable[data[i][main_type]]['undefined'] +=1;
 		else
 			crysTable['undefined'] +=1;
 		if(data[i][main_type]&&data[i]["shape"]&&shapeTable[data[i][main_type]])
-			shapeTable[data[i][main_type]][data[i]["shape"]] +=1;
+			shapeTable[data[i][main_type]][data[i]["shape"] ] +=1;
 		else if(data[i][main_type]&&shapeTable[data[i][main_type]])
 			shapeTable[data[i][main_type]]['undefined'] +=1;
 		else
@@ -208,16 +216,37 @@ function NestedPieChart(props){
 		
 		
 	}
-
-	let ids=[]
-	for(let i=0;i<labels.length;i++){
-		if(i>0 && labels[i]===labels[i-1]){
-			ids.push(labels[i]+i)
+	let c=0;
+	let ids = []
+	for(var key in table){
+		for(var k in table[key]){
+			if(k !== 'undefined'){
+				ids.push(key + " - " + k)
+				c+=1
+			}
 		}
-		else
-		ids.push(labels[i])
+
+	}
+	
+	for(let i=c;i<labels.length;i++){
+		// if(i>0 && labels[i]===labels[i-1]){
+			ids.push(labels[i]+i)
+		// }
+		// else
+		// ids.push(labels[i] )
 		
 	}
+
+	let p = [];
+	for(let i=0;i<c;i++){
+		p.push("");
+	}
+
+	for(let i=c;i<parents.length;i++){
+		p.push(ids[i-c])
+	}
+
+	console.log(p)
 	
 	let colors = []
 	let front = []
@@ -251,7 +280,7 @@ function NestedPieChart(props){
 	console.log(labels)
 	console.log(parents)
 	console.log(values)
-	console.log(colors)
+	console.log(ids)
 
 	let d={}
 	let t = []
@@ -264,7 +293,7 @@ function NestedPieChart(props){
 		}
 	}
 
-	console.log(crysTable)
+	console.log(t)
 
 	console.log(d)
 	
@@ -289,7 +318,7 @@ function NestedPieChart(props){
 			<Plot
         data={[{
 		labels: t,
-		parents: parents,
+		parents: p,
 		ids: ids,
 		type: "sunburst",
 		// values:  values,
