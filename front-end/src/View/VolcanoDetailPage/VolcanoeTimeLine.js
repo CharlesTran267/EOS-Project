@@ -24,14 +24,15 @@ const VolcanoTimeLine = () => {
   const [volcanoes, setVolcanoes] = useState([]);
   const [c,setC] = useState(0)
   const [AFE,setAFE] = useState([])
+  const [AFEData,setAFEData] = useState([])
 
-  let AFEData = []
+  
 
       useEffect(() =>{
     axios.get('/volcanoes/getAFE')
         .then(data =>{
          
-          setAFE(data.data)
+          setAFE(data.data.afes)
           console.log(data.data.afes)
         })
 
@@ -70,18 +71,40 @@ let volc_num = 0
   }
 
 useEffect(()=>{
-  if(AFE.length!=0){
-    for(let i =0;i<AFE.length;i++){
+  console.log(AFE)
+  let a = []
+    if(AFE.length != 0){
+    for(let i =0;i<12;i++){
+      if(AFE[i]['volc_num'] === volc_num){
       let s = AFE[i]['afe_date'].substr(0,4) + '.' + AFE[i]['afe_date'].substr(5,7);
-      AFEData.push({x: parseFloat(s),y:5});
+      a.push({x: parseFloat(s),y:5});
+      }
   }
-}
+    }
+console.log(a);
+setAFEData(a);
+
 },[AFE])
   
 
   
 
 let TaalEruptionYear = [];
+for(let i=0;i<eruptions.length;i++){
+  if(eruptions[i]['volc_name'] === vol && eruptions[i]['ed_stime'] && eruptions[i]['ed_etime'] ){
+  let s = eruptions[i]['ed_stime'].substr(0,4) + '.' + eruptions[i]['ed_stime'].substr(5,7);
+  let e = eruptions[i]['ed_etime'].substr(0,4) + '.' + eruptions[i]['ed_etime'].substr(5,7);
+
+    if(parseFloat(s) !== parseFloat(e)){
+    TaalEruptionYear.push({s:parseFloat(s),e:parseFloat(e)})
+    }
+    else{
+      TaalEruptionYear.push({s:parseFloat(s),e:parseFloat(e)+1})
+    }
+
+  }
+}
+
 const TaalData = [];
 
 
@@ -91,11 +114,11 @@ let check = 0;
 let EndYearData =[];
 
 
-if(check === 0){
+
 
 for(let i=0;i<TaalEruptionYear.length;i++){
   let p = {
-    x: TaalEruptionYear[i]+1,
+    x: TaalEruptionYear[i].s,
     y: 10
   }
   TaalData.push(p);
@@ -104,14 +127,14 @@ for(let i=0;i<TaalEruptionYear.length;i++){
 
 for(let i=0;i<TaalEruptionYear.length;i++){
   let p = {
-    x: TaalEruptionYear[i],
+    x: TaalEruptionYear[i].e,
     y: 10
   }
   TaalData.push(p);
 }
 
-check = 1;
-}
+TaalData.sort((a,b) => a.x > b.x && 1 || -1 )
+console.log(AFEData)
 
 
 
@@ -153,8 +176,7 @@ const [gData,setgData] = useState([]);
     for(let i = Math.floor(yD);i<=Math.floor(yU);i++){
       for(let j=0;j<0.12;j+=0.01){
         l.push(i+j);
-        alert(j+i);
-        break;
+        
       }
     }
     
@@ -178,6 +200,8 @@ const getDummyData = () =>{
     return AFEData;
   }
 
+  console.log(AFEData)
+
 const redirectPage = () =>{
   
 }
@@ -196,6 +220,15 @@ const redirectPage = () =>{
   onGetDummyAFEData = {getDummyData}
 />;
 
+// const [AFEtimeGraph,setAFEtimeGraph]= useState(
+//  <AFEtimeGraph
+// ll = {AddLable}
+// dt = {AddGraphData}
+// onGetTaalData = {()=>{return TaalData}}
+// onGetTaalEruptionEndYear = {PassEndYear}
+// onGetAFEData = {()=>{return AFEData}}
+// /> );
+
   const [EruptionOption,setEruptionOption] = useState(OverviewTL);
   
 const ChangeGraph = (choice) => {
@@ -207,13 +240,15 @@ const ChangeGraph = (choice) => {
       onGetTaalEruptionEndYear = {PassEndYear}
       onGetDummyAFEData = {getDummyData}
     />);
-  }
+  }  
   else if(choice === 'decade'){
+    console.log(AFEData)
     setEruptionOption(<TimeLine 
       onPassData = {onUp}
-      onGetTaalData = {PassTaalData}
+      onGetTaalData = {() => {return TaalData}}
       onGetTaalEruptionEndYear = {PassEndYear}
-      onGetDummyAFEData = {getDummyData}
+      onGetDummyAFEData = {() => {return AFEData}}
+      onGetVolcNum = {() => {return volc_num}}
     />);
   }
 
@@ -238,13 +273,15 @@ const ChangeGraph = (choice) => {
                 {EruptionOption}
             </div>
             <div >
-            <AFEtimeGraph 
-  ll = {AddLable}
-  dt = {AddGraphData}
-  onGetTaalData = {()=>{return TaalData}}
-  onGetTaalEruptionEndYear = {PassEndYear}
-  onGetAFEData = {getDummyData}
-  />
+          
+            <AFEtimeGraph
+ll = {AddLable}
+dt = {AddGraphData}
+onGetTaalData = {()=>{return TaalData}}
+onGetTaalEruptionEndYear = {PassEndYear}
+onGetAFEData = {getDummyData}
+onGetVolcNum = {()=>{return volc_num}}
+/>
             </div>
         </div>
     );

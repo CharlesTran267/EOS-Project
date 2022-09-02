@@ -6,26 +6,65 @@ import Draggable from 'react-draggable';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import DragBox from './DragBox';
-
+import axios from 'axios';
 
 
 function valuetext(value) {
   return `${value}°C`;
 }
 
+// let AFEData = [];
+
 
 
 const TimeLine = (props) =>{
+  const [AFE,setAFE] = useState([])
+  const [AFEData,setAFEData] = useState([])
+  
 
+  let volc_num = props.onGetVolcNum();
+
+  useEffect(() =>{
+    axios.get('/volcanoes/getAFE')
+        .then(data =>{
+         
+          setAFE(data.data.afes)
+          console.log(data.data.afes)
+        })
+
+         
+	},[])
+
+ 
+  let FinalAFEData = []
   let TaalData = props.onGetTaalData();
+  
+
+  
+  console.log(AFEData)
+
+  useEffect(()=>{
+    console.log(AFE)
+    let a = []
+      if(AFE.length != 0){
+      for(let i =0;i<12;i++){
+        if(AFE[i]['volc_num'] === volc_num){
+        let s = AFE[i]['afe_date'].substr(0,4) + '.' + AFE[i]['afe_date'].substr(5,7);
+        a.push({x: parseFloat(s),y:5});
+        }
+    }
+      }
+  console.log(a);
+  setAFEData(a);
+  
+  },[AFE])
+  
+
+    
 
   let fillList = TaalData;
-	for(let i=0;i<fillList.length;i++){
-		fillList[i].y = 10;
-	}
-
 
 	fillList.sort((a,b) => a.x > b.x && 1 || -1 )
 
@@ -70,7 +109,7 @@ const TimeLine = (props) =>{
     return list;
   }
 
-  const [EruptionLabel,setEruptionLabel] = useState(CreateLabel(2011));
+  const [EruptionLabel,setEruptionLabel] = useState(CreateLabel(2021));
   
   const MovePrev = () =>{
       let newlist = [];
@@ -88,7 +127,7 @@ const TimeLine = (props) =>{
   const MoveForward = () =>{
     let newlist = [];
     newlist = CreateLabel(EruptionLabel[EruptionLabel.length -1 ]+1);
-    if(newlist[newlist.length - 1] >= 2020){
+    if(newlist[newlist.length - 1] >= 2030){
       setLast(1);
     }
     else{
@@ -99,7 +138,7 @@ const TimeLine = (props) =>{
   }
 
   let t;
-
+  FinalAFEData = AFEData.filter(n => n.x>=EruptionLabel[0]&&n.x<=EruptionLabel[EruptionLabel.length - 1])
 
 	const graphData = {
 		labels: EruptionLabel,
@@ -122,9 +161,11 @@ const TimeLine = (props) =>{
       borderWidth: 1,
       pointRadius: 10,
       showLine: false,
-      data: fillList.filter(n => n.x>=EruptionLabel[0]&&n.x<=EruptionLabel[EruptionLabel.length - 1]),
-      pointRadius: 0,
+      data: FinalAFEData,
+      
     }
+    
+    
   ],
     }
 
@@ -210,7 +251,7 @@ const opt = {
     setYearUp((posX/w - 0.016891891891891893)/(0.1081081081) + EruptionLabel[0] );
     var yU = (posX/w - 0.016891891891891893)/(0.1081081081) + EruptionLabel[0];
     var m = Math.floor((yU-Math.floor(yU)) /0.08333333333) + 1 ;
-    props.onPassData(monthDown,m,yearDown,yU);
+    props.onPassData(yearDown,yU);
     setMonthUp( Math.floor((yU-Math.floor(yU)) /0.08333333333) + 1 );
     console.log(m);
     setPosMouseUp(posX/w);

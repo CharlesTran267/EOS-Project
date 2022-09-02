@@ -13,8 +13,21 @@ const AFEtimeGraph = (props) =>{
 
 	const [eruptions,setEruptions] = useState([])
 	const [volcanoes,setVolcanoes] = useState([])
+	const [AFE,setAFE] = useState([])
+	const [AFEData,setAFEData] = useState([])
+
+	let volc_num = props.onGetVolcNum();
+      
 
   useEffect(() =>{
+
+	axios.get('/volcanoes/getAFE')
+        .then(data =>{
+         
+          setAFE(data.data.afes)
+          console.log(data.data.afes)
+        })
+
 		axios.get('/volcanoes/getEruptions')
 		.then(data =>{
       setEruptions(data.data['eruptions'])
@@ -34,8 +47,24 @@ const AFEtimeGraph = (props) =>{
          
 	},[])
 
-	let AFEDummyData = props.onGetAFEData();
 
+		console.log(AFE)
+		let a = []
+		  if(AFE.length != 0){
+		  for(let i =0;i<12;i++){
+		    if(AFE[i]['volc_num'] === volc_num){
+		    let s = AFE[i]['afe_date'].substr(0,4) + '.' + AFE[i]['afe_date'].substr(5,7);
+		    a.push({x: parseFloat(s),y:5});
+		    }
+		}
+		  }
+	      console.log(a);
+	     
+	      
+	    
+
+	// let AFEDummyData = AFEData;
+	
 	let list = props.ll();
 	let graphData = props.dt();
 	//let TaalEruptionEndYear = props.onGetTaalEruptionEndYear();
@@ -151,7 +180,9 @@ console.log(TaalData)
 		fList.push({x:fillList[i],y:10})
 	}
 
-	let AFEFilteredData = AFEDummyData.filter(n => list.includes(n.x));
+
+	let AFEFilteredData = a.filter(n => list.includes(n.x));
+	console.log(AFEFilteredData)
 // console.log(TaalData)
 // console.log(TaalEruptionEndYear)
 // 	if(p.length>0 && EndYear.length>0){
