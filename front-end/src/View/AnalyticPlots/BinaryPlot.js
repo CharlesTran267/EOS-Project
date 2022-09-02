@@ -9,7 +9,6 @@ import DropDownForEssential from './DropDownForEssentialVariable';
 
 var variableData = ["convexity","rectangularity","elongation","roundness","circularity","eccentricity_moments","eccentricity_ellipse","solidit","aspect_rat","compactness","circ_rect","comp_elon","circ_elon","rect_comp","contrast","dissimilarity","homogeneity","energy","correlation","asm","blue_mean","blue_std","blue_mode","green_mean","green_std","green_mode","red_mean","red_std","red_mode"];
 let crystallinity = "crystallinity";
-let shape = shape;
 const BinaryPlot = (props) =>{
 
 	// let mesurement = require("/Users/vinhkhaitruong/Desktop/EOS Project /front-end/src/sample.json");
