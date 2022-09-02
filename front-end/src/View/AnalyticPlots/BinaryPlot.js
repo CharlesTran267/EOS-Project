@@ -74,7 +74,7 @@ function GetVariableData(){
 
 	for(let i=0;i<arr.length;i++){
 		
-		JnCrys[arr[i]["crystallinity_and_color"]] = [];
+		JnCrys[arr[i][crystallinity]] = [];
 		
 		essentialList[arr[i][essentialVariable]] = 1;
 	} 
