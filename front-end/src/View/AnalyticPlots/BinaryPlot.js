@@ -8,7 +8,8 @@ import DropDownBar from './DropDownForBinaryGraph';
 import DropDownForEssential from './DropDownForEssentialVariable';
 
 var variableData = ["convexity","rectangularity","elongation","roundness","circularity","eccentricity_moments","eccentricity_ellipse","solidit","aspect_rat","compactness","circ_rect","comp_elon","circ_elon","rect_comp","contrast","dissimilarity","homogeneity","energy","correlation","asm","blue_mean","blue_std","blue_mode","green_mean","green_std","green_mode","red_mean","red_std","red_mode"];
-
+let crystallinity = "crystallinity";
+let shape = shape;
 const BinaryPlot = (props) =>{
 
 	// let mesurement = require("/Users/vinhkhaitruong/Desktop/EOS Project /front-end/src/sample.json");
@@ -86,9 +87,8 @@ function GetVariableData(){
 		dataListY[key] = []
 	}
 
-	
 	for(let i=0;i<arr.length;i++){
-		JnCrys[arr[i]["crystallinity_and_color"]].push(arr[i]["shape"])	
+		JnCrys[arr[i][crystallinity]].push(arr[i]["shape"])	
 		if(arr[i][essentialVariable]){
 			dataListX[arr[i][essentialVariable]].push(arr[i][variable[0]])
 		}
